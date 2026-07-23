@@ -1,13 +1,13 @@
 {
   "app": "aquarelle-control-stock",
   "version": 4,
-  "savedAt": "2026-07-23T15:56:02.549Z",
+  "savedAt": "2026-07-23T15:39:05.638Z",
   "data": [
     {
       "categoria": "ROSAS",
       "generico": "A-Rosas-Colores",
       "producto": "A-Rosas-Colores-30_1",
-      "saldo": 18,
+      "saldo": 15,
       "recapCode": "17.127",
       "codeBase": "17127"
     },
@@ -15,7 +15,7 @@
       "categoria": "ROSAS",
       "generico": "A-Rosas-Colores",
       "producto": "A-Rosas-Colores-40_2",
-      "saldo": 11,
+      "saldo": 9,
       "recapCode": "17.127",
       "codeBase": "17127"
     },
@@ -23,7 +23,7 @@
       "categoria": "ROSAS",
       "generico": "A-Rosas-Colores",
       "producto": "A-Rosas-Colores-50_3",
-      "saldo": 27,
+      "saldo": 23,
       "recapCode": "17.127",
       "codeBase": "17127"
     },
@@ -39,7 +39,7 @@
       "categoria": "ROSAS",
       "generico": "A-ROSAS-ETHIOPIA",
       "producto": "A-ROSAS-ETHIOPIA_1",
-      "saldo": 11,
+      "saldo": 15,
       "recapCode": "31.056",
       "codeBase": "31056"
     },
@@ -47,7 +47,7 @@
       "categoria": "ROSAS",
       "generico": "A-ROSAS-ETHIOPIA",
       "producto": "A-ROSAS-ETHIOPIA_2",
-      "saldo": 14,
+      "saldo": 18,
       "recapCode": "31.056",
       "codeBase": "31056"
     },
@@ -55,7 +55,7 @@
       "categoria": "ROSAS",
       "generico": "A-ROSAS-ETHIOPIA",
       "producto": "A-ROSAS-ETHIOPIA_3",
-      "saldo": 4,
+      "saldo": 5,
       "recapCode": "31.056",
       "codeBase": "31056"
     },
@@ -63,7 +63,7 @@
       "categoria": "ROSAS",
       "generico": "A-ROSAS-ETHIOPIA",
       "producto": "A-ROSAS-ETHIOPIA_4",
-      "saldo": 1,
+      "saldo": 2,
       "recapCode": "31.056",
       "codeBase": "31056"
     },
@@ -95,7 +95,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-AUTHENTIQUE",
       "producto": "C-AUTHENTIQUE_1",
-      "saldo": 7,
+      "saldo": 6,
       "recapCode": "37.006",
       "codeBase": "37006"
     },
@@ -103,7 +103,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-AUTHENTIQUE",
       "producto": "C-AUTHENTIQUE_2",
-      "saldo": 11,
+      "saldo": 9,
       "recapCode": "37.006",
       "codeBase": "37006"
     },
@@ -119,7 +119,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-BLEU-PARFUME",
       "producto": "C-BLEU-PARFUME_1",
-      "saldo": 5,
+      "saldo": 4,
       "recapCode": "50.971",
       "codeBase": "50971"
     },
@@ -127,7 +127,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-BLEU-PARFUME",
       "producto": "C-BLEU-PARFUME_2",
-      "saldo": 12,
+      "saldo": 10,
       "recapCode": "50.971",
       "codeBase": "50971"
     },
@@ -143,7 +143,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-GIRASOLES-BQT",
       "producto": "C-GIRASOLES-BQT_1",
-      "saldo": 14,
+      "saldo": 10,
       "recapCode": "45.528",
       "codeBase": "45528"
     },
@@ -151,7 +151,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-LUX_HORTENSIA_SWEET",
       "producto": "C-LUX_HORTENSIA_SWEET_1",
-      "saldo": 7,
+      "saldo": 5,
       "recapCode": "38.332",
       "codeBase": "38332"
     },
@@ -159,7 +159,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-LUX_HORTENSIA_SWEET",
       "producto": "C-LUX_HORTENSIA_SWEET_2",
-      "saldo": 11,
+      "saldo": 9,
       "recapCode": "38.332",
       "codeBase": "38332"
     },
@@ -175,7 +175,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-Lys_champetre",
       "producto": "C-Lys_champetre_2",
-      "saldo": 19,
+      "saldo": 15,
       "recapCode": "56.058",
       "codeBase": "56058"
     },
@@ -183,7 +183,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-PASTEL-HIVERS",
       "producto": "C-PASTEL-HIVERS_1",
-      "saldo": 10,
+      "saldo": 7,
       "recapCode": "49.169",
       "codeBase": "49169"
     },
@@ -191,7 +191,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-RAMO_FLORISTA",
       "producto": "C-RAMO_FLORISTA_1",
-      "saldo": 21,
+      "saldo": 17,
       "recapCode": "30.640",
       "codeBase": "30640"
     },
@@ -199,7 +199,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-RAMO_FLORISTA",
       "producto": "C-RAMO_FLORISTA_2",
-      "saldo": 16,
+      "saldo": 13,
       "recapCode": "30.640",
       "codeBase": "30640"
     },
@@ -215,7 +215,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-STATICE-ROMANTICO",
       "producto": "C-STATICE-ROMANTICO_1",
-      "saldo": 7,
+      "saldo": 2,
       "recapCode": "37.614",
       "codeBase": "37614"
     },
@@ -231,7 +231,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-TOSCANA-PASTEL",
       "producto": "C-TOSCANA-PASTEL_1",
-      "saldo": 11,
+      "saldo": 7,
       "recapCode": "35.641",
       "codeBase": "35641"
     },
@@ -239,7 +239,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-TOSCANA-PASTEL",
       "producto": "C-TOSCANA-PASTEL_2",
-      "saldo": 13,
+      "saldo": 8,
       "recapCode": "35.641",
       "codeBase": "35641"
     },
@@ -255,7 +255,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-TOURNESOL",
       "producto": "C-TOURNESOL_1",
-      "saldo": 10,
+      "saldo": 8,
       "recapCode": "38.088",
       "codeBase": "38088"
     },
@@ -263,7 +263,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-TOURNESOL",
       "producto": "C-TOURNESOL_2",
-      "saldo": 13,
+      "saldo": 11,
       "recapCode": "38.088",
       "codeBase": "38088"
     },
@@ -279,7 +279,7 @@
       "categoria": "COMPUESTOS",
       "generico": "C-ZODIAC-CANCER",
       "producto": "C-ZODIAC-CANCER_1",
-      "saldo": 3,
+      "saldo": 2,
       "recapCode": "53.933",
       "codeBase": "53933"
     },
@@ -303,7 +303,7 @@
       "categoria": "PLANTAS",
       "generico": "P-Orqui-BLANCA",
       "producto": "P-Orqui-BLANCA_1",
-      "saldo": 6,
+      "saldo": 5,
       "recapCode": "33.551",
       "codeBase": "33551"
     },
@@ -311,7 +311,7 @@
       "categoria": "PLANTAS",
       "generico": "P-Orqui-ROSA",
       "producto": "P-Orqui-ROSA_1",
-      "saldo": 9,
+      "saldo": 8,
       "recapCode": "28.206",
       "codeBase": "28206"
     },
@@ -327,7 +327,7 @@
       "categoria": "SIMPLES",
       "generico": "S-Alstro_parme_",
       "producto": "S-Alstro_parme__2",
-      "saldo": 6,
+      "saldo": 5,
       "recapCode": "25.148",
       "codeBase": "25148"
     },
@@ -343,7 +343,7 @@
       "categoria": "SIMPLES",
       "generico": "S-Lilium-Rosa-06-P",
       "producto": "S-Lilium-Rosa-06-P_1",
-      "saldo": 8,
+      "saldo": 7,
       "recapCode": "18.397",
       "codeBase": "18397"
     },
@@ -351,7 +351,7 @@
       "categoria": "SIMPLES",
       "generico": "S-Lilium-Rosa-06-P",
       "producto": "S-Lilium-Rosa-08-P_2",
-      "saldo": 6,
+      "saldo": 5,
       "recapCode": "18.397",
       "codeBase": "18397"
     },
@@ -367,7 +367,7 @@
       "categoria": "SIMPLES",
       "generico": "S-Premium-12-18-24-30-roja",
       "producto": "S-Premium-12-18-24-30-roja_1",
-      "saldo": 22,
+      "saldo": 16,
       "recapCode": "32.486",
       "codeBase": "32486"
     },
@@ -375,7 +375,7 @@
       "categoria": "SIMPLES",
       "generico": "S-Premium-12-18-24-30-roja",
       "producto": "S-Premium-12-18-24-30-roja_2",
-      "saldo": 9,
+      "saldo": 7,
       "recapCode": "32.486",
       "codeBase": "32486"
     },
@@ -383,7 +383,7 @@
       "categoria": "SIMPLES",
       "generico": "S-Premium-12-18-24-30-roja",
       "producto": "S-Premium-12-18-24-30-roja_3",
-      "saldo": 3,
+      "saldo": 2,
       "recapCode": "32.486",
       "codeBase": "32486"
     },
@@ -391,7 +391,7 @@
       "categoria": "SIMPLES",
       "generico": "S-Premium-12-18-24-30-roja",
       "producto": "S-Premium-12-18-24-30-roja_4",
-      "saldo": 6,
+      "saldo": 5,
       "recapCode": "32.486",
       "codeBase": "32486"
     },
@@ -399,7 +399,7 @@
       "categoria": "SIMPLES",
       "generico": "S-R-Blanc-Premi-12-P",
       "producto": "S-R-Blanc-Premi-12-P_1",
-      "saldo": 7,
+      "saldo": 6,
       "recapCode": "18.919",
       "codeBase": "18919"
     },
@@ -407,7 +407,7 @@
       "categoria": "SIMPLES",
       "generico": "S-R-Blanc-Premi-12-P",
       "producto": "S-R-Blanc-Premi-18-P_2",
-      "saldo": 8,
+      "saldo": 7,
       "recapCode": "18.919",
       "codeBase": "18919"
     },
@@ -430,27 +430,27 @@
   ],
   "genericoData": {
     "A-Rosas-Colores": {
-      "compraL": 0,
+      "compraL": 67,
       "compraM": 0,
-      "compraX": 0,
+      "compraX": 57,
       "compraJ": 0,
       "compraV": 0,
       "prevExpedicion": 0,
-      "pendientePreasignar": 30
+      "pendientePreasignar": 0
     },
     "A-ROSAS-ETHIOPIA": {
-      "compraL": 0,
+      "compraL": 29,
       "compraM": 0,
-      "compraX": 0,
+      "compraX": 39,
       "compraJ": 0,
       "compraV": 0,
       "prevExpedicion": 0,
-      "pendientePreasignar": 16
+      "pendientePreasignar": 0
     },
     "C-ASTRO-LEO": {
       "compraL": 0,
       "compraM": 0,
-      "compraX": 0,
+      "compraX": 15,
       "compraJ": 0,
       "compraV": 0,
       "prevExpedicion": 0,
@@ -459,7 +459,7 @@
     "C-AUTHENTIQUE": {
       "compraL": 0,
       "compraM": 0,
-      "compraX": 0,
+      "compraX": 8,
       "compraJ": 0,
       "compraV": 0,
       "prevExpedicion": 0,
@@ -475,9 +475,9 @@
       "pendientePreasignar": 0
     },
     "C-GIRASOLES-BQT": {
-      "compraL": 0,
+      "compraL": 10,
       "compraM": 0,
-      "compraX": 0,
+      "compraX": 10,
       "compraJ": 0,
       "compraV": 0,
       "prevExpedicion": 0,
@@ -486,61 +486,61 @@
     "C-LUX_HORTENSIA_SWEET": {
       "compraL": 0,
       "compraM": 0,
-      "compraX": 0,
+      "compraX": 10,
       "compraJ": 0,
       "compraV": 0,
       "prevExpedicion": 0,
       "pendientePreasignar": 0
     },
     "C-Lys_champetre": {
-      "compraL": 0,
+      "compraL": 8,
       "compraM": 0,
-      "compraX": 0,
+      "compraX": 12,
       "compraJ": 0,
       "compraV": 0,
       "prevExpedicion": 0,
       "pendientePreasignar": 0
     },
     "C-PASTEL-HIVERS": {
-      "compraL": 0,
+      "compraL": 6,
       "compraM": 0,
-      "compraX": 0,
+      "compraX": 6,
       "compraJ": 0,
       "compraV": 0,
       "prevExpedicion": 0,
       "pendientePreasignar": 0
     },
     "C-RAMO_FLORISTA": {
-      "compraL": 0,
+      "compraL": 10,
       "compraM": 0,
-      "compraX": 0,
+      "compraX": 20,
       "compraJ": 0,
       "compraV": 0,
       "prevExpedicion": 0,
       "pendientePreasignar": 0
     },
     "C-STATICE-ROMANTICO": {
-      "compraL": 0,
+      "compraL": 20,
       "compraM": 0,
-      "compraX": 0,
+      "compraX": 15,
       "compraJ": 0,
       "compraV": 0,
       "prevExpedicion": 0,
       "pendientePreasignar": 0
     },
     "C-TOSCANA-PASTEL": {
-      "compraL": 0,
+      "compraL": 25,
       "compraM": 0,
-      "compraX": 0,
+      "compraX": 25,
       "compraJ": 0,
       "compraV": 0,
       "prevExpedicion": 0,
       "pendientePreasignar": 0
     },
     "C-TOURNESOL": {
-      "compraL": 0,
+      "compraL": 10,
       "compraM": 0,
-      "compraX": 0,
+      "compraX": 10,
       "compraJ": 0,
       "compraV": 0,
       "prevExpedicion": 0,
@@ -574,7 +574,7 @@
       "pendientePreasignar": 0
     },
     "P-Orqui-BLANCA": {
-      "compraL": 0,
+      "compraL": 6,
       "compraM": 0,
       "compraX": 0,
       "compraJ": 0,
@@ -583,7 +583,7 @@
       "pendientePreasignar": 0
     },
     "P-Orqui-ROSA": {
-      "compraL": 0,
+      "compraL": 6,
       "compraM": 0,
       "compraX": 0,
       "compraJ": 0,
@@ -603,16 +603,16 @@
     "S-Lilium-Rosa-06-P": {
       "compraL": 0,
       "compraM": 0,
-      "compraX": 0,
+      "compraX": 6,
       "compraJ": 0,
       "compraV": 0,
       "prevExpedicion": 0,
       "pendientePreasignar": 0
     },
     "S-Premium-12-18-24-30-roja": {
-      "compraL": 0,
+      "compraL": 15,
       "compraM": 0,
-      "compraX": 0,
+      "compraX": 15,
       "compraJ": 0,
       "compraV": 0,
       "prevExpedicion": 0,
@@ -629,78 +629,76 @@
     }
   },
   "prevExpedicionProducto": {
-    "A-Rosas-Colores-30_1": 12,
-    "A-Rosas-Colores-40_2": 7,
-    "A-Rosas-Colores-50_3": 17,
-    "A-Rosas-Colores-60_4": 3,
-    "A-ROSAS-ETHIOPIA_1": 2,
-    "A-ROSAS-ETHIOPIA_2": 3,
-    "A-ROSAS-ETHIOPIA_3": 1,
-    "A-ROSAS-ETHIOPIA_4": 0,
-    "C-ASTRO-LEO_1": 0,
-    "C-ASTRO-LEO_2": 0,
-    "C-ASTRO-LEO_3": 0,
-    "C-AUTHENTIQUE_1": 1,
-    "C-AUTHENTIQUE_2": 2,
-    "C-AUTHENTIQUE_3": 0,
-    "C-BLEU-PARFUME_1": 1,
-    "C-BLEU-PARFUME_2": 2,
-    "C-BLEU-PARFUME_3": 0,
-    "C-GIRASOLES-BQT_1": 4,
-    "C-LUX_HORTENSIA_SWEET_1": 2,
-    "C-LUX_HORTENSIA_SWEET_2": 2,
+    "A-Rosas-Colores-30_1": 39,
+    "A-Rosas-Colores-40_2": 25,
+    "A-Rosas-Colores-50_3": 74,
+    "A-Rosas-Colores-60_4": 10,
+    "A-ROSAS-ETHIOPIA_1": 8,
+    "A-ROSAS-ETHIOPIA_2": 11,
+    "A-ROSAS-ETHIOPIA_3": 3,
+    "A-ROSAS-ETHIOPIA_4": -1,
+    "C-ASTRO-LEO_3": 3,
+    "C-AUTHENTIQUE_1": 5,
+    "C-AUTHENTIQUE_2": 9,
+    "C-AUTHENTIQUE_3": 3,
+    "C-BLEU-PARFUME_1": 3,
+    "C-BLEU-PARFUME_2": 6,
+    "C-BLEU-PARFUME_3": 3,
+    "C-GIRASOLES-BQT_1": 23,
+    "C-LUX_HORTENSIA_SWEET_1": 7,
+    "C-LUX_HORTENSIA_SWEET_2": 9,
     "C-LUX_HORTENSIA_SWEET_3": 0,
-    "C-Lys_champetre_2": 4,
-    "C-PASTEL-HIVERS_1": 3,
-    "C-RAMO_FLORISTA_1": 4,
-    "C-RAMO_FLORISTA_2": 3,
-    "C-RAMO_FLORISTA_3": 0,
-    "C-STATICE-ROMANTICO_1": 5,
-    "C-STATICE-ROMANTICO_2": 0,
-    "C-TOSCANA-PASTEL_1": 4,
-    "C-TOSCANA-PASTEL_2": 5,
-    "C-TOSCANA-PASTEL_3": 0,
-    "C-TOURNESOL_1": 2,
-    "C-TOURNESOL_2": 2,
-    "C-TOURNESOL_3": 0,
-    "C-ZODIAC-CANCER_1": 1,
-    "P-ANTHURIUM_13cm_1": 0,
-    "P-Bonsai_1": 0,
-    "P-Orqui-BLANCA_1": 1,
-    "P-Orqui-ROSA_1": 1,
-    "S-Alstro_parme__1": 0,
-    "S-Alstro_parme__2": 1,
-    "S-Alstro_parme__3": 0,
-    "S-Lilium-Rosa-06-P_1": 1,
-    "S-Lilium-Rosa-08-P_2": 1,
-    "S-Lilium-Rosa-10-P_3": 0,
-    "S-Premium-12-18-24-30-roja_1": 6,
-    "S-Premium-12-18-24-30-roja_2": 2,
-    "S-Premium-12-18-24-30-roja_3": 1,
-    "S-Premium-12-18-24-30-roja_4": 1,
-    "S-R-Blanc-Premi-12-P_1": 1,
-    "S-R-Blanc-Premi-18-P_2": 1,
-    "S-R-Blanc-Premi-24-P_3": 0,
-    "S-R-Blanc-Premi-30-P_4": 0
+    "C-Lys_champetre_2": 27,
+    "C-PASTEL-HIVERS_1": 12,
+    "C-RAMO_FLORISTA_1": 24,
+    "C-RAMO_FLORISTA_2": 17,
+    "C-RAMO_FLORISTA_3": 6,
+    "C-STATICE-ROMANTICO_1": 12,
+    "C-STATICE-ROMANTICO_2": 12,
+    "C-TOSCANA-PASTEL_1": 20,
+    "C-TOSCANA-PASTEL_2": 26,
+    "C-TOURNESOL_1": 11,
+    "C-TOURNESOL_2": 15,
+    "C-TOURNESOL_3": 5,
+    "C-ZODIAC-CANCER_1": 0,
+    "C-ZODIAC-CANCER_3": 0,
+    "P-ANTHURIUM_13cm_1": 1,
+    "P-Bonsai_1": 3,
+    "P-Orqui-BLANCA_1": 5,
+    "P-Orqui-ROSA_1": 7,
+    "S-Alstro_parme__1": 1,
+    "S-Alstro_parme__2": 2,
+    "S-Alstro_parme__3": 1,
+    "S-Lilium-Rosa-06-P_1": 6,
+    "S-Lilium-Rosa-08-P_2": 5,
+    "S-Lilium-Rosa-10-P_3": 4,
+    "S-Premium-12-18-24-30-roja_1": 21,
+    "S-Premium-12-18-24-30-roja_2": 8,
+    "S-Premium-12-18-24-30-roja_3": 3,
+    "S-Premium-12-18-24-30-roja_4": 6,
+    "S-R-Blanc-Premi-12-P_1": 3,
+    "S-R-Blanc-Premi-18-P_2": 3,
+    "S-R-Blanc-Premi-24-P_3": 1,
+    "S-R-Blanc-Premi-30-P_4": 0,
+    "C-ASTRO-LEO_1": 9,
+    "C-ASTRO-LEO_2": 9,
+    "C-STATICE-ROMANTICO_3": 0,
+    "C-TOSCANA-PASTEL_3": 5
   },
   "simplesPrea": {
     "A-ROSAS-ETHIOPIA": {
-      "tallosPendientes": 650,
-      "tallosMedios": 41
+      "tallosPendientes": 0,
+      "tallosMedios": 0
     },
     "A-Rosas-Colores": {
-      "tallosPendientes": 1350,
-      "tallosMedios": 45
+      "tallosPendientes": 0,
+      "tallosMedios": 0
     },
     "S-Alstro_parme_": {
       "tallosPendientes": 0,
       "tallosMedios": 0
     },
     "S-Lilium-Rosa-06-P": {
-      "tallosPendientes": 0,
-      "tallosMedios": 0
-    },
-    "S-Peonia-rosa-": {
       "tallosPendientes": 0,
       "tallosMedios": 0
     },
@@ -714,23 +712,31 @@
     }
   },
   "forecastAdjustments": {
-    "C-STATICE-ROMANTICO": {
-      "percent": "",
-      "units": "5"
+    "A-Rosas-Colores": {
+      "percent": "28",
+      "units": ""
+    },
+    "C-ZODIAC-CANCER": {
+      "percent": "0",
+      "units": ""
+    },
+    "C-ASTRO-LEO": {
+      "percent": "4",
+      "units": ""
     }
   },
   "recapLoaded": true,
   "weekState": {
     "year": 2026,
-    "week": 30,
-    "objetivo": 525,
-    "acumulado": 416,
-    "baseWeekKey": null
+    "week": 31,
+    "objetivo": 530,
+    "acumulado": 0,
+    "baseWeekKey": "2026-30"
   },
   "groupView": true,
-  "activeWeekKey": "2026-30",
+  "activeWeekKey": "2026-31",
   "currentWeekKey": "2026-30",
-  "planningMode": false,
+  "planningMode": true,
   "weekSnapshots": {
     "2026-27": {
       "key": "2026-27",

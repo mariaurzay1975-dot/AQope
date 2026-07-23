@@ -509,74 +509,9 @@
     margin-top:28px;font-size:12px;color:var(--ink-soft);font-family:var(--mono);
     border-top:1px solid var(--line);padding-top:14px;
   }
-
-  /* Supabase: acceso y sincronizacion compartida */
-  .auth-overlay{
-    position:fixed;inset:0;z-index:200;background:rgba(35,61,44,.94);
-    display:flex;align-items:center;justify-content:center;padding:24px;
-  }
-  .auth-overlay.hidden{display:none;}
-  .auth-card{width:min(420px,100%);background:var(--panel);border-radius:8px;padding:30px;box-shadow:0 24px 70px rgba(0,0,0,.28);}
-  .auth-card h1{font-family:var(--serif);font-size:28px;color:var(--moss-deep);margin:0 0 6px;}
-  .auth-card p{font-size:13px;color:var(--ink-soft);line-height:1.5;margin:0 0 20px;}
-  .auth-card label{display:block;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin:12px 0 5px;}
-  .auth-card input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:4px;font-size:14px;background:#fff;}
-  .auth-card input:focus{outline:none;border-color:var(--moss);}
-  .auth-card .btn{width:100%;margin-top:18px;padding:11px 16px;}
-  .auth-message{min-height:18px;margin-top:12px;font-size:12px;color:var(--neg);}
-  .auth-message.ok{color:var(--pos);}
-  .cloud-user{display:none;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;color:var(--ink-soft);}
-  .cloud-user.visible{display:flex;}
-  .cloud-user button{font:inherit;border:1px solid var(--line);background:var(--panel);color:var(--moss-deep);padding:5px 8px;border-radius:3px;cursor:pointer;}
-  .cloud-user button:hover{border-color:var(--moss-deep);}
-
-  .migration-overlay{position:fixed;inset:0;z-index:190;background:rgba(35,61,44,.92);display:none;align-items:center;justify-content:center;padding:24px;}
-  .migration-overlay.visible{display:flex;}
-  .migration-card{width:min(680px,100%);max-height:90vh;overflow:auto;background:var(--panel);border-radius:8px;padding:28px;box-shadow:0 24px 70px rgba(0,0,0,.28);}
-  .migration-card h2{font-family:var(--serif);font-size:25px;color:var(--moss-deep);margin:0 0 8px;}
-  .migration-card p{font-size:13px;color:var(--ink-soft);line-height:1.5;}
-  .migration-warning{background:#fdf1d6;border:1px solid var(--gold);border-radius:4px;padding:12px 14px;color:#6b5215;margin:14px 0;}
-  .migration-summary{display:none;background:#f4f2ea;border:1px solid var(--line);border-radius:4px;padding:12px 14px;margin:14px 0;font-family:var(--mono);font-size:12px;line-height:1.8;}
-  .migration-summary.visible{display:block;}
-  .migration-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
-  .migration-actions .btn{flex:1;min-width:190px;}
-  .migration-status{min-height:20px;margin-top:12px;font-size:12px;color:var(--ink-soft);}
-
 </style>
 </head>
 <body>
-
-<div class="auth-overlay" id="authOverlay">
-  <form class="auth-card" id="authForm">
-    <h1>Aquarelle Ops</h1>
-    <p>Accede con tu usuario de Aquarelle para trabajar con los datos compartidos.</p>
-    <label for="authEmail">Correo</label>
-    <input type="email" id="authEmail" autocomplete="username" required placeholder="nombre@aquarelle.es">
-    <label for="authPassword">Contraseña</label>
-    <input type="password" id="authPassword" autocomplete="current-password" required>
-    <button type="submit" class="btn btn-primary" id="authSubmit">Entrar</button>
-    <div class="auth-message" id="authMessage"></div>
-  </form>
-</div>
-
-<div class="migration-overlay" id="migrationOverlay">
-  <div class="migration-card">
-    <h2>Conectar los datos compartidos</h2>
-    <p>Para la primera migración, selecciona la copia JSON completa que acabas de recuperar. La aplicación la comprobará antes de reemplazar los datos incompletos de Supabase.</p>
-    <div class="migration-warning"><strong>Importante:</strong> no se guardará nada automáticamente en Supabase hasta que completes uno de los dos pasos siguientes.</div>
-    <input type="file" id="migrationFileInput" accept=".json,application/json" style="display:none;">
-    <div class="migration-actions">
-      <button type="button" class="btn btn-primary" id="btnChooseMigrationFile">1. Seleccionar copia JSON completa</button>
-      <button type="button" class="btn btn-coral" id="btnUploadMigration" disabled>2. Subir y reemplazar en Supabase</button>
-    </div>
-    <div class="migration-summary" id="migrationSummary"></div>
-    <div class="migration-actions">
-      <button type="button" class="btn btn-ghost" id="btnLoadSharedState">Cargar los datos que ya hay en Supabase</button>
-    </div>
-    <div class="migration-status" id="migrationStatus"></div>
-  </div>
-</div>
-
 <div class="app">
 
   <header class="top">
@@ -586,7 +521,6 @@
     </div>
     <div class="top-right">
       <span class="module-tag">Fase 1 · Control de Stock</span>
-      <div class="cloud-user" id="cloudUser"><span id="cloudUserEmail"></span><button type="button" id="btnSignOut">Salir</button></div>
       <div class="save-status" id="saveStatus">Comprobando guardado</div>
       <div class="timestamp" id="clock"></div>
     </div>
@@ -1218,316 +1152,11 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script>
-// ---------- Supabase: usuarios y datos compartidos ----------
-const SUPABASE_URL = 'https://divmnzsviqlhfcxpsugr.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_auUBXvrIdNTweKXHeWUTiA_bEwlODVd';
-const SUPABASE_STATE_KEY = 'aquarelle-ops-global';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:true}
-});
-let supabaseUser = null;
-let supabaseStateVersion = null;
-let supabaseSaveTimer = null;
-let suppressSupabaseAutoSave = false;
-let supabaseSaveInProgress = false;
-let supabaseSavePending = false;
-let cloudSyncEnabled = false;
-let migrationCandidate = null;
-const SUPABASE_MIGRATED_FLAG = 'aquarelle_supabase_migrated_v1';
-
-function setAuthMessage(message, ok=false){
-  const el=document.getElementById('authMessage');
-  if(!el) return;
-  el.textContent=message||'';
-  el.classList.toggle('ok', !!ok);
-}
-
-function showAuthenticatedUser(user){
-  supabaseUser=user||null;
-  const overlay=document.getElementById('authOverlay');
-  const box=document.getElementById('cloudUser');
-  const email=document.getElementById('cloudUserEmail');
-  if(user){
-    overlay?.classList.add('hidden');
-    box?.classList.add('visible');
-    if(email) email.textContent=user.email||'Usuario';
-  }else{
-    overlay?.classList.remove('hidden');
-    box?.classList.remove('visible');
-    if(email) email.textContent='';
-  }
-}
-
-function refreshAppAfterCloudLoad(){
-  populateFilter();
-  const toggle=document.getElementById('toggleGroup');
-  if(toggle) toggle.checked=groupView;
-  render();
-  activeModule=nomenclatureMode?'nomenclaturas':(planningMode?'planning':'stock');
-  applyActiveModule();
-  checkWeekRollover();
-  renderNomenclatures();
-  renderPreasignDiaView();
-}
-
-async function loadStateFromSupabase(){
-  if(!supabaseUser) return false;
-  setSaveStatus('Cargando datos compartidos…');
-  const {data:row,error}=await supabaseClient
-    .from('app_states')
-    .select('state,version,updated_at,updated_by')
-    .eq('week_key',SUPABASE_STATE_KEY)
-    .maybeSingle();
-  if(error) throw error;
-  if(!row){
-    supabaseStateVersion=null;
-    setSaveStatus('Supabase todavía está vacío','warn');
-    return false;
-  }
-  suppressSupabaseAutoSave=true;
-  try{
-    applyAppState(row.state);
-    localStorage.setItem(STORAGE_KEY,JSON.stringify(row.state));
-    supabaseStateVersion=row.version;
-    cloudSyncEnabled=true;
-    localStorage.setItem(SUPABASE_MIGRATED_FLAG,'1');
-    refreshAppAfterCloudLoad();
-    document.getElementById('migrationOverlay')?.classList.remove('visible');
-    const when=row.updated_at?new Date(row.updated_at).toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'}):'';
-    setSaveStatus(`Supabase cargado${when?' · '+when:''}`);
-    return true;
-  }finally{
-    suppressSupabaseAutoSave=false;
-  }
-}
-
-function migrationSummaryFor(state){
-  const weeks=state.weekSnapshots && typeof state.weekSnapshots==='object' ? Object.keys(state.weekSnapshots).length : 0;
-  const nomenclatures=Array.isArray(state.nomenclatures) ? state.nomenclatures.length : 0;
-  const flowers=Array.isArray(state.flowers) ? state.flowers.length : 0;
-  const stock=Array.isArray(state.data) ? state.data.length : 0;
-  const week=state.weekState?.week ?? '-';
-  const year=state.weekState?.year ?? '-';
-  const objective=state.weekState?.objetivo ?? '-';
-  return {weeks,nomenclatures,flowers,stock,week,year,objective};
-}
-
-function showMigrationPanel(){
-  cloudSyncEnabled=false;
-  document.getElementById('migrationOverlay')?.classList.add('visible');
-  const status=document.getElementById('migrationStatus');
-  if(status) status.textContent='Selecciona la copia completa para realizar la migración inicial.';
-}
-
-async function uploadMigrationCandidate(){
-  if(!supabaseUser || !migrationCandidate) return;
-  const status=document.getElementById('migrationStatus');
-  const button=document.getElementById('btnUploadMigration');
-  button.disabled=true;
-  if(status) status.textContent='Subiendo la copia completa a Supabase…';
-  try{
-    const {data:existing,error:readError}=await supabaseClient
-      .from('app_states').select('version').eq('week_key',SUPABASE_STATE_KEY).maybeSingle();
-    if(readError) throw readError;
-    let row;
-    if(existing){
-      const nextVersion=(existing.version||0)+1;
-      const {data,error}=await supabaseClient.from('app_states')
-        .update({state:migrationCandidate,version:nextVersion,updated_by:supabaseUser.id,updated_at:new Date().toISOString()})
-        .eq('week_key',SUPABASE_STATE_KEY).select('version,updated_at').single();
-      if(error) throw error;
-      row=data;
-    }else{
-      const {data,error}=await supabaseClient.from('app_states')
-        .insert({week_key:SUPABASE_STATE_KEY,state:migrationCandidate,version:1,updated_by:supabaseUser.id,updated_at:new Date().toISOString()})
-        .select('version,updated_at').single();
-      if(error) throw error;
-      row=data;
-    }
-    suppressSupabaseAutoSave=true;
-    applyAppState(migrationCandidate);
-    localStorage.setItem(STORAGE_KEY,JSON.stringify(migrationCandidate));
-    supabaseStateVersion=row.version;
-    cloudSyncEnabled=true;
-    localStorage.setItem(SUPABASE_MIGRATED_FLAG,'1');
-    refreshAppAfterCloudLoad();
-    suppressSupabaseAutoSave=false;
-    document.getElementById('migrationOverlay')?.classList.remove('visible');
-    setSaveStatus(`Supabase migrado ${new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}`);
-    if(status) status.textContent='Migración completada.';
-    alert('Migración completada. La copia completa ya está en Supabase y el guardado compartido está activado.');
-  }catch(err){
-    suppressSupabaseAutoSave=false;
-    console.error(err);
-    button.disabled=false;
-    if(status) status.textContent='No se pudo completar la migración: '+(err.message||'error desconocido');
-  }
-}
-
-function initMigrationControls(){
-  const input=document.getElementById('migrationFileInput');
-  document.getElementById('btnChooseMigrationFile')?.addEventListener('click',()=>input?.click());
-  input?.addEventListener('change',async e=>{
-    const file=e.target.files?.[0];
-    if(!file) return;
-    const status=document.getElementById('migrationStatus');
-    try{
-      const parsed=JSON.parse(await file.text());
-      if(!parsed || !Array.isArray(parsed.data)) throw new Error('El archivo no contiene datos de stock válidos.');
-      const summary=migrationSummaryFor(parsed);
-      if(summary.nomenclatures===0 || summary.weeks===0){
-        throw new Error('La copia parece incompleta: no contiene nomenclaturas o semanas guardadas.');
-      }
-      migrationCandidate=parsed;
-      const box=document.getElementById('migrationSummary');
-      box.innerHTML=`<strong>Copia seleccionada:</strong> ${file.name}<br>`+
-        `Referencias de stock: ${summary.stock}<br>Nomenclaturas: ${summary.nomenclatures}<br>`+
-        `Flores / artículos: ${summary.flowers}<br>Semanas guardadas: ${summary.weeks}<br>`+
-        `Semana activa: ${summary.week}/${summary.year} · Objetivo: ${summary.objective}`;
-      box.classList.add('visible');
-      document.getElementById('btnUploadMigration').disabled=false;
-      if(status) status.textContent='Copia comprobada. Revisa el resumen y pulsa “Subir y reemplazar en Supabase”.';
-    }catch(err){
-      migrationCandidate=null;
-      document.getElementById('btnUploadMigration').disabled=true;
-      document.getElementById('migrationSummary')?.classList.remove('visible');
-      if(status) status.textContent='No se puede usar este archivo: '+(err.message||'archivo no válido');
-    }
-    e.target.value='';
-  });
-  document.getElementById('btnUploadMigration')?.addEventListener('click',()=>{
-    if(!migrationCandidate) return;
-    const s=migrationSummaryFor(migrationCandidate);
-    const ok=confirm(`Vas a reemplazar los datos de Supabase por esta copia completa.
-
-Nomenclaturas: ${s.nomenclatures}
-Semanas: ${s.weeks}
-Flores: ${s.flowers}
-
-¿Continuar?`);
-    if(ok) uploadMigrationCandidate();
-  });
-  document.getElementById('btnLoadSharedState')?.addEventListener('click',async()=>{
-    const ok=confirm('Esto cargará la versión que existe actualmente en Supabase. Para la primera migración de María, es mejor seleccionar la copia JSON completa. ¿Continuar?');
-    if(!ok) return;
-    try{
-      const loaded=await loadStateFromSupabase();
-      if(!loaded) document.getElementById('migrationStatus').textContent='No hay datos compartidos en Supabase.';
-    }catch(err){
-      document.getElementById('migrationStatus').textContent='No se pudieron cargar los datos: '+(err.message||'error');
-    }
-  });
-}
-
-async function saveStateToSupabase(forceInsert=false){
-  if(!supabaseUser || !cloudSyncEnabled || suppressSupabaseAutoSave) return false;
-  if(supabaseSaveInProgress){supabaseSavePending=true;return false;}
-  supabaseSaveInProgress=true;
-  try{
-    const state=buildAppState();
-    if(supabaseStateVersion===null || forceInsert){
-      const {data:row,error}=await supabaseClient
-        .from('app_states')
-        .insert({week_key:SUPABASE_STATE_KEY,state,version:1,updated_by:supabaseUser.id,updated_at:new Date().toISOString()})
-        .select('version,updated_at')
-        .single();
-      if(error){
-        if(error.code==='23505'){
-          await loadStateFromSupabase();
-          return false;
-        }
-        throw error;
-      }
-      supabaseStateVersion=row.version;
-    }else{
-      const nextVersion=supabaseStateVersion+1;
-      const {data:rows,error}=await supabaseClient
-        .from('app_states')
-        .update({state,version:nextVersion,updated_by:supabaseUser.id,updated_at:new Date().toISOString()})
-        .eq('week_key',SUPABASE_STATE_KEY)
-        .eq('version',supabaseStateVersion)
-        .select('version,updated_at');
-      if(error) throw error;
-      if(!rows || rows.length===0){
-        setSaveStatus('Conflicto: hay cambios más recientes','warn');
-        const reload=confirm('Otra persona ha guardado cambios antes que tú. Para no sobrescribirlos, debes cargar la versión más reciente. ¿Cargarla ahora?');
-        if(reload) await loadStateFromSupabase();
-        return false;
-      }
-      supabaseStateVersion=rows[0].version;
-    }
-    setSaveStatus(`Supabase ${new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}`);
-    return true;
-  }catch(err){
-    console.error('Error guardando en Supabase',err);
-    setSaveStatus('Supabase no guardó','warn');
-    return false;
-  }finally{
-    supabaseSaveInProgress=false;
-    if(supabaseSavePending){
-      supabaseSavePending=false;
-      scheduleSupabaseAutoSave();
-    }
-  }
-}
-
-function scheduleSupabaseAutoSave(){
-  if(!supabaseUser || !cloudSyncEnabled || suppressSupabaseAutoSave) return;
-  clearTimeout(supabaseSaveTimer);
-  supabaseSaveTimer=setTimeout(()=>saveStateToSupabase(false),1200);
-}
-
-async function initSupabaseAuth(){
-  const form=document.getElementById('authForm');
-  form?.addEventListener('submit',async e=>{
-    e.preventDefault();
-    const button=document.getElementById('authSubmit');
-    const email=document.getElementById('authEmail').value.trim();
-    const password=document.getElementById('authPassword').value;
-    button.disabled=true;
-    setAuthMessage('Comprobando usuario…',true);
-    const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
-    button.disabled=false;
-    if(error){setAuthMessage('No se ha podido iniciar sesión. Revisa el correo y la contraseña.');return;}
-    showAuthenticatedUser(data.user);
-    setAuthMessage('');
-    if(localStorage.getItem(SUPABASE_MIGRATED_FLAG)==='1'){
-      await loadStateFromSupabase().catch(err=>{ console.error(err); showMigrationPanel(); setSaveStatus('No se pudieron cargar datos','warn'); });
-    }else{
-      showMigrationPanel();
-    }
-  });
-  document.getElementById('btnSignOut')?.addEventListener('click',async()=>{
-    await supabaseClient.auth.signOut();
-    supabaseStateVersion=null;
-    cloudSyncEnabled=false;
-    document.getElementById('migrationOverlay')?.classList.remove('visible');
-    showAuthenticatedUser(null);
-    setAuthMessage('Sesión cerrada.',true);
-  });
-  const {data:{session}}=await supabaseClient.auth.getSession();
-  if(session?.user){
-    showAuthenticatedUser(session.user);
-    if(localStorage.getItem(SUPABASE_MIGRATED_FLAG)==='1'){
-      await loadStateFromSupabase().catch(err=>{ console.error(err); showMigrationPanel(); setSaveStatus('No se pudieron cargar datos','warn'); });
-    }else{
-      showMigrationPanel();
-    }
-  }else{
-    showAuthenticatedUser(null);
-  }
-  supabaseClient.auth.onAuthStateChange((event,session)=>{
-    if(event==='SIGNED_OUT') showAuthenticatedUser(null);
-    else if(session?.user) showAuthenticatedUser(session.user);
-  });
-}
-
 // ---------- Datos iniciales (extraídos de tu Excel real) ----------
 const SEED = [
 ["ROSAS","A-Rosas-Colo","A-Rosas-Colores-30_1",20,13,8],
@@ -1957,9 +1586,8 @@ function saveState(){
   const state = buildAppState();
   try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    setSaveStatus(`Guardado local ${new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'})}`);
+    setSaveStatus(`Guardado ${new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'})}`);
     scheduleOneDriveAutoSave();
-    scheduleSupabaseAutoSave();
     return true;
   } catch(err){
     console.warn('No se pudo guardar en este navegador', err);
@@ -7041,8 +6669,6 @@ loadStateFromOneDrive({ask:false}).then(loaded=>{
   }
 });
 loadNomenclaturesFromOneDrive().then(loaded=>{ if(loaded) renderNomenclatures(); });
-initMigrationControls();
-initSupabaseAuth();
 </script>
 </body>
 </html>

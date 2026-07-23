@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aquarelle Ops — Control de Stock</title>
+<style>
+  :root{
+    --bg: #faf7f2;
+    --panel: #ffffff;
+    --ink: #1f2a24;
+    --ink-soft: #5b6b62;
+    --line: #e3ddd0;
+    --moss: #3c5c47;
+    --moss-deep: #233d2c;
+    --coral: #c4622d;
+    --gold: #b9923f;
+    --neg: #b3422f;
+    --pos: #3c5c47;
+    --mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, monospace;
+    --serif: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Inter', -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  .app{max-width:1280px;margin:0 auto;padding:28px 24px 80px;}
+
+  /* Header */
+  header.top{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    border-bottom:2px solid var(--moss-deep);
+    padding-bottom:18px;margin-bottom:24px;
+    flex-wrap:wrap;gap:16px;
+  }
+  .brand{display:flex;align-items:baseline;gap:12px;}
+  .brand .mark{
+    font-family:var(--serif);font-weight:600;font-size:30px;color:var(--moss-deep);
+    letter-spacing:-0.01em;
+  }
+  .brand .sub{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-soft);}
+  .module-tag{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+    background:var(--moss-deep);color:#f3efe6;padding:6px 12px;border-radius:2px;
+  }
+  .top-right{display:flex;align-items:center;gap:14px;}
+  .timestamp{font-family:var(--mono);font-size:12px;color:var(--ink-soft);text-align:right;}
+  .save-status{
+    font-family:var(--mono);font-size:11px;color:var(--ink-soft);
+    border:1px solid var(--line);background:var(--panel);padding:6px 10px;border-radius:2px;
+  }
+  .save-status.ok{color:var(--pos);border-color:rgba(60,92,71,.35);}
+  .save-status.warn{color:var(--neg);border-color:rgba(179,66,47,.35);}
+
+  /* Summary strip */
+  .summary{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);
+    margin-bottom:28px;
+  }
+  .summary .cell{
+    background:var(--panel);padding:16px 18px;
+  }
+  .summary .cell .label{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-soft);margin-bottom:8px;}
+  .summary .cell .val{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--moss-deep);line-height:1;}
+  .summary .cell .val.warn{color:var(--neg);}
+  .summary .cell .sub{font-size:11px;color:var(--ink-soft);margin-top:6px;}
+
+  /* Week / objective panel */
+  .week-panel{
+    background:var(--moss-deep);border-radius:4px;padding:18px 22px;margin-bottom:22px;
+    display:grid;grid-template-columns:1.3fr 1px repeat(4,1fr);gap:0;align-items:center;color:#f3efe6;
+  }
+  .week-panel .divider{width:1px;height:42px;background:rgba(255,255,255,0.18);justify-self:center;}
+  .week-block{padding:0 22px;}
+  .week-block:first-child{padding-left:0;}
+  .week-block .label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#aebda9;margin-bottom:6px;}
+  .week-select-row{display:flex;align-items:center;gap:10px;}
+  .week-select-row select{
+    font-family:var(--mono);font-size:13px;background:rgba(255,255,255,0.08);color:#f3efe6;
+    border:1px solid rgba(255,255,255,0.2);border-radius:3px;padding:7px 10px;
+  }
+  .week-dates{font-family:var(--serif);font-size:16px;color:#f3efe6;}
+  .week-input{
+    width:90px;font-family:var(--mono);font-size:20px;font-weight:600;
+    background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.3);
+    color:var(--gold);padding:2px 0;
+  }
+  .week-input:focus{outline:none;border-color:var(--gold);}
+  .week-val{font-family:var(--serif);font-size:22px;font-weight:600;color:#f3efe6;}
+  .week-val.accent{color:var(--gold);}
+  .week-val.warn{color:#e08a6b;}
+  .week-sub{font-size:11px;color:#aebda9;margin-top:3px;}
+
+  .view-toggle{
+    display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-soft);
+    cursor:pointer;user-select:none;
+  }
+  .view-toggle input{accent-color:var(--moss-deep);width:14px;height:14px;cursor:pointer;}
+
+  /* Simples preasignación helper */
+  .simples-section{
+    background:transparent;border:none;padding:0;
+  }
+  .simples-section h3{
+    font-family:var(--serif);font-size:18px;color:var(--moss-deep);margin:0 0 4px;
+  }
+  .simples-section .desc{font-size:12.5px;color:var(--ink-soft);margin:0 0 16px;line-height:1.5;}
+  .simples-cat-title{
+    font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;
+    color:var(--moss-deep);margin:18px 0 8px;
+  }
+  .simples-cat-title:first-of-type{margin-top:0;}
+  table.simples-table{width:100%;border-collapse:collapse;font-size:13px;}
+  table.simples-table thead th{
+    font-family:var(--mono);font-weight:500;font-size:10px;text-transform:uppercase;letter-spacing:0.05em;
+    color:var(--ink-soft);text-align:left;padding:8px 10px;border-bottom:2px solid var(--line);
+  }
+  table.simples-table thead th.num{text-align:right;}
+  table.simples-table tbody td{padding:7px 10px;border-bottom:1px solid var(--line);}
+  table.simples-table tbody td.num{text-align:right;font-family:var(--mono);}
+  table.simples-table input.simples-input{
+    width:70px;font-family:var(--mono);font-size:13px;text-align:right;
+    border:1px solid var(--line);border-radius:3px;padding:5px 7px;background:#fbfaf6;
+  }
+  table.simples-table input.simples-input:focus{outline:none;border-color:var(--moss);}
+  .simples-result{font-weight:600;color:var(--moss-deep);}
+  .simples-apply-btn{
+    font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.04em;
+    background:var(--moss-deep);color:#f3efe6;border:none;border-radius:3px;
+    padding:5px 10px;cursor:pointer;
+  }
+  .simples-apply-btn:hover{background:var(--moss);}
+  .simples-applied{font-family:var(--mono);font-size:11px;color:var(--pos);}
+
+  .toolbar{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:14px;flex-wrap:wrap;gap:12px;
+  }
+  .toolbar .left{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .search{
+    font-family:var(--sans);font-size:13.5px;
+    padding:9px 14px;border:1px solid var(--line);border-radius:3px;
+    background:var(--panel);min-width:220px;
+  }
+  .search:focus{outline:none;border-color:var(--moss);}
+  select.filter{
+    font-family:var(--sans);font-size:13px;padding:9px 12px;border:1px solid var(--line);
+    border-radius:3px;background:var(--panel);color:var(--ink);
+  }
+  .btn{
+    font-family:var(--sans);font-weight:600;font-size:13px;
+    padding:9px 16px;border-radius:3px;border:1px solid transparent;
+    cursor:pointer;transition:all .15s ease;
+  }
+  .btn-primary{background:var(--moss-deep);color:#f3efe6;}
+  .btn-primary:hover{background:var(--moss);}
+  .btn-ghost{background:transparent;color:var(--moss-deep);border-color:var(--line);}
+  .btn-ghost:hover{border-color:var(--moss-deep);}
+  .btn-coral{background:var(--coral);color:#fff;}
+  .btn-coral:hover{background:#a8501f;}
+
+  /* Table */
+  .table-wrap{
+    background:var(--panel);border:1px solid var(--line);border-radius:4px;
+    overflow:auto;max-height:78vh;
+  }
+  table{width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed;}
+  thead{position:sticky;top:0;z-index:5;}
+  thead tr{background:var(--moss-deep);}
+  thead th{
+    font-family:var(--mono);font-weight:500;font-size:9px;text-transform:uppercase;letter-spacing:0.03em;
+    color:#dfe6dd;text-align:left;padding:5px 5px;white-space:normal;line-height:1.15;
+    word-break:break-word;position:relative;
+  }
+  .col-resize-handle{
+    position:absolute;top:0;right:0;width:6px;height:100%;cursor:col-resize;
+    user-select:none;touch-action:none;
+  }
+  .col-resize-handle:hover, .col-resize-handle.resizing{background:rgba(185,146,63,0.5);}
+  thead th.num{text-align:right;}
+  thead th.colwide{width:auto;}
+  thead th.colcat{width:70px;}
+  thead th.colgen{width:190px;}
+  thead th.colnum{width:38px;max-width:38px;}
+  thead th.colprea{width:54px;max-width:54px;}
+  thead th.colday{width:28px;max-width:28px;}
+  thead th.col-saldo{background:#33533d;}
+  thead th.col-prea{background:#33533d;}
+  thead th.sortable{cursor:pointer;user-select:none;}
+  thead th.sortable:hover{color:#fff;}
+  thead tr.compras-row th{
+    background:var(--moss-deep);color:#cfd9cc;font-size:8.5px;text-transform:uppercase;
+    letter-spacing:0.08em;text-align:center;padding:3px 4px;border-top:1px solid rgba(255,255,255,0.12);
+  }
+  thead tr.compras-row th.compras-label{background:#3c5c47;}
+  tbody tr{border-bottom:1px solid var(--line);}
+  tbody tr:hover{background:#f7f4ed;}
+  tbody tr.cat-row{background:#f1ede2;}
+  tbody tr.cat-row td{
+    font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.06em;
+    color:var(--moss-deep);font-weight:600;padding:3px 8px;
+  }
+  tbody td{padding:3px 5px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  tbody td.cell-day{padding-left:0;padding-right:0;}
+  tbody td.num{text-align:right;font-family:var(--mono);font-size:12px;}
+  tbody td.producto{font-weight:500;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  tbody td.generico{color:var(--ink-soft);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  tbody td.cell-saldo{font-weight:700;background:#e7eee5;}
+  tbody td.cell-prea{background:#e7eee5;}
+  tbody td.cell-prea input.qty-edit{background:transparent;}
+  tbody td.cell-day{background:#f4f2ea;}
+  tbody td.cell-day input.qty-edit{background:transparent;padding-left:0;padding-right:0;font-size:11px;}
+  .neg{color:var(--neg);font-weight:600;}
+  .badge{
+    display:inline-block;font-family:var(--mono);font-size:9.5px;text-transform:uppercase;
+    padding:2px 5px;border-radius:2px;letter-spacing:0.02em;
+  }
+  .badge-rosas{background:#f3dccb;color:#8a3e16;}
+  .badge-compuestos{background:#dde6da;color:#33502c;}
+  .badge-plantas{background:#dfe9e3;color:#235239;}
+  .badge-simples{background:#ece2cf;color:#7a5f1f;}
+
+  input.qty-edit{
+    width:100%;box-sizing:border-box;font-family:var(--mono);font-size:12px;text-align:right;
+    border:1px solid transparent;background:transparent;border-radius:3px;padding:1px 3px;
+    color:var(--ink);
+    -moz-appearance:textfield;
+  }
+  input.qty-edit::-webkit-outer-spin-button,
+  input.qty-edit::-webkit-inner-spin-button{
+    -webkit-appearance:none;margin:0;
+  }
+  input.qty-edit:hover{border-color:var(--line);}
+  input.qty-edit:focus{outline:none;border-color:var(--moss);background:#fff;}
+  input.qty-edit.dirty{background:#fff8e8;border-color:var(--gold);}
+
+  tfoot td{
+    font-family:var(--mono);font-weight:600;font-size:12.5px;padding:8px 10px;
+    border-top:2px solid var(--moss-deep);background:#f1ede2;
+  }
+  tfoot td.num{text-align:right;}
+  tfoot td.cell-saldo{background:#dde7da;}
+  tfoot td.cell-prea{background:#dde7da;}
+  tfoot td.cell-day{background:#ebe7dc;}
+
+  /* Modal paste */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(35,61,44,0.45);
+    display:none;align-items:center;justify-content:center;z-index:50;padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal{
+    background:var(--panel);border-radius:6px;max-width:680px;width:100%;
+    padding:26px 28px;box-shadow:0 20px 50px rgba(0,0,0,0.25);
+  }
+  .modal h3{font-family:var(--serif);font-size:20px;margin:0 0 6px;color:var(--moss-deep);}
+  .modal p{font-size:13px;color:var(--ink-soft);margin:0 0 16px;line-height:1.5;}
+  .modal textarea{
+    width:100%;min-height:160px;font-family:var(--mono);font-size:12.5px;
+    border:1px solid var(--line);border-radius:4px;padding:12px;resize:vertical;
+  }
+  .modal textarea:focus{outline:none;border-color:var(--moss);}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;}
+  .modal-note{font-size:11.5px;color:var(--ink-soft);margin-top:10px;font-family:var(--mono);}
+  .forecast-adjustments{
+    border:1px solid var(--line);border-radius:4px;margin-top:14px;background:#fbfaf6;
+  }
+  .forecast-adjustments summary{
+    cursor:pointer;list-style:none;padding:10px 12px;font-family:var(--mono);
+    font-size:11.5px;color:var(--moss-deep);font-weight:600;
+  }
+  .forecast-adjustments summary::-webkit-details-marker{display:none;}
+  .forecast-adjustments summary::after{content:'+';float:right;color:var(--ink-soft);}
+  .forecast-adjustments[open] summary::after{content:'-';}
+  .forecast-adjustment-tools{padding:0 12px 10px;}
+  .forecast-adjustment-search{
+    width:100%;border:1px solid var(--line);border-radius:3px;padding:7px 9px;
+    font-size:12px;background:#fff;color:var(--ink);
+  }
+  .forecast-adjustment-list{max-height:220px;overflow:auto;border-top:1px solid var(--line);}
+  .forecast-adjustment-row{
+    display:grid;grid-template-columns:86px 1fr 82px;gap:10px;align-items:center;
+    padding:7px 12px;border-top:1px solid var(--line);font-size:12px;
+  }
+  .forecast-adjustment-row:first-child{border-top:0;}
+  .forecast-adjustment-row .cat{font-family:var(--mono);font-size:10px;color:var(--ink-soft);}
+  .forecast-adjustment-row .name{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .forecast-adjustment-row input{
+    width:100%;font-family:var(--mono);font-size:12px;text-align:right;
+    border:1px solid var(--line);border-radius:3px;padding:5px 7px;background:#fff;
+  }
+  .forecast-adjustment-row input:focus{outline:none;border-color:var(--moss);}
+
+  .save-bar{
+    position:fixed;bottom:0;left:0;right:0;background:var(--moss-deep);color:#f3efe6;
+    padding:14px 24px;display:none;align-items:center;justify-content:center;gap:18px;
+    font-size:13.5px;z-index:40;box-shadow:0 -6px 20px rgba(0,0,0,0.15);
+  }
+  .save-bar.show{display:flex;}
+  .save-bar strong{color:var(--gold);}
+  .save-bar .btn{padding:7px 16px;}
+
+  footer.note{
+    margin-top:28px;font-size:12px;color:var(--ink-soft);font-family:var(--mono);
+    border-top:1px solid var(--line);padding-top:14px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand">
+      <span class="mark">Aquarelle Ops</span>
+      <span class="sub">Producción · Operaciones</span>
+    </div>
+    <div class="top-right">
+      <span class="module-tag">Fase 1 · Control de Stock</span>
+      <div class="save-status" id="saveStatus">Comprobando guardado</div>
+      <div class="timestamp" id="clock"></div>
+    </div>
+  </header>
+
+  <div class="week-panel" id="weekPanel"></div>
+
+  <div class="toolbar">
+    <div class="left">
+      <input type="text" class="search" id="search" placeholder="Buscar producto o familia…">
+      <select class="filter" id="filterCat">
+        <option value="">Todas las categorías</option>
+      </select>
+      <select class="filter" id="filterNeg">
+        <option value="">Todo el stock</option>
+        <option value="neg">Solo con saldo negativo</option>
+        <option value="negfinal">Solo con saldo final negativo</option>
+      </select>
+      <label class="view-toggle">
+        <input type="checkbox" id="toggleGroup" checked>
+        <span>Agrupar por producto genérico</span>
+      </label>
+    </div>
+    <div class="left">
+      <button class="btn btn-ghost" id="btnPaste">Pegar Recap Stock</button>
+      <button class="btn btn-ghost" id="btnPrevision">Calcular previsión con IA</button>
+      <button class="btn btn-ghost" id="btnPreasignacion">Pendiente de preasignar</button>
+      <button class="btn btn-ghost" id="btnSaveOneDrive">Guardar datos OneDrive</button>
+      <button class="btn btn-ghost" id="btnLoadOneDrive">Cargar datos OneDrive</button>
+      <input type="file" id="stateFileInput" accept=".json" style="display:none;">
+      <button class="btn btn-coral" id="btnReset">Restaurar datos de ejemplo</button>
+      <button class="btn btn-primary" id="btnExport">Exportar CSV</button>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr class="compras-row">
+          <th colspan="4"></th>
+          <th colspan="5" class="compras-label">Compras previstas</th>
+          <th colspan="2"></th>
+        </tr>
+        <tr>
+          <th class="sortable colcat" data-key="categoria" data-colid="categoria">Categ.<span class="col-resize-handle"></span></th>
+          <th class="sortable colgen" data-key="generico" data-colid="generico">Producto<span class="col-resize-handle"></span></th>
+          <th class="num sortable colnum col-saldo" data-key="saldo" data-colid="saldo">Saldo<span class="col-resize-handle"></span></th>
+          <th class="num sortable colprea col-prea" data-key="pendientePreasignar" data-colid="prea">Pte.<br>preas.<span class="col-resize-handle"></span></th>
+          <th class="num colday col-day" data-colid="dayL">L<span class="col-resize-handle"></span></th>
+          <th class="num colday col-day" data-colid="dayM">M<span class="col-resize-handle"></span></th>
+          <th class="num colday col-day" data-colid="dayX">X<span class="col-resize-handle"></span></th>
+          <th class="num colday col-day" data-colid="dayJ">J<span class="col-resize-handle"></span></th>
+          <th class="num colday col-day" data-colid="dayV">V<span class="col-resize-handle"></span></th>
+          <th class="num sortable colnum" data-key="prevExpedicion" data-colid="prev">Prev.<span class="col-resize-handle"></span></th>
+          <th class="num sortable" style="width:48px;" data-key="saldoFinal" data-colid="saldoFinal">Saldo<br>final</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2">TOTAL (filtrado)</td>
+          <td class="num cell-saldo" id="fSaldo">0</td>
+          <td class="num cell-prea" id="fPendientePreasignar">0</td>
+          <td class="num cell-day" id="fL">0</td>
+          <td class="num cell-day" id="fM">0</td>
+          <td class="num cell-day" id="fX">0</td>
+          <td class="num cell-day" id="fJ">0</td>
+          <td class="num cell-day" id="fV">0</td>
+          <td class="num" id="fPrev">0</td>
+          <td class="num" id="fSaldoFinal">0</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <footer class="note">
+    Saldo = stock actual disponible (prepa + fini − ya comprometido a expedir) · Pendientes preasignar = unidades de esa referencia (solo Rosas y Simples) que aún quedan por preasignar, dato manual · L/M/X/J/V = compras previstas que llegan ese día (unidades de ramo) · Previsión expedición = lo que se calcula que saldrá de esa referencia hasta cubrir el objetivo semanal · Saldo final = Saldo + compras previstas (L–V) − Previsión expedición.
+    Los datos se guardan automáticamente en este navegador. Para compartirlos entre ordenadores, usa Guardar datos OneDrive y Cargar datos OneDrive con el archivo JSON sincronizado.
+  </footer>
+
+</div>
+
+<div class="modal-overlay" id="preasignacionModal">
+  <div class="modal" style="max-width:900px;">
+    <h3 style="margin-bottom:14px;">Preasignación de Rosas y Simples</h3>
+    <div id="simplesSection"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="btnPreasignacionClose">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal-overlay" id="pasteModal">
+  <div class="modal">
+    <h3>Pegar tabla de producción</h3>
+    <p>Copia y pega aquí el listado tal cual lo exportas de tu herramienta de producción (Código, nº, Producto, Stock Prepa, Stock Fini, Qté à expédier, Solde, Bloqué, ID). La app detecta este formato automáticamente y calcula el Saldo (Prepa + Fini − A expedir). También acepta el formato simplificado de dos columnas (Producto, Saldo). Las filas que no coincidan con un producto existente se ignoran y se avisa cuántas fueron.</p>
+    <textarea id="pasteArea" placeholder="17.127	1	A-Rosas-Colores-30_1	20	7	2			17127-1&#10;17.127	2	A-Rosas-Colores-40_2	8	2	1			17127-2&#10;..."></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="btnPasteCancel">Cancelar</button>
+      <button class="btn btn-primary" id="btnPasteApply">Aplicar datos pegados</button>
+    </div>
+    <div class="modal-note">Formato: una fila por producto, valores separados por tabulación (igual que al copiar desde Excel).</div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="previsionModal">
+  <div class="modal" style="max-width:760px;">
+    <h3>Calcular previsión de expedición con IA</h3>
+    <p>Pega aquí la tabla de ventas recientes por día (la misma que copias hoy de tu herramienta de producción). La IA repartirá el <strong id="pendienteLabel">pendiente por salir</strong> entre las familias de producto, dando más peso a los 2 últimos días, igual que hace tu prompt actual. Excluye automáticamente referencias que empiecen por X- o TF-.</p>
+    <textarea id="ventasArea" placeholder="Pega aquí la tabla: código, tipo, referencia, total, y una columna por día (igual que tu export de producción)…"></textarea>
+    <details class="forecast-adjustments" id="forecastAdjustments">
+      <summary>Ajustar porcentajes por ramo</summary>
+      <div class="forecast-adjustment-tools">
+        <input type="text" class="forecast-adjustment-search" id="forecastAdjustmentSearch" placeholder="Buscar ramo o categoría">
+      </div>
+      <div class="forecast-adjustment-list" id="forecastAdjustmentList"></div>
+      <div class="modal-note" style="padding:0 12px 12px;margin-top:8px;">Vacío = reparto normal. El número indica el % del pendiente total reservado para ese ramo. Usa 0 para no asignar previsión.</div>
+    </details>
+    <div class="modal-actions" style="justify-content:space-between;align-items:center;">
+      <div class="modal-note" id="previsionStatus" style="margin-top:0;"></div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-ghost" id="btnPrevisionCancel">Cancelar</button>
+        <button class="btn btn-primary" id="btnPrevisionCalcular">Calcular y completar Prev.</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ---------- Datos iniciales (extraídos de tu Excel real) ----------
+const SEED = [
+["ROSAS","A-Rosas-Colo","A-Rosas-Colores-30_1",20,13,8],
+["ROSAS","A-Rosas-Colo","A-Rosas-Colores-40_2",8,2,1],
+["ROSAS","A-Rosas-Colo","A-Rosas-Colores-50_3",6,18,24],
+["ROSAS","A-Rosas-Colo","A-Rosas-Colores-60_4",2,2,0],
+["ROSAS","A-Rose-Ethio","A-Rose-Ethiopia-30_1",0,8,6],
+["ROSAS","A-Rose-Ethio","A-Rose-Ethiopia-40_2",3,9,8],
+["ROSAS","A-Rose-Ethio","A-Rose-Ethiopia-50_3",0,20,16],
+["ROSAS","A-Rose-Ethio","A-Rose-Ethiopia-60_4",2,0,0],
+["COMPUESTOS","C-AUTHENTIQU","C-AUTHENTIQUE_1",0,4,2],
+["COMPUESTOS","C-AUTHENTIQU","C-AUTHENTIQUE_2",0,14,3],
+["COMPUESTOS","C-AUTHENTIQU","C-AUTHENTIQUE_3",0,4,1],
+["COMPUESTOS","C-BLEU-PARFU","C-BLEU-PARFUME_1",0,10,2],
+["COMPUESTOS","C-BLEU-PARFU","C-BLEU-PARFUME_2",0,14,2],
+["COMPUESTOS","C-BLEU-PARFU","C-BLEU-PARFUME_3",0,2,0],
+["COMPUESTOS","C-DEEP-PURPL","C-DEEP-PURPLE_1",5,0,0],
+["COMPUESTOS","C-DEEP-PURPL","C-DEEP-PURPLE_2",8,0,0],
+["COMPUESTOS","C-DEEP-PURPL","C-DEEP-PURPLE_3",2,0,0],
+["COMPUESTOS","C-GIRASOLES-","C-GIRASOLES-BQT_1",0,6,5],
+["COMPUESTOS","C-Lys_champe","C-Lys_champetre_2",0,11,4],
+["COMPUESTOS","C-PASTEL-HIV","C-PASTEL-HIVERS_1",8,4,2],
+["COMPUESTOS","C-PIVOINE-PE","C-PIVOINE-PEPS-2026_1",0,3,1],
+["COMPUESTOS","C-RAMO_FLORI","C-RAMO_FLORISTA_1",8,7,3],
+["COMPUESTOS","C-RAMO_FLORI","C-RAMO_FLORISTA_2",6,17,4],
+["COMPUESTOS","C-RAMO_FLORI","C-RAMO_FLORISTA_3",1,2,3],
+["COMPUESTOS","C-STATICE-RO","C-STATICE-ROMANTICO_1",0,14,4],
+["COMPUESTOS","C-STATICE-RO","C-STATICE-ROMANTICO_2",0,9,2],
+["COMPUESTOS","C-STATICE-RO","C-STATICE-ROMANTICO_3",0,1,1],
+["COMPUESTOS","C-TOSCANA-PA","C-TOSCANA-PASTEL_1",0,11,0],
+["COMPUESTOS","C-TOSCANA-PA","C-TOSCANA-PASTEL_2",6,10,8],
+["COMPUESTOS","C-TOSCANA-PA","C-TOSCANA-PASTEL_3",0,1,1],
+["COMPUESTOS","C-TOURNESOL_","C-TOURNESOL_1",0,12,4],
+["COMPUESTOS","C-TOURNESOL_","C-TOURNESOL_2",10,5,4],
+["COMPUESTOS","C-TOURNESOL_","C-TOURNESOL_3",2,2,0],
+["COMPUESTOS","C-ZODIAC-CAN","C-ZODIAC-CANCER_1",0,10,2],
+["COMPUESTOS","C-ZODIAC-CAN","C-ZODIAC-CANCER_2",0,23,5],
+["PLANTAS","P-ANTHURIUM_","P-ANTHURIUM_13cm",0,6,1],
+["PLANTAS","P-Bonsai_1","P-Bonsai_1",0,7,1],
+["PLANTAS","P-Orquidea_p","P-Orquidea_phal_blan_PROD_1",0,6,0],
+["PLANTAS","P-Orquidea_p","P-Orquidea_phal_rose_1",0,14,1],
+["SIMPLES","S-Alstro_par","S-Alstro_parme_15_1",4,0,0],
+["SIMPLES","S-Alstro_par","S-Alstro_parme_20_2",2,1,1],
+["SIMPLES","S-Alstro_par","S-Alstro_parme_25_3",1,0,0],
+["SIMPLES","S-Lilium-Ros","S-Lilium-Rosa-06-P_1",5,0,1],
+["SIMPLES","S-Lilium-Ros","S-Lilium-Rosa-08-P_2",5,0,0],
+["SIMPLES","S-Lilium-Ros","S-Lilium-Rosa-10-P_3",0,0,4],
+["SIMPLES","S-Peonia-ros","S-Peonia-rosa-12p_2",0,1,1],
+["SIMPLES","S-Premium-12","S-Premium-12-18-24-30-roja_1",17,9,8],
+["SIMPLES","S-Premium-12","S-Premium-12-18-24-30-roja_2",9,2,1],
+["SIMPLES","S-Premium-12","S-Premium-12-18-24-30-roja_3",4,3,2],
+["SIMPLES","S-Premium-12","S-Premium-12-18-24-30-roja_4",5,1,2],
+["SIMPLES","S-R-Blanc-Pr","S-R-Blanc-Premi-12-P_1",4,1,1],
+["SIMPLES","S-R-Blanc-Pr","S-R-Blanc-Premi-18-P_2",2,2,2],
+["SIMPLES","S-R-Blanc-Pr","S-R-Blanc-Premi-24-P_3",1,0,0],
+["SIMPLES","S-R-Blanc-Pr","S-R-Blanc-Premi-30-P_4",3,0,0],
+];
+
+let data = [];
+let dirty = {};
+let genericoData = {}; // genérico -> {compraL, compraM, compraX, compraJ, compraV, prevExpedicion}
+let prevExpedicionProducto = {}; // producto (talla concreta) -> previsión de expedición
+let sortKey = null, sortDir = 1;
+let groupView = true;
+let simplesPrea = {}; // generico -> {tallosPendientes, tallosMedios}
+let recapLoaded = false; // cuando hay Recap Stock, la tabla visible sale solo de ese recap.
+const STORAGE_KEY = 'aquarelle-control-stock-state-v1';
+const HANDLE_DB = 'aquarelle-control-stock-handles';
+const HANDLE_STORE = 'handles';
+const DIR_HANDLE_KEY = 'onedrive-data-folder';
+const ONE_DRIVE_DATA_FILE = 'aquarelle-stock-datos.json';
+let oneDriveFileHandle = null;
+let oneDriveDirHandle = null;
+let oneDriveAutoSaveTimer = null;
+let suppressOneDriveAutoSave = false;
+
+let weekState = {
+  year: new Date().getFullYear(),
+  week: getISOWeek(new Date()),
+  objetivo: 580,
+  acumulado: 302
+};
+
+function getISOWeek(d){
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil((((d-yearStart)/86400000)+1)/7);
+}
+
+function getISOWeekRange(year, week){
+  const simple = new Date(Date.UTC(year,0,1+(week-1)*7));
+  const dow = simple.getUTCDay();
+  const isoWeekStart = new Date(simple);
+  if(dow <= 4) isoWeekStart.setUTCDate(simple.getUTCDate() - simple.getUTCDay() + 1);
+  else isoWeekStart.setUTCDate(simple.getUTCDate() + 8 - simple.getUTCDay());
+  const isoWeekEnd = new Date(isoWeekStart);
+  isoWeekEnd.setUTCDate(isoWeekStart.getUTCDate()+6); // L a D (semana completa)
+  return {start:isoWeekStart, end:isoWeekEnd};
+}
+
+function fmtDateShort(d){
+  return d.toLocaleDateString('es-ES', {day:'2-digit', month:'short'});
+}
+
+
+function loadSeed(){
+  data = SEED.map(r => ({
+    categoria:r[0], generico:r[1], producto:r[2],
+    saldo: r[3] + r[4] - r[5]
+  }));
+  genericoData = {};
+  [...new Set(data.map(d=>d.generico))].forEach(g=>{
+    genericoData[g] = {compraL:0, compraM:0, compraX:0, compraJ:0, compraV:0, pendientePreasignar:0};
+  });
+  prevExpedicionProducto = {};
+  data.forEach(d=>{ prevExpedicionProducto[d.producto] = 0; });
+  dirty = {};
+  recapLoaded = false;
+}
+
+function setSaveStatus(message, type='ok'){
+  const el = document.getElementById('saveStatus');
+  if(!el) return;
+  el.textContent = message;
+  el.classList.toggle('ok', type === 'ok');
+  el.classList.toggle('warn', type === 'warn');
+}
+
+function storageAvailable(){
+  try{
+    const testKey = STORAGE_KEY + '-test';
+    localStorage.setItem(testKey, '1');
+    localStorage.removeItem(testKey);
+    return true;
+  } catch(err){
+    return false;
+  }
+}
+
+function buildAppState(){
+  return {
+    app: 'aquarelle-control-stock',
+    version: 1,
+    savedAt: new Date().toISOString(),
+    data,
+    genericoData,
+    prevExpedicionProducto,
+    simplesPrea,
+    recapLoaded,
+    weekState,
+    groupView
+  };
+}
+
+function openHandleDb(){
+  return new Promise((resolve, reject)=>{
+    const request = indexedDB.open(HANDLE_DB, 1);
+    request.onupgradeneeded = ()=> request.result.createObjectStore(HANDLE_STORE);
+    request.onsuccess = ()=> resolve(request.result);
+    request.onerror = ()=> reject(request.error);
+  });
+}
+
+async function storeOneDriveDirHandle(handle){
+  try{
+    const db = await openHandleDb();
+    await new Promise((resolve, reject)=>{
+      const tx = db.transaction(HANDLE_STORE, 'readwrite');
+      tx.objectStore(HANDLE_STORE).put(handle, DIR_HANDLE_KEY);
+      tx.oncomplete = resolve;
+      tx.onerror = ()=> reject(tx.error);
+    });
+    db.close();
+  } catch(err){
+    console.warn('No se pudo recordar la carpeta de OneDrive', err);
+  }
+}
+
+async function getStoredOneDriveDirHandle(){
+  try{
+    const db = await openHandleDb();
+    const handle = await new Promise((resolve, reject)=>{
+      const tx = db.transaction(HANDLE_STORE, 'readonly');
+      const request = tx.objectStore(HANDLE_STORE).get(DIR_HANDLE_KEY);
+      request.onsuccess = ()=> resolve(request.result || null);
+      request.onerror = ()=> reject(request.error);
+    });
+    db.close();
+    return handle;
+  } catch(err){
+    return null;
+  }
+}
+
+async function hasWritePermission(handle, ask=false){
+  if(!handle || !handle.queryPermission) return true;
+  const opts = {mode:'readwrite'};
+  if(await handle.queryPermission(opts) === 'granted') return true;
+  if(ask && handle.requestPermission){
+    return await handle.requestPermission(opts) === 'granted';
+  }
+  return false;
+}
+
+async function getOneDriveDataFileHandle({ask=false, create=false}={}){
+  if(!oneDriveDirHandle) oneDriveDirHandle = await getStoredOneDriveDirHandle();
+  if(!oneDriveDirHandle && ask && window.showDirectoryPicker){
+    alert('Selecciona la carpeta Datos de OneDrive:\nC:\\Users\\maria\\OneDrive\\Aquarelle.es -Maria\\App operaciones control stock\\Datos');
+    oneDriveDirHandle = await window.showDirectoryPicker({mode:'readwrite'});
+    await storeOneDriveDirHandle(oneDriveDirHandle);
+  }
+  if(!oneDriveDirHandle) return null;
+  if(!await hasWritePermission(oneDriveDirHandle, ask)) return null;
+  oneDriveFileHandle = await oneDriveDirHandle.getFileHandle(ONE_DRIVE_DATA_FILE, {create});
+  return oneDriveFileHandle;
+}
+
+async function writeStateToOneDrive(handle, {silent=false}={}){
+  if(!handle) handle = await getOneDriveDataFileHandle({ask:!silent, create:true});
+  if(!handle) return false;
+  try{
+    if(!await hasWritePermission(handle, !silent)){
+      if(!silent) setSaveStatus('Autoriza OneDrive', 'warn');
+      return false;
+    }
+    const writable = await handle.createWritable();
+    await writable.write(new Blob([JSON.stringify(buildAppState(), null, 2)], {type:'application/json'}));
+    await writable.close();
+    setSaveStatus(`OneDrive ${new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'})}`);
+    return true;
+  } catch(err){
+    console.warn('No se pudo autoguardar en OneDrive', err);
+    setSaveStatus('OneDrive no guardó', 'warn');
+    return false;
+  }
+}
+
+async function loadStateFromOneDrive({ask=false}={}){
+  const handle = await getOneDriveDataFileHandle({ask, create:false});
+  if(!handle) return false;
+  try{
+    const file = await handle.getFile();
+    const state = JSON.parse(await file.text());
+    suppressOneDriveAutoSave = true;
+    applyAppState(state);
+    saveState();
+    suppressOneDriveAutoSave = false;
+    setSaveStatus('OneDrive cargado');
+    return true;
+  } catch(err){
+    suppressOneDriveAutoSave = false;
+    console.warn('No se pudo cargar desde OneDrive', err);
+    if(ask) alert(`No he podido leer ${ONE_DRIVE_DATA_FILE}. Revisa que exista en la carpeta Datos.`);
+    return false;
+  }
+}
+
+function scheduleOneDriveAutoSave(){
+  if(suppressOneDriveAutoSave) return;
+  clearTimeout(oneDriveAutoSaveTimer);
+  oneDriveAutoSaveTimer = setTimeout(()=> writeStateToOneDrive(null, {silent:true}), 800);
+}
+
+function applyAppState(state){
+  if(!state || !Array.isArray(state.data)) throw new Error('El archivo no contiene datos de stock válidos.');
+  data = state.data;
+  genericoData = state.genericoData || {};
+  prevExpedicionProducto = state.prevExpedicionProducto || {};
+  simplesPrea = state.simplesPrea || {};
+  weekState = {...weekState, ...(state.weekState || {})};
+  groupView = state.groupView !== undefined ? !!state.groupView : groupView;
+  recapLoaded = !!state.recapLoaded;
+  data.forEach(d=>{
+    genericoFor(d.generico);
+    prevExpedicionFor(d.producto);
+  });
+}
+
+function saveState(){
+  const state = buildAppState();
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    setSaveStatus(`Guardado ${new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'})}`);
+    scheduleOneDriveAutoSave();
+    return true;
+  } catch(err){
+    console.warn('No se pudo guardar en este navegador', err);
+    setSaveStatus('No se puede guardar', 'warn');
+    return false;
+  }
+}
+
+function loadSavedState(){
+  let raw = null;
+  try{
+    raw = localStorage.getItem(STORAGE_KEY);
+  } catch(err){
+    setSaveStatus('No se puede guardar', 'warn');
+    return false;
+  }
+  if(!raw) return false;
+  try{
+    const state = JSON.parse(raw);
+    applyAppState(state);
+    setSaveStatus('Datos recuperados');
+    return true;
+  } catch(err){
+    console.warn('No se pudo recuperar el guardado local', err);
+    return false;
+  }
+}
+
+if(!storageAvailable()){
+  setSaveStatus('No se puede guardar', 'warn');
+  loadSeed();
+} else if(!loadSavedState()){
+  loadSeed();
+  setSaveStatus('Listo para guardar');
+}
+
+function productBaseName(producto){
+  // Quita sufijos de talla/variante sin usar palabras ambiguas como rose/rosa para agrupar.
+  return String(producto || '').replace(/[-_]\d+([-_]\d+)*$/,'').replace(/[-_]?\d+P?$/,'');
+}
+
+function codeBaseFor(code){
+  // Normaliza el code produit conservando todo el identificador: 17.127 => 17127.
+  return String(code || '').trim().replace(/\s+/g,'').replace(/[^A-Za-z0-9]/g,'').replace(/^0+/,'');
+}
+
+function inferCategoryFromProduct(producto){
+  const p = String(producto || '');
+  if(/^P-Orqui/i.test(p) || /^P-Orquidea/i.test(p) || /^P-/i.test(p)) return 'PLANTAS';
+  if(/^A-Rosas/i.test(p) || /^A-Rose/i.test(p)) return 'ROSAS';
+  if(/^C-/i.test(p)) return 'COMPUESTOS';
+  if(/^S-/i.test(p)) return 'SIMPLES';
+  return 'PENDIENTE';
+}
+
+function seedMetaByProduct(){
+  return new Map(SEED.map(r => [r[2], {categoria:r[0], generico:r[1], producto:r[2]}]));
+}
+
+function currentMetaByProduct(){
+  const seed = seedMetaByProduct();
+  data.forEach(d=> seed.set(d.producto, {categoria:d.categoria, generico:d.generico, producto:d.producto, recapCode:d.recapCode, codeBase:d.codeBase}));
+  return seed;
+}
+
+function safeGenericForRecapRow(row, codeGroups){
+  // El code produit manda para agrupar tallas; la categoria evita mezclar familias incompatibles.
+  if(row.codeBase){
+    const key = row.categoria + '|' + row.codeBase;
+    if(codeGroups[key]) return codeGroups[key];
+  }
+  return productBaseName(row.producto);
+}
+
+function genericoFor(generico){
+  if(!genericoData[generico]) genericoData[generico] = {compraL:0, compraM:0, compraX:0, compraJ:0, compraV:0, prevExpedicion:0, pendientePreasignar:0};
+  if(genericoData[generico].pendientePreasignar===undefined) genericoData[generico].pendientePreasignar = 0;
+  return genericoData[generico];
+}
+
+function aplicaPreasignacion(categoria){
+  return categoria === 'ROSAS' || categoria === 'SIMPLES';
+}
+
+function prevExpedicionFor(producto){
+  if(prevExpedicionProducto[producto]===undefined) prevExpedicionProducto[producto] = 0;
+  return prevExpedicionProducto[producto];
+}
+
+function computed(row){
+  const g = genericoFor(row.generico);
+  const compras = (g.compraL||0)+(g.compraM||0)+(g.compraX||0)+(g.compraJ||0)+(g.compraV||0);
+  const pendientePrea = aplicaPreasignacion(row.categoria) ? (g.pendientePreasignar||0) : 0;
+  let prevExp;
+  if(row._variants){
+    // fila agrupada: sumar la previsión de todas las tallas de esta familia
+    prevExp = row._variants.reduce((s,v)=> s + prevExpedicionFor(v.producto), 0);
+  } else {
+    prevExp = prevExpedicionFor(row.producto);
+  }
+  const saldoFinal = row.saldo + compras + pendientePrea - prevExp;
+  return {compras, saldoFinal, prevExp};
+}
+
+function fmtNum(n){
+  if(n===0) return '0';
+  return n.toLocaleString('es-ES');
+}
+
+function parseAppNumber(value){
+  if(typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  const raw = String(value ?? '').trim();
+  if(!raw) return 0;
+  let normalized = raw.replace(/\s/g, '');
+  const hasComma = normalized.includes(',');
+  const hasDot = normalized.includes('.');
+  if(hasComma && hasDot){
+    normalized = normalized.lastIndexOf(',') > normalized.lastIndexOf('.')
+      ? normalized.replace(/\./g, '').replace(',', '.')
+      : normalized.replace(/,/g, '');
+  } else if(hasComma){
+    normalized = normalized.replace(',', '.');
+  } else if(/^-?\d{1,3}(\.\d{3})+$/.test(normalized)){
+    normalized = normalized.replace(/\./g, '');
+  }
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function badgeClass(cat){
+  return 'badge badge-' + cat.toLowerCase();
+}
+
+function uniqueCats(){
+  return [...new Set(data.map(d=>d.categoria))].sort();
+}
+
+function renderWeekPanel(){
+  const {start, end} = getISOWeekRange(weekState.year, weekState.week);
+  const pendiente = weekState.objetivo - weekState.acumulado;
+  const weekOptions = [];
+  for(let w=1; w<=53; w++) weekOptions.push(w);
+
+  const panel = document.getElementById('weekPanel');
+  panel.innerHTML = `
+    <div class="week-block">
+      <div class="label">Semana de producción</div>
+      <div class="week-select-row">
+        <select id="weekSelect">
+          ${weekOptions.map(w=>`<option value="${w}" ${w===weekState.week?'selected':''}>Semana ${w}</option>`).join('')}
+        </select>
+        <select id="yearSelect">
+          ${[weekState.year-1, weekState.year, weekState.year+1].map(y=>`<option value="${y}" ${y===weekState.year?'selected':''}>${y}</option>`).join('')}
+        </select>
+      </div>
+      <div class="week-dates" style="margin-top:8px;">${fmtDateShort(start)} — ${fmtDateShort(end)}</div>
+    </div>
+    <div class="divider"></div>
+    <div class="week-block">
+      <div class="label">Objetivo expediciones</div>
+      <input type="number" class="week-input" id="objetivoInput" value="${weekState.objetivo}">
+    </div>
+    <div class="week-block">
+      <div class="label">Acumuladas hoy</div>
+      <input type="number" class="week-input" id="acumuladoInput" value="${weekState.acumulado}">
+    </div>
+    <div class="week-block">
+      <div class="label">Pendiente por salir</div>
+      <div class="week-val accent" id="weekPendingValue">${fmtNum(pendiente)}</div>
+      <div class="week-sub">objetivo − acumulado</div>
+    </div>
+    <div class="week-block">
+      <div class="label">% completado</div>
+      <div class="week-val ${pendiente<0?'warn':''}" id="weekPercentValue">${weekState.objetivo>0?Math.round(weekState.acumulado/weekState.objetivo*100):0}%</div>
+      <div class="week-sub" id="weekPercentSub">${pendiente<0?'objetivo superado':'de la semana'}</div>
+    </div>
+  `;
+
+  document.getElementById('weekSelect').addEventListener('change', e=>{
+    weekState.week = parseInt(e.target.value); saveState(); renderWeekPanel();
+  });
+  document.getElementById('yearSelect').addEventListener('change', e=>{
+    weekState.year = parseInt(e.target.value); saveState(); renderWeekPanel();
+  });
+  document.getElementById('objetivoInput').addEventListener('input', e=>{
+    weekState.objetivo = parseAppNumber(e.target.value); saveState(); updateWeekSummary();
+  });
+  document.getElementById('acumuladoInput').addEventListener('input', e=>{
+    weekState.acumulado = parseAppNumber(e.target.value); saveState(); updateWeekSummary();
+  });
+}
+
+function updateWeekSummary(){
+  const pendiente = weekState.objetivo - weekState.acumulado;
+  const percent = weekState.objetivo > 0 ? Math.round(weekState.acumulado / weekState.objetivo * 100) : 0;
+  const pendingEl = document.getElementById('weekPendingValue');
+  const percentEl = document.getElementById('weekPercentValue');
+  const subEl = document.getElementById('weekPercentSub');
+  if(pendingEl) pendingEl.textContent = fmtNum(pendiente);
+  if(percentEl){
+    percentEl.textContent = `${percent}%`;
+    percentEl.classList.toggle('warn', pendiente < 0);
+  }
+  if(subEl) subEl.textContent = pendiente < 0 ? 'objetivo superado' : 'de la semana';
+}
+
+function populateFilter(){
+  const sel = document.getElementById('filterCat');
+  sel.innerHTML = '<option value="">Todas las categorías</option>' +
+    uniqueCats().map(c=>`<option value="${c}">${c}</option>`).join('');
+}
+
+function applyFilters(rows){
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  const cat = document.getElementById('filterCat').value;
+  const negFilter = document.getElementById('filterNeg').value;
+  return rows.filter(r=>{
+    if(cat && r.categoria !== cat) return false;
+    if(q && !(r.producto.toLowerCase().includes(q) || r.generico.toLowerCase().includes(q))) return false;
+    const {saldoFinal} = computed(r);
+    if(negFilter==='neg' && r.saldo >= 0) return false;
+    if(negFilter==='negfinal' && saldoFinal >= 0) return false;
+    return true;
+  });
+}
+
+function applySort(rows){
+  if(!sortKey) return rows;
+  return [...rows].sort((a,b)=>{
+    let av, bv;
+    if(sortKey==='saldoFinal'){
+      av = computed(a)[sortKey]; bv = computed(b)[sortKey];
+    } else {
+      av = a[sortKey]; bv = b[sortKey];
+    }
+    if(typeof av === 'string') return av.localeCompare(bv) * sortDir;
+    return (av - bv) * sortDir;
+  });
+}
+
+function groupedData(rows){
+  const map = new Map();
+  rows.forEach(r=>{
+    const key = r.generico;
+    if(!map.has(key)){
+      map.set(key, {categoria:r.categoria, generico:r.generico, producto:r.generico, saldo:0, _variants:[]});
+    }
+    const g = map.get(key);
+    g.saldo += r.saldo;
+    g._variants.push(r);
+  });
+  return [...map.values()];
+}
+
+function render(){
+  let filtered = applyFilters(data);
+  let displayRows = groupView ? groupedData(filtered) : filtered;
+  displayRows = applySort(displayRows);
+
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+
+  let lastCat = null;
+  let fSaldo=0, fPendientePreasignar=0, fL=0, fM=0, fX=0, fJ=0, fV=0, fPrev=0, fSaldoFinal=0;
+  const seenGenericos = new Set();
+
+  displayRows.forEach(row=>{
+    if(!sortKey && row.categoria !== lastCat){
+      lastCat = row.categoria;
+      const tr = document.createElement('tr');
+      tr.className = 'cat-row';
+      tr.innerHTML = `<td colspan="11">${row.categoria}</td>`;
+      tbody.appendChild(tr);
+    }
+    const g = genericoFor(row.generico);
+    const {saldoFinal, prevExp} = computed(row);
+    fSaldo+=row.saldo;
+    if(!seenGenericos.has(row.generico)){
+      // sumar compras solo una vez por genérico para los totales del pie
+      seenGenericos.add(row.generico);
+      fL+=g.compraL; fM+=g.compraM; fX+=g.compraX; fJ+=g.compraJ; fV+=g.compraV;
+      if(aplicaPreasignacion(row.categoria)) fPendientePreasignar += g.pendientePreasignar;
+    }
+    fSaldoFinal+=saldoFinal;
+
+    const tr = document.createElement('tr');
+    const editCellClass = (field, val, cls) => {
+      const dayField = ['compraL','compraM','compraX','compraJ','compraV'].includes(field);
+      const displayVal = dayField && !val ? '' : val;
+      return `<td class="num ${cls}"><input class="qty-edit" data-generico="${row.generico}" data-field="${field}" type="number" value="${displayVal}"></td>`;
+    };
+    const preasignarCell = aplicaPreasignacion(row.categoria)
+      ? editCellClass('pendientePreasignar', g.pendientePreasignar, 'cell-prea')
+      : `<td class="num cell-prea" style="color:var(--ink-soft);">—</td>`;
+
+    if(groupView){
+      const variantCount = row._variants.length;
+      // total de fPrev se acumula a nivel de producto, no de genérico, así que se suma aquí siempre (no solo una vez)
+      fPrev += prevExp;
+      tr.innerHTML = `
+        <td><span class="${badgeClass(row.categoria)}">${row.categoria}</span></td>
+        <td class="generico">${row.generico} <span style="color:var(--ink-soft);font-weight:400;font-size:11px;">(${variantCount}T)</span></td>
+        <td class="num cell-saldo ${row.saldo<0?'neg':''}">${fmtNum(row.saldo)}</td>
+        ${preasignarCell}
+        ${editCellClass('compraL', g.compraL, 'cell-day')}
+        ${editCellClass('compraM', g.compraM, 'cell-day')}
+        ${editCellClass('compraX', g.compraX, 'cell-day')}
+        ${editCellClass('compraJ', g.compraJ, 'cell-day')}
+        ${editCellClass('compraV', g.compraV, 'cell-day')}
+        <td class="num" style="color:var(--ink-soft);" title="Suma de la previsión de las ${variantCount} tallas">${fmtNum(prevExp)}</td>
+        <td class="num ${saldoFinal<0?'neg':''}">${fmtNum(saldoFinal)}</td>
+      `;
+    } else {
+      fPrev += prevExp;
+      tr.innerHTML = `
+        <td><span class="${badgeClass(row.categoria)}">${row.categoria}</span></td>
+        <td class="generico">${row.producto}</td>
+        <td class="num cell-saldo ${row.saldo<0?'neg':''}">${fmtNum(row.saldo)}</td>
+        ${preasignarCell}
+        ${editCellClass('compraL', g.compraL, 'cell-day')}
+        ${editCellClass('compraM', g.compraM, 'cell-day')}
+        ${editCellClass('compraX', g.compraX, 'cell-day')}
+        ${editCellClass('compraJ', g.compraJ, 'cell-day')}
+        ${editCellClass('compraV', g.compraV, 'cell-day')}
+        <td class="num"><input class="qty-edit" data-producto="${row.producto}" data-field="prevExpedicionProducto" type="number" value="${prevExp}"></td>
+        <td class="num ${saldoFinal<0?'neg':''}">${fmtNum(saldoFinal)}</td>
+      `;
+    }
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('fSaldo').textContent = fmtNum(fSaldo);
+  document.getElementById('fPendientePreasignar').textContent = fmtNum(fPendientePreasignar);
+  document.getElementById('fL').textContent = fL ? fmtNum(fL) : '';
+  document.getElementById('fM').textContent = fM ? fmtNum(fM) : '';
+  document.getElementById('fX').textContent = fX ? fmtNum(fX) : '';
+  document.getElementById('fJ').textContent = fJ ? fmtNum(fJ) : '';
+  document.getElementById('fV').textContent = fV ? fmtNum(fV) : '';
+  document.getElementById('fPrev').textContent = fmtNum(fPrev);
+  document.getElementById('fSaldoFinal').textContent = fmtNum(fSaldoFinal);
+
+  renderWeekPanel();
+  renderSimplesSection();
+
+  tbody.querySelectorAll('input.qty-edit').forEach(inp=>{
+    inp.addEventListener('input', onEditCell);
+  });
+}
+
+
+function renderSimplesSection(){
+  const section = document.getElementById('simplesSection');
+  const categoriasPrea = ['ROSAS', 'SIMPLES'];
+  const genericosPorCat = {};
+  categoriasPrea.forEach(cat=>{
+    genericosPorCat[cat] = [...new Set(data.filter(d=>d.categoria===cat).map(d=>d.generico))].sort();
+  });
+
+  const totalGenericos = categoriasPrea.reduce((s,cat)=>s+genericosPorCat[cat].length, 0);
+  if(totalGenericos === 0){
+    section.innerHTML = '';
+    return;
+  }
+
+  categoriasPrea.forEach(cat=>{
+    genericosPorCat[cat].forEach(g=>{
+      if(!simplesPrea[g]) simplesPrea[g] = {tallosPendientes:0, tallosMedios:0};
+    });
+  });
+
+  const buildRows = (genericos) => genericos.map(g=>{
+    const s = simplesPrea[g];
+    const bouquets = s.tallosMedios > 0 ? Math.round(s.tallosPendientes / s.tallosMedios) : 0;
+    const actual = genericoFor(g).pendientePreasignar;
+    return `
+      <tr>
+        <td>${g}</td>
+        <td class="num"><input class="simples-input" data-sgenerico="${g}" data-sfield="tallosPendientes" type="number" value="${s.tallosPendientes}"></td>
+        <td class="num"><input class="simples-input" data-sgenerico="${g}" data-sfield="tallosMedios" type="number" value="${s.tallosMedios}"></td>
+        <td class="num simples-result" data-sresult="${g}">${fmtNum(bouquets)}</td>
+        <td class="num" style="color:var(--ink-soft);">${fmtNum(actual)}</td>
+        <td><button class="simples-apply-btn" data-sapply="${g}">Aplicar</button></td>
+      </tr>
+    `;
+  }).join('');
+
+  const tableHeader = `
+    <thead>
+      <tr>
+        <th>Producto genérico</th>
+        <th class="num">Tallos pendientes</th>
+        <th class="num">Tallos medios / bqt</th>
+        <th class="num">Bouquets calculados</th>
+        <th class="num">Actual en tabla</th>
+        <th></th>
+      </tr>
+    </thead>
+  `;
+
+  const blocksHtml = categoriasPrea
+    .filter(cat => genericosPorCat[cat].length > 0)
+    .map(cat => `
+      <h4 class="simples-cat-title">${cat}</h4>
+      <table class="simples-table">
+        ${tableHeader}
+        <tbody>${buildRows(genericosPorCat[cat])}</tbody>
+      </table>
+    `).join('');
+
+  section.innerHTML = `
+    <p class="desc">Indica los tallos pendientes por preasignar y los tallos medios por bouquet de cada referencia. La app calcula los bouquets resultantes (tallos pendientes ÷ tallos medios); pulsa "Aplicar" para volcar ese número en la columna "Pendientes preasignar" de la tabla principal.</p>
+    ${blocksHtml}
+  `;
+
+  section.querySelectorAll('input.simples-input').forEach(inp=>{
+    inp.addEventListener('input', e=>{
+      const g = e.target.dataset.sgenerico;
+      const field = e.target.dataset.sfield;
+      const val = parseAppNumber(e.target.value);
+      simplesPrea[g][field] = val;
+      const s = simplesPrea[g];
+      const bouquets = s.tallosMedios > 0 ? Math.round(s.tallosPendientes / s.tallosMedios) : 0;
+      section.querySelector(`[data-sresult="${CSS.escape(g)}"]`).textContent = fmtNum(bouquets);
+      saveState();
+    });
+  });
+
+  section.querySelectorAll('button.simples-apply-btn').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      const g = e.target.dataset.sapply;
+      const s = simplesPrea[g];
+      const bouquets = s.tallosMedios > 0 ? Math.round(s.tallosPendientes / s.tallosMedios) : 0;
+      genericoFor(g).pendientePreasignar = bouquets;
+      saveState();
+      render();
+    });
+  });
+}
+
+function onEditCell(e){
+  const inp = e.target;
+  const field = inp.dataset.field;
+  const emptyInput = inp.value === '';
+  const val = emptyInput ? 0 : parseAppNumber(inp.value);
+  if(isNaN(val)) return;
+
+  if(field === 'prevExpedicionProducto'){
+    const producto = inp.dataset.producto;
+    prevExpedicionProducto[producto] = val;
+    saveState();
+    render_partial_saldoFinal();
+    return;
+  }
+
+  const generico = inp.dataset.generico;
+  const g = genericoFor(generico);
+  g[field] = val;
+  if(emptyInput && ['compraL','compraM','compraX','compraJ','compraV'].includes(field)) inp.value = '';
+  saveState();
+  // actualizar totales y saldo final en vivo sin perder el foco del input
+  const tr = inp.closest('tr');
+  refreshRowTotals(tr, generico);
+}
+
+function refreshRowTotals(tr, generico){
+  render_partial_saldoFinal();
+}
+
+function render_partial_saldoFinal(){
+  // recálculo ligero: recorremos filas visibles y actualizamos solo la celda Saldo Final + footer
+  const rows = groupView ? groupedData(applyFilters(data)) : applyFilters(data);
+  const sorted = applySort(rows);
+  const trs = document.querySelectorAll('#tbody tr:not(.cat-row)');
+  let fSaldoFinal = 0;
+  let fL=0, fM=0, fX=0, fJ=0, fV=0, fPrev=0, fPendientePreasignar=0;
+  const seen = new Set();
+  trs.forEach((tr, i)=>{
+    const row = sorted[i];
+    if(!row) return;
+    const {saldoFinal, prevExp} = computed(row);
+    const lastTd = tr.querySelector('td:last-child');
+    if(lastTd){ lastTd.textContent = fmtNum(saldoFinal); lastTd.classList.toggle('neg', saldoFinal<0); }
+    fSaldoFinal += saldoFinal;
+    fPrev += prevExp;
+    if(!seen.has(row.generico)){
+      seen.add(row.generico);
+      const g = genericoFor(row.generico);
+      fL+=g.compraL; fM+=g.compraM; fX+=g.compraX; fJ+=g.compraJ; fV+=g.compraV;
+      if(aplicaPreasignacion(row.categoria)) fPendientePreasignar += g.pendientePreasignar;
+    }
+  });
+  document.getElementById('fPendientePreasignar').textContent = fmtNum(fPendientePreasignar);
+  document.getElementById('fL').textContent = fL ? fmtNum(fL) : '';
+  document.getElementById('fM').textContent = fM ? fmtNum(fM) : '';
+  document.getElementById('fX').textContent = fX ? fmtNum(fX) : '';
+  document.getElementById('fJ').textContent = fJ ? fmtNum(fJ) : '';
+  document.getElementById('fV').textContent = fV ? fmtNum(fV) : '';
+  document.getElementById('fPrev').textContent = fmtNum(fPrev);
+  document.getElementById('fSaldoFinal').textContent = fmtNum(fSaldoFinal);
+}
+
+
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('filterCat').addEventListener('change', render);
+document.getElementById('filterNeg').addEventListener('change', render);
+document.getElementById('toggleGroup').addEventListener('change', e=>{
+  groupView = e.target.checked;
+  saveState();
+  render();
+});
+
+document.querySelectorAll('thead th.sortable').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const key = th.dataset.key;
+    if(sortKey===key){ sortDir *= -1; } else { sortKey = key; sortDir = 1; }
+    render();
+  });
+});
+
+document.getElementById('btnReset').addEventListener('click', ()=>{
+  if(confirm('Esto restaura los datos de ejemplo y descarta cambios. ¿Continuar?')){
+    loadSeed();
+    saveState();
+    render();
+  }
+});
+
+document.getElementById('btnExport').addEventListener('click', ()=>{
+  let rows = applyFilters(data);
+  rows = groupView ? groupedData(rows) : rows;
+  rows = applySort(rows);
+  let csv = 'Categoria,Producto Generico,Producto,Saldo,L,M,X,J,V,Prevision Expedicion,Saldo Final\n';
+  rows.forEach(r=>{
+    const g = genericoFor(r.generico);
+    const {saldoFinal, prevExp} = computed(r);
+    csv += `${r.categoria},${r.generico},${r.producto},${r.saldo},${g.compraL},${g.compraM},${g.compraX},${g.compraJ},${g.compraV},${prevExp},${saldoFinal}\n`;
+  });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `stock_aquarelle_S${weekState.week}_${weekState.year}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+function stateFileName(){
+  return `aquarelle-stock-datos-S${weekState.week}_${weekState.year}.json`;
+}
+
+async function exportStateToOneDrive(){
+  saveState();
+
+  if(window.showDirectoryPicker){
+    try{
+      const handle = await getOneDriveDataFileHandle({ask:true, create:true});
+      await writeStateToOneDrive(handle);
+      alert(`Datos guardados en ${ONE_DRIVE_DATA_FILE}. A partir de ahora cada cambio se escribirá automáticamente en la carpeta Datos.`);
+      return;
+    } catch(err){
+      if(err && err.name === 'AbortError') return;
+      console.warn('No se pudo usar la carpeta Datos', err);
+    }
+  }
+
+  const payload = JSON.stringify(buildAppState(), null, 2);
+  const blob = new Blob([payload], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = ONE_DRIVE_DATA_FILE;
+  a.click();
+  URL.revokeObjectURL(url);
+  setSaveStatus('Datos descargados');
+  alert('Se ha descargado el archivo de datos. Guárdalo en la carpeta compartida de OneDrive para usarlo en el otro ordenador.');
+}
+
+async function importStateFile(file){
+  if(!file) return;
+  try{
+    const text = await file.text();
+    const state = JSON.parse(text);
+    applyAppState(state);
+    saveState();
+    populateFilter();
+    document.getElementById('toggleGroup').checked = groupView;
+    render();
+    setSaveStatus('Datos OneDrive cargados');
+    alert(`Datos cargados desde ${file.name}.`);
+  } catch(err){
+    alert('No se pudieron cargar los datos: ' + (err.message || 'archivo no reconocido.'));
+  }
+}
+
+document.getElementById('btnSaveOneDrive').addEventListener('click', exportStateToOneDrive);
+document.getElementById('btnLoadOneDrive').addEventListener('click', async ()=>{
+  if(window.showDirectoryPicker){
+    try{
+      if(await loadStateFromOneDrive({ask:true})){
+        populateFilter();
+        document.getElementById('toggleGroup').checked = groupView;
+        render();
+        alert(`Datos cargados desde ${ONE_DRIVE_DATA_FILE}.`);
+      }
+      return;
+    } catch(err){
+      if(err && err.name === 'AbortError') return;
+      console.warn('No se pudo leer el archivo de la carpeta Datos', err);
+      alert(`No he encontrado ${ONE_DRIVE_DATA_FILE}. Pulsa primero Guardar datos OneDrive en el ordenador donde tienes los datos buenos.`);
+      return;
+    }
+  }
+  document.getElementById('stateFileInput').click();
+});
+
+document.getElementById('stateFileInput').addEventListener('change', async e=>{
+  await importStateFile(e.target.files[0]);
+  e.target.value = '';
+});
+
+async function initOneDriveAutoSave(){
+  if(!window.indexedDB) return;
+  oneDriveDirHandle = await getStoredOneDriveDirHandle();
+  if(oneDriveDirHandle && await hasWritePermission(oneDriveDirHandle, false)){
+    const loaded = await loadStateFromOneDrive({ask:false});
+    if(loaded){
+      populateFilter();
+      document.getElementById('toggleGroup').checked = groupView;
+      render();
+      setSaveStatus('OneDrive Datos cargado');
+    } else {
+      oneDriveFileHandle = await getOneDriveDataFileHandle({ask:false, create:false}).catch(()=>null);
+      setSaveStatus(oneDriveFileHandle ? 'OneDrive Datos conectado' : 'Pulsa Guardar datos OneDrive');
+    }
+    return;
+  }
+  setSaveStatus('Pulsa Guardar datos OneDrive', 'warn');
+}
+
+// ---------- Modal de pegado ----------
+const modal = document.getElementById('pasteModal');
+document.getElementById('btnPaste').addEventListener('click', ()=> modal.classList.add('open'));
+document.getElementById('btnPasteCancel').addEventListener('click', ()=> modal.classList.remove('open'));
+
+document.getElementById('btnPasteApply').addEventListener('click', ()=>{
+  const text = document.getElementById('pasteArea').value.trim();
+  if(!text){ modal.classList.remove('open'); return; }
+  const lines = text.split('\n').map(l=>l.trim()).filter(Boolean);
+  const metaByProduct = currentMetaByProduct();
+  const parsedRows = [];
+  const unknownRows = [];
+
+  lines.forEach(line=>{
+    const parts = line.split('\t').map(p=>p.trim());
+    if(parts.length < 2) return;
+    let producto, saldo, codeProduit = '', codeBase = '';
+    if(parts.length >= 7 && /^[A-Za-z]/.test(parts[2]||'')){
+      // Recap Stock real: code produit, variante, producto, stock prepa, stock fini, a expedir.
+      codeProduit = parts[0];
+      codeBase = codeBaseFor(codeProduit);
+      producto = parts[2];
+      const prepa = parseAppNumber(parts[3]);
+      const fini = parseAppNumber(parts[4]);
+      const expedir = parseAppNumber(parts[5]);
+      saldo = prepa + fini - expedir;
+    } else {
+      producto = parts[0];
+      saldo = parseAppNumber(parts[1]);
+    }
+    const meta = metaByProduct.get(producto);
+    const categoria = meta?.categoria || inferCategoryFromProduct(producto);
+    const row = {producto, saldo, codeProduit, codeBase, meta, categoria};
+    if(!meta) unknownRows.push(row);
+    parsedRows.push(row);
+  });
+
+  const includeUnknown = new Set();
+  [...new Map(unknownRows.map(r=>[r.producto, r])).values()].forEach(r=>{
+    if(confirm('Producto nuevo en Recap Stock:\n' + r.producto + '\n\nCategoria propuesta: ' + r.categoria + '\n\nQuieres incluirlo en el control de stock?')) includeUnknown.add(r.producto);
+  });
+
+  const codeGroups = {};
+  parsedRows.forEach(r=>{
+    if(!r.codeBase) return;
+    const key = r.categoria + '|' + r.codeBase;
+    if(!codeGroups[key]) codeGroups[key] = productBaseName(r.producto);
+  });
+  parsedRows.forEach(r=>{
+    if(!r.codeBase) return;
+    const key = r.categoria + '|' + r.codeBase;
+    if(!codeGroups[key]) codeGroups[key] = productBaseName(r.producto);
+  });
+
+  const nextData = [];
+  let included = 0, ignored = 0, pending = 0;
+  parsedRows.forEach(r=>{
+    if(!r.meta && !includeUnknown.has(r.producto)){ ignored++; return; }
+    const generico = safeGenericForRecapRow(r, codeGroups);
+    nextData.push({categoria:r.categoria, generico, producto:r.producto, saldo:r.saldo, recapCode:r.codeProduit, codeBase:r.codeBase});
+    included++;
+    if(!r.meta) pending++;
+  });
+
+  data = nextData;
+  recapLoaded = true;
+  const validProducts = new Set(data.map(r=>r.producto));
+  Object.keys(prevExpedicionProducto).forEach(producto=>{ if(!validProducts.has(producto)) delete prevExpedicionProducto[producto]; });
+  const oldGenericoData = genericoData;
+  genericoData = {};
+  data.forEach(d=>{
+    const g = genericoFor(d.generico);
+    if(oldGenericoData[d.generico]) Object.assign(g, oldGenericoData[d.generico]);
+    prevExpedicionFor(d.producto);
+  });
+
+  document.getElementById('pasteArea').value = '';
+  modal.classList.remove('open');
+  populateFilter();
+  saveState();
+  render();
+  let msg = 'Recap Stock actualizado: ' + included + ' productos visibles.';
+  if(ignored>0) msg += ' ' + ignored + ' producto(s) nuevo(s) sin clasificar no incluidos.';
+  if(pending>0) msg += ' ' + pending + ' producto(s) nuevo(s) incluidos tras confirmacion.';
+  alert(msg);
+});
+// ---------- Cálculo de previsión de expedición con IA ----------
+const previsionModal = document.getElementById('previsionModal');
+
+function renderForecastAdjustmentList(){
+  const list = document.getElementById('forecastAdjustmentList');
+  const search = document.getElementById('forecastAdjustmentSearch');
+  if(!list) return;
+  const current = {};
+  list.querySelectorAll('input.prevision-percent').forEach(inp=>{
+    if(inp.value !== '') current[inp.dataset.generico] = inp.value;
+  });
+  const rows = [...new Map(data.map(d=>[d.generico, {generico:d.generico, categoria:d.categoria}])).values()]
+    .filter(r => !r.generico.startsWith('X-') && !r.generico.startsWith('TF-'));
+  list.innerHTML = rows.map(r=>`
+    <div class="forecast-adjustment-row" data-adjust-row data-search="${`${r.categoria} ${r.generico}`.toLowerCase()}">
+      <div class="cat">${r.categoria}</div>
+      <div class="name" title="${r.generico}">${r.generico}</div>
+      <input class="prevision-percent" data-generico="${r.generico}" type="number" min="0" step="1" placeholder="100" value="${current[r.generico] || ''}" aria-label="Porcentaje para ${r.generico}">
+    </div>
+  `).join('');
+  if(search && !search.dataset.bound){
+    search.dataset.bound = '1';
+    search.addEventListener('input', ()=>{
+      const q = search.value.trim().toLowerCase();
+      list.querySelectorAll('[data-adjust-row]').forEach(row=>{
+        row.style.display = !q || row.dataset.search.includes(q) ? '' : 'none';
+      });
+    });
+  }
+  if(search) search.dispatchEvent(new Event('input'));
+}
+
+document.getElementById('btnPrevision').addEventListener('click', ()=>{
+  const pendiente = weekState.objetivo - weekState.acumulado;
+  document.getElementById('pendienteLabel').textContent = `pendiente por salir (${fmtNum(pendiente)} expediciones)`;
+  document.getElementById('previsionStatus').textContent = '';
+  renderForecastAdjustmentList();
+  previsionModal.classList.add('open');
+});
+document.getElementById('btnPrevisionCancel').addEventListener('click', ()=> previsionModal.classList.remove('open'));
+
+// ---------- Subir archivo de previsiones (Excel o JSON) ----------
+document.getElementById('btnUploadPrevision')?.addEventListener('click', ()=>{
+  document.getElementById('previsionFileInput').click();
+});
+
+function aplicarPrevisionDesdeRegistros(registros){
+  // registros: array de {referencia, valor} donde referencia puede ser un producto (talla) o un genérico (familia)
+  data.forEach(d=>{ prevExpedicionProducto[d.producto] = 0; });
+
+  const porGenerico = {};
+  let aplicadosProducto = 0;
+
+  registros.forEach(({referencia, valor})=>{
+    const ref = String(referencia).trim();
+    const num = Math.round(parseAppNumber(valor));
+    const esProducto = data.some(d=>d.producto===ref);
+    const esGenerico = data.some(d=>d.generico===ref);
+    if(esProducto){
+      prevExpedicionProducto[ref] = num;
+      aplicadosProducto++;
+    } else if(esGenerico){
+      porGenerico[ref] = num;
+    }
+  });
+
+  // Repartir los valores indicados a nivel de familia entre sus tallas, proporcional al saldo
+  Object.entries(porGenerico).forEach(([generico, totalFamilia])=>{
+    const tallas = data.filter(d=>d.generico===generico);
+    if(tallas.length === 0) return;
+    const saldoTotal = tallas.reduce((s,t)=> s + Math.max(t.saldo,0), 0);
+    let repartido = 0;
+    tallas.forEach((t, i)=>{
+      let parte;
+      if(i === tallas.length-1){
+        parte = totalFamilia - repartido;
+      } else if(saldoTotal > 0){
+        parte = Math.round(totalFamilia * (Math.max(t.saldo,0) / saldoTotal));
+      } else {
+        parte = Math.round(totalFamilia / tallas.length);
+      }
+      prevExpedicionProducto[t.producto] = parte;
+      repartido += parte;
+    });
+  });
+
+  saveState();
+  render();
+  const totalAplicado = data.reduce((s,d)=> s + (prevExpedicionProducto[d.producto]||0), 0);
+  return {totalAplicado, familias: Object.keys(porGenerico).length, productos: aplicadosProducto};
+}
+
+document.getElementById('previsionFileInput')?.addEventListener('change', async (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const statusEl = document.getElementById('previsionStatus');
+
+  try{
+    let registros = [];
+
+    if(file.name.toLowerCase().endsWith('.json')){
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if(Array.isArray(parsed)){
+        // formato [{referencia, valor}, ...] o [{producto, previsionExpedicion}, ...]
+        registros = parsed.map(r=>({
+          referencia: r.referencia ?? r.producto ?? r.generico ?? r.codigo,
+          valor: r.valor ?? r.previsionExpedicion ?? r.prevision ?? r.cantidad
+        }));
+      } else {
+        // formato { "CODIGO": numero, ... }
+        registros = Object.entries(parsed).map(([referencia, valor])=>({referencia, valor}));
+      }
+    } else {
+      // Excel: primera hoja, primera columna = referencia, segunda columna = valor
+      const buffer = await file.arrayBuffer();
+      const wb = XLSX.read(buffer, {type:'array'});
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, {header:1});
+      registros = rows
+        .filter(r => r.length >= 2 && r[0] !== undefined && r[0] !== '')
+        .map(r => ({referencia: r[0], valor: r[1]}));
+    }
+
+    registros = registros.filter(r => r.referencia !== undefined && r.referencia !== null && r.referencia !== '');
+
+    if(registros.length === 0){
+      throw new Error('No se han encontrado referencias válidas en el archivo.');
+    }
+
+    const resultado = aplicarPrevisionDesdeRegistros(registros);
+    const pendiente = weekState.objetivo - weekState.acumulado;
+
+    statusEl.style.color = resultado.totalAplicado === pendiente ? 'var(--pos)' : 'var(--ink-soft)';
+    statusEl.textContent = `Previsión cargada desde archivo: ${resultado.familias} familias y ${resultado.productos} productos aplicados. Total: ${fmtNum(resultado.totalAplicado)}` +
+      (pendiente ? ` de ${fmtNum(pendiente)} pendientes.` : '.');
+
+    if(!previsionModal.classList.contains('open')){
+      previsionModal.classList.add('open');
+      document.getElementById('pendienteLabel').textContent = `pendiente por salir (${fmtNum(pendiente)} expediciones)`;
+    }
+  } catch(err){
+    alert('Error al leer el archivo: ' + (err.message || 'formato no reconocido.'));
+  } finally {
+    e.target.value = '';
+  }
+});
+
+// ---------- Modal de preasignación ----------
+const preasignacionModal = document.getElementById('preasignacionModal');
+document.getElementById('btnPreasignacion').addEventListener('click', ()=>{
+  renderSimplesSection();
+  preasignacionModal.classList.add('open');
+});
+document.getElementById('btnPreasignacionClose').addEventListener('click', ()=>{
+  preasignacionModal.classList.remove('open');
+});
+
+
+document.getElementById('btnPrevisionCalcular').addEventListener('click', ()=>{
+  const ventasTexto = document.getElementById('ventasArea').value.trim();
+  const statusEl = document.getElementById('previsionStatus');
+  if(!ventasTexto){
+    statusEl.textContent = 'Pega antes la tabla de ventas recientes.';
+    statusEl.style.color = 'var(--neg)';
+    return;
+  }
+
+  const pendiente = Math.max(0, weekState.objetivo - weekState.acumulado);
+  const EXCLUIR_EXACTO = new Set(['S_ pot_blanco_13cm','S_zinc pot 14cm','S-POP_CHAT']);
+
+  // Mapa de prefijo de referencia de venta (tal como aparece en la tabla pegada)
+  // a código de familia (generico) usado en la app.
+  const genericosValidosParaMapeo = [...new Set(data.map(d=>d.generico))]
+    .filter(g => !g.startsWith('X-') && !g.startsWith('TF-'));
+
+  const normReferencia = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g,'');
+
+  function mapReferenciaAGenerico(ref){
+    const limpio = ref.trim();
+    if(limpio.startsWith('X-') || limpio.startsWith('TF-')) return null;
+    if(EXCLUIR_EXACTO.has(limpio)) return null;
+    const categoriaRef = inferCategoryFromProduct(limpio);
+    // quitar sufijos de talla/numero al final, conservando el nombre base
+    const base = limpio.replace(/[-_]\d+([-_]\d+)*$/,'').replace(/[-_]?\d+P?$/,'');
+    const refNorm = normReferencia(base.length>=4 ? base : limpio);
+    let mejor = null, mejorScore = 0;
+    genericosValidosParaMapeo.forEach(g=>{
+      const sample = data.find(d=>d.generico===g);
+      if(sample && categoriaRef !== 'PENDIENTE' && sample.categoria !== categoriaRef) return;
+      if(/^P-Orqui/i.test(limpio) && sample?.categoria !== 'PLANTAS') return;
+      const gNorm = normReferencia(g);
+      const minLen = Math.min(gNorm.length, refNorm.length);
+      if(minLen < 4) return;
+      const prefijoComun = gNorm.slice(0,minLen) === refNorm.slice(0,minLen) ? minLen : 0;
+      let score = prefijoComun;
+      if(refNorm.startsWith(gNorm) || gNorm.startsWith(refNorm)) score = Math.max(score, minLen + 2);
+      if(score > mejorScore){ mejor = g; mejorScore = score; }
+    });
+    return mejorScore >= 5 ? mejor : null;
+  }
+
+  function parseAjustesPrevision(genericosValidos){
+    const ajustes = {};
+    document.querySelectorAll('#forecastAdjustmentList input.prevision-percent').forEach(inp=>{
+      if(inp.value === '') return;
+      const generico = inp.dataset.generico;
+      if(!genericosValidos.includes(generico)) return;
+      ajustes[generico] = Math.max(0, parseAppNumber(inp.value));
+    });
+    return {ajustes, noEncontrados: []};
+  }
+
+  // Parsear la tabla pegada: separar por tabulador, detectar filas con código numérico + texto + números
+  const lines = ventasTexto.split('\n').map(l=>l.trim()).filter(Boolean);
+  const filasDatos = [];
+  lines.forEach(line=>{
+    const parts = line.split('\t').map(p=>p.trim());
+    if(parts.length < 4) return;
+    // Esperado: code, type, reference, total, dia1, dia2, ... diaN
+    const code = parts[0];
+    if(!/^\d/.test(code)) return; // saltar cabeceras
+    const reference = parts[2];
+    const total = parseAppNumber(parts[3]);
+    if(parts[3] === '' || !Number.isFinite(total)) return;
+    const dias = parts.slice(4).map(v => v==='' ? 0 : parseAppNumber(v));
+    filasDatos.push({reference, total, dias});
+  });
+
+  if(filasDatos.length === 0){
+    statusEl.textContent = 'No se ha podido leer ninguna fila de ventas. Revisa que el formato sea el habitual (código, tipo, referencia, total, días...).';
+    statusEl.style.color = 'var(--neg)';
+    return;
+  }
+
+  // Determinar pesos por día según el número de columnas de día detectadas
+  const numDias = Math.max(...filasDatos.map(f=>f.dias.length));
+  let pesosDias;
+  if(numDias <= 1){
+    pesosDias = [1];
+  } else if(numDias === 3){
+    pesosDias = [1,4,4];
+  } else {
+    pesosDias = Array(numDias-2).fill(2).concat([4,4]);
+  }
+
+  // Calcular peso por familia (genérico), sumando las referencias que mapeen a esa familia.
+  // Las filas con menos columnas de días que el máximo se alinean a la derecha
+  // (los días más recientes), ya que las columnas vacías al principio significan "sin venta ese día".
+  const productosPrevisionFueraRecap = [...new Set(filasDatos.map(f=>f.reference))]
+    .filter(ref => !mapReferenciaAGenerico(ref))
+    .filter(ref => !String(ref).startsWith('X-') && !String(ref).startsWith('TF-') && !EXCLUIR_EXACTO.has(String(ref).trim()));
+  const incluirPrevision = new Set();
+  productosPrevisionFueraRecap.forEach(ref=>{
+    if(confirm('Estos productos aparecen en la tabla de prevision, pero no estan en el Recap Stock actual. Es posible que sean productos que van a salir del catalogo. Quieres incluirlos igualmente en el control de stock?\n\n' + ref)){
+      incluirPrevision.add(ref);
+      const meta = currentMetaByProduct().get(ref);
+      const categoria = meta?.categoria || inferCategoryFromProduct(ref);
+      const generico = meta?.generico || productBaseName(ref);
+      data.push({categoria, generico, producto:ref, saldo:0, recapCode:'', codeBase:''});
+      genericoFor(generico);
+      prevExpedicionFor(ref);
+    }
+  });
+  if(incluirPrevision.size){ populateFilter(); renderForecastAdjustmentList(); }
+
+  const pesoPorGenerico = {};
+  filasDatos.forEach(f=>{
+    const generico = mapReferenciaAGenerico(f.reference);
+    if(!generico) return;
+    let peso;
+    if(numDias > 1){
+      const offset = numDias - f.dias.length;
+      peso = f.dias.reduce((s,d,i)=> s + d*pesosDias[offset+i], 0);
+    } else {
+      peso = f.total;
+    }
+    pesoPorGenerico[generico] = (pesoPorGenerico[generico]||0) + peso;
+  });
+
+  const genericosValidos = [...new Set(data.map(d=>d.generico))]
+    .filter(g => !g.startsWith('X-') && !g.startsWith('TF-'));
+  genericosValidos.forEach(g=>{ if(pesoPorGenerico[g]===undefined) pesoPorGenerico[g] = 0; });
+
+  const {ajustes, noEncontrados} = parseAjustesPrevision(genericosValidos);
+  const porcentajeReservado = Object.values(ajustes).reduce((s,p)=>s+p,0);
+  if(porcentajeReservado > 100){
+    statusEl.textContent = `Los porcentajes ajustados suman ${fmtNum(porcentajeReservado)}%. Deben sumar 100% o menos.`;
+    statusEl.style.color = 'var(--neg)';
+    return;
+  }
+  const genericosFijados = new Set(Object.keys(ajustes));
+  const pesoDisponible = Object.entries(pesoPorGenerico)
+    .filter(([generico])=> !genericosFijados.has(generico))
+    .reduce((s,[,w])=>s+w,0);
+
+  if(pesoDisponible === 0 && porcentajeReservado < 100){
+    statusEl.textContent = 'No se ha podido calcular peso para ninguna familia. Revisa que las referencias de la tabla coincidan con los productos de tu stock.';
+    statusEl.style.color = 'var(--neg)';
+    return;
+  }
+
+  // Los porcentajes introducidos reservan una parte fija del pendiente total.
+  // El resto se reparte proporcionalmente entre las familias sin porcentaje manual.
+  const aplicados = {};
+  let asignado = 0;
+  Object.entries(ajustes).forEach(([generico, porcentaje])=>{
+    const num = Math.round(pendiente * (porcentaje / 100));
+    aplicados[generico] = num;
+    asignado += num;
+  });
+  const pendienteRestante = Math.max(0, pendiente - asignado);
+  const entradas = Object.entries(pesoPorGenerico).filter(([generico])=> !genericosFijados.has(generico));
+  entradas.forEach(([generico, peso])=>{
+    const valorExacto = pesoDisponible > 0 ? pendienteRestante * (peso / pesoDisponible) : 0;
+    const num = Math.round(valorExacto);
+    aplicados[generico] = num;
+    asignado += num;
+  });
+  const diferencia = pendiente - asignado;
+  if(diferencia !== 0){
+    const mayor = entradas.length ? entradas.sort((a,b)=>b[1]-a[1])[0][0] : Object.keys(aplicados)[0];
+    aplicados[mayor] += diferencia;
+    asignado = pendiente;
+  }
+
+  // Limpiar previsión anterior de todos los productos antes de aplicar la nueva.
+  data.forEach(d=>{ prevExpedicionProducto[d.producto] = 0; });
+
+  // Repartir el total de cada familia entre sus tallas, proporcional al saldo actual de cada talla.
+  Object.entries(aplicados).forEach(([generico, totalFamilia])=>{
+    const tallas = data.filter(d=>d.generico===generico);
+    if(tallas.length === 0) return;
+    const saldoTotal = tallas.reduce((s,t)=> s + Math.max(t.saldo,0), 0);
+    let repartido = 0;
+    tallas.forEach((t, i)=>{
+      let parte;
+      if(i === tallas.length-1){
+        parte = totalFamilia - repartido;
+      } else if(saldoTotal > 0){
+        parte = Math.round(totalFamilia * (Math.max(t.saldo,0) / saldoTotal));
+      } else {
+        parte = Math.round(totalFamilia / tallas.length);
+      }
+      prevExpedicionProducto[t.producto] = parte;
+      repartido += parte;
+    });
+  });
+
+  const sumaRealTotal = data.reduce((s,d)=> s + (prevExpedicionProducto[d.producto]||0), 0);
+
+  saveState();
+  render();
+  statusEl.style.color = sumaRealTotal === pendiente ? 'var(--pos)' : 'var(--neg)';
+  const ajusteTxt = Object.keys(ajustes).length ? ` Ajustes aplicados: ${Object.keys(ajustes).length}.` : '';
+  const noEncontradosTxt = noEncontrados.length ? ` No encontrados: ${noEncontrados.join(', ')}.` : '';
+  if(sumaRealTotal === pendiente){
+    statusEl.textContent = `Previsión calculada para ${entradas.filter(([g,w])=>w>0).length} familias con ventas. Suma total verificada: ${fmtNum(sumaRealTotal)} de ${fmtNum(pendiente)} pendientes. Correcto.${ajusteTxt}${noEncontradosTxt}`;
+    setTimeout(()=> previsionModal.classList.remove('open'), 1600);
+  } else {
+    statusEl.textContent = `Aviso: la suma total es ${fmtNum(sumaRealTotal)}, no coincide con el pendiente (${fmtNum(pendiente)}).${ajusteTxt}${noEncontradosTxt}`;
+  }
+});
+
+// ---------- Reloj ----------
+function tickClock(){
+  const now = new Date();
+  const opts = {weekday:'long', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'};
+  document.getElementById('clock').textContent = now.toLocaleDateString('es-ES', opts);
+}
+tickClock();
+setInterval(tickClock, 30000);
+window.addEventListener('beforeunload', ()=>{
+  saveState();
+  if(oneDriveFileHandle) writeStateToOneDrive(oneDriveFileHandle, {silent:true});
+});
+
+// ---------- Init ----------
+// ---------- Redimensionado de columnas ----------
+function initColumnResize(){
+  const table = document.querySelector('.table-wrap table');
+  if(!table) return;
+  let startX, startWidth, currentTh;
+
+  table.querySelectorAll('.col-resize-handle').forEach(handle=>{
+    handle.addEventListener('mousedown', e=>{
+      currentTh = handle.closest('th');
+      startX = e.pageX;
+      startWidth = currentTh.offsetWidth;
+      handle.classList.add('resizing');
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+  });
+
+  document.addEventListener('mousemove', e=>{
+    if(!currentTh) return;
+    const newWidth = Math.max(18, startWidth + (e.pageX - startX));
+    currentTh.style.width = newWidth + 'px';
+  });
+
+  document.addEventListener('mouseup', ()=>{
+    if(currentTh){
+      document.querySelectorAll('.col-resize-handle.resizing').forEach(h=>h.classList.remove('resizing'));
+      document.body.style.userSelect = '';
+      currentTh = null;
+    }
+  });
+}
+
+populateFilter();
+document.getElementById('toggleGroup').checked = groupView;
+render();
+initColumnResize();
+initOneDriveAutoSave();
+</script>
+</body>
+</html>

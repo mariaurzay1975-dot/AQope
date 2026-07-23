@@ -1,0 +1,602 @@
+{
+  "app": "aquarelle-control-stock",
+  "version": 1,
+  "savedAt": "2026-06-30T15:10:33.464Z",
+  "data": [
+    {
+      "categoria": "ROSAS",
+      "generico": "A-Rosas-Colo",
+      "producto": "A-Rosas-Colores-30_1",
+      "saldo": 15
+    },
+    {
+      "categoria": "ROSAS",
+      "generico": "A-Rosas-Colo",
+      "producto": "A-Rosas-Colores-40_2",
+      "saldo": 9
+    },
+    {
+      "categoria": "ROSAS",
+      "generico": "A-Rosas-Colo",
+      "producto": "A-Rosas-Colores-50_3",
+      "saldo": 13
+    },
+    {
+      "categoria": "ROSAS",
+      "generico": "A-Rosas-Colo",
+      "producto": "A-Rosas-Colores-60_4",
+      "saldo": 2
+    },
+    {
+      "categoria": "ROSAS",
+      "generico": "A-Rose-Ethio",
+      "producto": "A-Rose-Ethiopia-30_1",
+      "saldo": 4
+    },
+    {
+      "categoria": "ROSAS",
+      "generico": "A-Rose-Ethio",
+      "producto": "A-Rose-Ethiopia-40_2",
+      "saldo": 4
+    },
+    {
+      "categoria": "ROSAS",
+      "generico": "A-Rose-Ethio",
+      "producto": "A-Rose-Ethiopia-50_3",
+      "saldo": 16
+    },
+    {
+      "categoria": "ROSAS",
+      "generico": "A-Rose-Ethio",
+      "producto": "A-Rose-Ethiopia-60_4",
+      "saldo": 2
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-AUTHENTIQU",
+      "producto": "C-AUTHENTIQUE_1",
+      "saldo": 2
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-AUTHENTIQU",
+      "producto": "C-AUTHENTIQUE_2",
+      "saldo": 11
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-AUTHENTIQU",
+      "producto": "C-AUTHENTIQUE_3",
+      "saldo": 3
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-BLEU-PARFU",
+      "producto": "C-BLEU-PARFUME_1",
+      "saldo": 8
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-BLEU-PARFU",
+      "producto": "C-BLEU-PARFUME_2",
+      "saldo": 12
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-BLEU-PARFU",
+      "producto": "C-BLEU-PARFUME_3",
+      "saldo": 2
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-DEEP-PURPL",
+      "producto": "C-DEEP-PURPLE_1",
+      "saldo": 5
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-DEEP-PURPL",
+      "producto": "C-DEEP-PURPLE_2",
+      "saldo": 8
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-DEEP-PURPL",
+      "producto": "C-DEEP-PURPLE_3",
+      "saldo": 2
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-GIRASOLES-",
+      "producto": "C-GIRASOLES-BQT_1",
+      "saldo": 1
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-Lys_champe",
+      "producto": "C-Lys_champetre_2",
+      "saldo": 7
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-PASTEL-HIV",
+      "producto": "C-PASTEL-HIVERS_1",
+      "saldo": 10
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-PIVOINE-PE",
+      "producto": "C-PIVOINE-PEPS-2026_1",
+      "saldo": 2
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-RAMO_FLORI",
+      "producto": "C-RAMO_FLORISTA_1",
+      "saldo": 11
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-RAMO_FLORI",
+      "producto": "C-RAMO_FLORISTA_2",
+      "saldo": 18
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-RAMO_FLORI",
+      "producto": "C-RAMO_FLORISTA_3",
+      "saldo": 0
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-STATICE-RO",
+      "producto": "C-STATICE-ROMANTICO_1",
+      "saldo": 10
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-STATICE-RO",
+      "producto": "C-STATICE-ROMANTICO_2",
+      "saldo": 7
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-STATICE-RO",
+      "producto": "C-STATICE-ROMANTICO_3",
+      "saldo": 0
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-TOSCANA-PA",
+      "producto": "C-TOSCANA-PASTEL_1",
+      "saldo": 10
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-TOSCANA-PA",
+      "producto": "C-TOSCANA-PASTEL_2",
+      "saldo": 9
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-TOSCANA-PA",
+      "producto": "C-TOSCANA-PASTEL_3",
+      "saldo": -1
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-TOURNESOL_",
+      "producto": "C-TOURNESOL_1",
+      "saldo": 6
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-TOURNESOL_",
+      "producto": "C-TOURNESOL_2",
+      "saldo": 10
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-TOURNESOL_",
+      "producto": "C-TOURNESOL_3",
+      "saldo": 4
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-ZODIAC-CAN",
+      "producto": "C-ZODIAC-CANCER_1",
+      "saldo": 8
+    },
+    {
+      "categoria": "COMPUESTOS",
+      "generico": "C-ZODIAC-CAN",
+      "producto": "C-ZODIAC-CANCER_2",
+      "saldo": 18
+    },
+    {
+      "categoria": "PLANTAS",
+      "generico": "P-ANTHURIUM_",
+      "producto": "P-ANTHURIUM_13cm",
+      "saldo": 4
+    },
+    {
+      "categoria": "PLANTAS",
+      "generico": "P-Bonsai_1",
+      "producto": "P-Bonsai_1",
+      "saldo": 6
+    },
+    {
+      "categoria": "PLANTAS",
+      "generico": "P-Orquidea_p",
+      "producto": "P-Orquidea_phal_blan_PROD_1",
+      "saldo": 5
+    },
+    {
+      "categoria": "PLANTAS",
+      "generico": "P-Orquidea_p",
+      "producto": "P-Orquidea_phal_rose_1",
+      "saldo": 12
+    },
+    {
+      "categoria": "SIMPLES",
+      "generico": "S-Alstro_par",
+      "producto": "S-Alstro_parme_15_1",
+      "saldo": 4
+    },
+    {
+      "categoria": "SIMPLES",
+      "generico": "S-Alstro_par",
+      "producto": "S-Alstro_parme_20_2",
+      "saldo": 2
+    },
+    {
+      "categoria": "SIMPLES",
+      "generico": "S-Alstro_par",
+      "producto": "S-Alstro_parme_25_3",
+      "saldo": 1
+    },
+    {
+      "categoria": "SIMPLES",
+      "generico": "S-Lilium-Ros",
+      "producto": "S-Lilium-Rosa-06-P_1",
+      "saldo": 4
+    },
+    {
+      "categoria": "SIMPLES",
+      "generico": "S-Lilium-Ros",
+      "producto": "S-Lilium-Rosa-08-P_2",
+      "saldo": 5
+    },
+    {
+      "categoria": "SIMPLES",
+      "generico": "S-Lilium-Ros",
+      "producto": "S-Lilium-Rosa-10-P_3",
+      "saldo": -4
+    },
+    {
+      "categoria": "SIMPLES",
+      "generico": "S-Peonia-ros",
+      "producto": "S-Peonia-rosa-12p_2",
+      "saldo": 0
+    },
+    {
+      "categoria": "SIMPLES",
+      "generico": "S-Premium-12",
+      "producto": "S-Premium-12-18-24-30-roja_1",
+      "saldo": 16
+    },
+    {
+      "categoria": "SIMPLES",
+      "generico": "S-Premium-12",
+      "producto": "S-Premium-12-18-24-30-roja_2",
+      "saldo": 10
+    },
+    {
+      "categoria": "SIMPLES",
+      "generico": "S-Premium-12",
+      "producto": "S-Premium-12-18-24-30-roja_3",
+      "saldo": 5
+    },
+    {
+      "categoria": "SIMPLES",
+      "generico": "S-Premium-12",
+      "producto": "S-Premium-12-18-24-30-roja_4",
+      "saldo": 4
+    },
+    {
+      "categoria": "SIMPLES",
+      "generico": "S-R-Blanc-Pr",
+      "producto": "S-R-Blanc-Premi-12-P_1",
+      "saldo": 4
+    },
+    {
+      "categoria": "SIMPLES",
+      "generico": "S-R-Blanc-Pr",
+      "producto": "S-R-Blanc-Premi-18-P_2",
+      "saldo": 2
+    },
+    {
+      "categoria": "SIMPLES",
+      "generico": "S-R-Blanc-Pr",
+      "producto": "S-R-Blanc-Premi-24-P_3",
+      "saldo": 1
+    },
+    {
+      "categoria": "SIMPLES",
+      "generico": "S-R-Blanc-Pr",
+      "producto": "S-R-Blanc-Premi-30-P_4",
+      "saldo": 3
+    }
+  ],
+  "genericoData": {
+    "A-Rosas-Colo": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 57,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 10
+    },
+    "A-Rose-Ethio": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 36,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 19
+    },
+    "C-AUTHENTIQU": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 0,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "C-BLEU-PARFU": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 0,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "C-DEEP-PURPL": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 10,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "C-GIRASOLES-": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 12,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "C-Lys_champe": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 15,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "C-PASTEL-HIV": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 0,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "C-PIVOINE-PE": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 0,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "C-RAMO_FLORI": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 12,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "C-STATICE-RO": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 10,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "C-TOSCANA-PA": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 6,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "C-TOURNESOL_": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 10,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "C-ZODIAC-CAN": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 0,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "P-ANTHURIUM_": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 0,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "P-Bonsai_1": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 0,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "P-Orquidea_p": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 0,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "S-Alstro_par": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 0,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "S-Lilium-Ros": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 5,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "S-Peonia-ros": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 0,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "S-Premium-12": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 10,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    },
+    "S-R-Blanc-Pr": {
+      "compraL": 0,
+      "compraM": 0,
+      "compraX": 3,
+      "compraJ": 0,
+      "compraV": 0,
+      "pendientePreasignar": 0
+    }
+  },
+  "prevExpedicionProducto": {
+    "A-Rosas-Colores-30_1": 25,
+    "A-Rosas-Colores-40_2": 15,
+    "A-Rosas-Colores-50_3": 21,
+    "A-Rosas-Colores-60_4": 3,
+    "A-Rose-Ethiopia-30_1": 6,
+    "A-Rose-Ethiopia-40_2": 6,
+    "A-Rose-Ethiopia-50_3": 23,
+    "A-Rose-Ethiopia-60_4": 2,
+    "C-AUTHENTIQUE_1": 1,
+    "C-AUTHENTIQUE_2": 6,
+    "C-AUTHENTIQUE_3": 2,
+    "C-BLEU-PARFUME_1": 3,
+    "C-BLEU-PARFUME_2": 4,
+    "C-BLEU-PARFUME_3": 0,
+    "C-DEEP-PURPLE_1": 0,
+    "C-DEEP-PURPLE_2": 1,
+    "C-DEEP-PURPLE_3": 0,
+    "C-GIRASOLES-BQT_1": 7,
+    "C-Lys_champetre_2": 10,
+    "C-PASTEL-HIVERS_1": 4,
+    "C-PIVOINE-PEPS-2026_1": 4,
+    "C-RAMO_FLORISTA_1": 9,
+    "C-RAMO_FLORISTA_2": 15,
+    "C-RAMO_FLORISTA_3": 0,
+    "C-STATICE-ROMANTICO_1": 6,
+    "C-STATICE-ROMANTICO_2": 5,
+    "C-STATICE-ROMANTICO_3": 0,
+    "C-TOSCANA-PASTEL_1": 12,
+    "C-TOSCANA-PASTEL_2": 11,
+    "C-TOSCANA-PASTEL_3": 0,
+    "C-TOURNESOL_1": 6,
+    "C-TOURNESOL_2": 11,
+    "C-TOURNESOL_3": 4,
+    "C-ZODIAC-CANCER_1": 4,
+    "C-ZODIAC-CANCER_2": 8,
+    "P-ANTHURIUM_13cm": 2,
+    "P-Bonsai_1": 1,
+    "P-Orquidea_phal_blan_PROD_1": 1,
+    "P-Orquidea_phal_rose_1": 3,
+    "S-Alstro_parme_15_1": 0,
+    "S-Alstro_parme_20_2": 0,
+    "S-Alstro_parme_25_3": 0,
+    "S-Lilium-Rosa-06-P_1": 3,
+    "S-Lilium-Rosa-08-P_2": 3,
+    "S-Lilium-Rosa-10-P_3": 0,
+    "S-Peonia-rosa-12p_2": 0,
+    "S-Premium-12-18-24-30-roja_1": 11,
+    "S-Premium-12-18-24-30-roja_2": 7,
+    "S-Premium-12-18-24-30-roja_3": 3,
+    "S-Premium-12-18-24-30-roja_4": 2,
+    "S-R-Blanc-Premi-12-P_1": 2,
+    "S-R-Blanc-Premi-18-P_2": 1,
+    "S-R-Blanc-Premi-24-P_3": 1,
+    "S-R-Blanc-Premi-30-P_4": 1
+  },
+  "simplesPrea": {
+    "A-Rosas-Colo": {
+      "tallosPendientes": 390,
+      "tallosMedios": 40
+    },
+    "A-Rose-Ethio": {
+      "tallosPendientes": 940,
+      "tallosMedios": 50
+    },
+    "S-Alstro_par": {
+      "tallosPendientes": 0,
+      "tallosMedios": 0
+    },
+    "S-Lilium-Ros": {
+      "tallosPendientes": 0,
+      "tallosMedios": 0
+    },
+    "S-Peonia-ros": {
+      "tallosPendientes": 0,
+      "tallosMedios": 0
+    },
+    "S-Premium-12": {
+      "tallosPendientes": 0,
+      "tallosMedios": 0
+    },
+    "S-R-Blanc-Pr": {
+      "tallosPendientes": 0,
+      "tallosMedios": 0
+    }
+  },
+  "weekState": {
+    "year": 2026,
+    "week": 27,
+    "objetivo": 600,
+    "acumulado": 325
+  },
+  "groupView": true
+}

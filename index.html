@@ -85,9 +85,7 @@
   .btn-planning:hover{background:#303754;}
   body.planning-mode #btnPaste,
   body.planning-mode #btnReset,
-  body.planning-mode #btnLoadOneDrive,
   body.planning-mode #btnPreasignacion{display:none;}
-  body.planning-mode #btnSaveOneDrive{margin-left:16px;}
   body.planning-mode #btnResetPlanning{background:#c7653f;color:#fff;border-color:#c7653f;}
   body.planning-mode thead tr{background:#3b4265;}
   body.planning-mode thead tr.compras-row th{background:#3b4265;}
@@ -220,6 +218,16 @@
     font-family:var(--sans);font-size:13px;padding:9px 12px;border:1px solid var(--line);
     border-radius:3px;background:var(--panel);color:var(--ink);
   }
+  .multi-filter{position:relative;min-width:190px;}
+  .multi-filter-button{width:100%;font-family:var(--sans);font-size:13px;text-align:left;padding:9px 34px 9px 12px;border:1px solid var(--line);border-radius:3px;background:var(--panel);color:var(--ink);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .multi-filter-button::after{content:'▾';position:absolute;right:12px;}
+  .multi-filter.open .multi-filter-button{border-color:var(--moss);}
+  .multi-filter-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;z-index:30;min-width:100%;max-height:260px;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:6px;box-shadow:0 10px 28px rgba(0,0,0,.14);}
+  .multi-filter.open .multi-filter-menu{display:block;}
+  .multi-filter-option{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:3px;cursor:pointer;font-size:13px;}
+  .multi-filter-option:hover,.multi-filter-option:focus-within{background:#f1ede2;}
+  .multi-filter-option input{accent-color:var(--moss-deep);}
+  .multi-filter-option.all{font-weight:600;border-bottom:1px solid var(--line);margin-bottom:4px;}
   .btn{
     font-family:var(--sans);font-weight:600;font-size:13px;
     padding:9px 16px;border-radius:3px;border:1px solid transparent;
@@ -541,6 +549,10 @@
   .migration-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
   .migration-actions .btn{flex:1;min-width:190px;}
   .migration-status{min-height:20px;margin-top:12px;font-size:12px;color:var(--ink-soft);}
+  .settings-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 18px;margin:14px 0;padding:12px;background:#f4f2ea;border:1px solid var(--line);border-radius:4px;font:12px/1.5 var(--mono);}
+  .settings-summary strong{display:block;color:var(--moss-deep);}
+  .settings-error{color:var(--neg);font-size:12px;min-height:18px;margin-top:10px;}
+  @media(max-width:650px){.multi-filter{width:100%}.multi-filter-menu{position:fixed;left:16px;right:16px;top:auto;width:auto;max-height:45vh}.settings-summary{grid-template-columns:1fr}.modal{width:calc(100% - 24px)}}
 
 </style>
 </head>
@@ -574,6 +586,29 @@
       <button type="button" class="btn btn-ghost" id="btnLoadSharedState">Cargar los datos que ya hay en Supabase</button>
     </div>
     <div class="migration-status" id="migrationStatus"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <div class="modal">
+    <h3 id="settingsTitle">Configuración y copias de seguridad</h3>
+    <p>La aplicación carga y guarda los datos compartidos automáticamente desde Supabase.</p>
+    <div class="modal-actions" style="justify-content:flex-start;">
+      <button type="button" class="btn btn-primary" id="btnExportBackup">Exportar copia de seguridad</button>
+      <button type="button" class="btn btn-coral" id="btnRestoreBackup">Restaurar copia JSON</button>
+    </div>
+    <div id="restoreAdminNote" class="modal-note"></div>
+    <div id="restorePreview" hidden>
+      <div class="settings-summary" id="restoreSummary"></div>
+      <div class="migration-warning">¿Confirmas que quieres reemplazar los datos actuales por esta copia? Esta operación afectará a todos los usuarios.</div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="btnCancelRestore">Cancelar restauración</button>
+        <button type="button" class="btn btn-coral" id="btnConfirmRestore">Confirmar y restaurar</button>
+      </div>
+    </div>
+    <div class="settings-error" id="restoreStatus" role="status"></div>
+    <div class="modal-actions"><button type="button" class="btn btn-ghost" id="btnCloseSettings">Cerrar</button></div>
+    <input type="file" id="stateFileInput" accept=".json,application/json" style="display:none;">
   </div>
 </div>
 
@@ -662,9 +697,7 @@
     </div>
     <div class="side-nav-divider"></div>
     <div class="side-nav-actions side-nav-actions-persistent">
-      <button class="btn btn-ghost" id="btnSaveOneDrive" title="Guardar datos OneDrive">Guardar</button>
-      <button class="btn btn-ghost" id="btnLoadOneDrive" title="Cargar datos OneDrive">Cargar</button>
-      <input type="file" id="stateFileInput" accept=".json" style="display:none;">
+      <button class="btn btn-ghost" id="btnSettings">Configuración y copias de seguridad</button>
     </div>
   </nav>
   <main class="main-content">
@@ -682,9 +715,10 @@
   <div class="toolbar">
     <div class="left">
       <input type="text" class="search" id="search" placeholder="Buscar producto o familia…">
-      <select class="filter" id="filterCat">
-        <option value="">Todas las categorías</option>
-      </select>
+      <div class="multi-filter" id="filterCat">
+        <button type="button" class="multi-filter-button" id="filterCatButton" aria-haspopup="true" aria-expanded="false">Todas las categorías</button>
+        <div class="multi-filter-menu" id="filterCatMenu" role="menu"></div>
+      </div>
       <select class="filter" id="filterNeg">
         <option value="">Todo el stock</option>
         <option value="neg">Solo con saldo negativo</option>
@@ -1262,6 +1296,7 @@ function showAuthenticatedUser(user){
     box?.classList.remove('visible');
     if(email) email.textContent='';
   }
+  refreshRestorePermission();
 }
 
 function refreshAppAfterCloudLoad(){
@@ -2084,6 +2119,23 @@ function uniqueCats(){
   return [...new Set(data.map(d=>d.categoria))].sort();
 }
 
+const categorySelections={stock:new Set(),planning:new Set()};
+function categoryFilterKey(){ return planningMode?'planning':'stock'; }
+function selectedCategories(){
+  const cats=uniqueCats();
+  const selected=categorySelections[categoryFilterKey()];
+  if(!selected.size) cats.forEach(cat=>selected.add(cat));
+  [...selected].forEach(cat=>{ if(!cats.includes(cat)) selected.delete(cat); });
+  if(!selected.size) cats.forEach(cat=>selected.add(cat));
+  return selected;
+}
+function categoryFilterLabel(cats,selected){
+  if(selected.size===cats.length) return 'Todas las categorías';
+  const values=cats.filter(cat=>selected.has(cat));
+  if(values.length<=2) return values.join(' + ');
+  return `${values.length} categorías seleccionadas`;
+}
+
 function renderWeekPanel(){
   const {start,end}=getISOWeekRange(weekState.year,weekState.week); const pendiente=weekState.objetivo-weekState.acumulado; const weekOptions=[]; for(let w=1;w<=53;w++) weekOptions.push(w);
   const panel=document.getElementById('weekPanel'); panel.className='week-panel'+(planningMode?' planning-panel':'');
@@ -2110,17 +2162,21 @@ function updateWeekSummary(){
 }
 
 function populateFilter(){
-  const sel = document.getElementById('filterCat');
-  sel.innerHTML = '<option value="">Todas las categorías</option>' +
-    uniqueCats().map(c=>`<option value="${c}">${c}</option>`).join('');
+  const cats=uniqueCats();
+  const selected=selectedCategories();
+  const allSelected=selected.size===cats.length;
+  const menu=document.getElementById('filterCatMenu');
+  menu.innerHTML=`<label class="multi-filter-option all"><input type="checkbox" data-category-all ${allSelected?'checked':''}> Todas</label>`+
+    cats.map(cat=>`<label class="multi-filter-option"><input type="checkbox" data-category="${escapeHtml(cat)}" ${selected.has(cat)?'checked':''}> ${escapeHtml(cat)}</label>`).join('');
+  document.getElementById('filterCatButton').textContent=categoryFilterLabel(cats,selected);
 }
 
 function applyFilters(rows){
   const q = document.getElementById('search').value.trim().toLowerCase();
-  const cat = document.getElementById('filterCat').value;
+  const selected = selectedCategories();
   const negFilter = document.getElementById('filterNeg').value;
   return rows.filter(r=>{
-    if(cat && r.categoria !== cat) return false;
+    if(!selected.has(r.categoria)) return false;
     if(q && !(r.producto.toLowerCase().includes(q) || r.generico.toLowerCase().includes(q))) return false;
     const {saldoFinal} = computed(r);
     if(negFilter==='neg' && r.saldo >= 0) return false;
@@ -2414,7 +2470,36 @@ function render_partial_saldoFinal(){
 
 
 document.getElementById('search').addEventListener('input', render);
-document.getElementById('filterCat').addEventListener('change', render);
+document.getElementById('filterCatButton').addEventListener('click',()=>{
+  const filter=document.getElementById('filterCat');
+  filter.classList.toggle('open');
+  document.getElementById('filterCatButton').setAttribute('aria-expanded',filter.classList.contains('open'));
+});
+document.getElementById('filterCatMenu').addEventListener('change',e=>{
+  const cats=uniqueCats();
+  const selected=selectedCategories();
+  if(e.target.matches('[data-category-all]')){
+    selected.clear();
+    cats.forEach(cat=>selected.add(cat));
+  }else if(e.target.matches('[data-category]')){
+    const cat=e.target.dataset.category;
+    if(e.target.checked) selected.add(cat);
+    else if(selected.size>1) selected.delete(cat);
+  }
+  populateFilter();
+  render();
+});
+document.addEventListener('click',e=>{
+  const filter=document.getElementById('filterCat');
+  if(!filter.contains(e.target)){
+    filter.classList.remove('open');
+    document.getElementById('filterCatButton').setAttribute('aria-expanded','false');
+  }
+});
+document.getElementById('filterCatButton').addEventListener('keydown',e=>{
+  if(e.key==='Escape'){ document.getElementById('filterCat').classList.remove('open'); e.currentTarget.setAttribute('aria-expanded','false'); }
+  if(e.key==='ArrowDown'){ e.preventDefault(); document.getElementById('filterCat').classList.add('open'); e.currentTarget.setAttribute('aria-expanded','true'); document.querySelector('#filterCatMenu input')?.focus(); }
+});
 document.getElementById('filterNeg').addEventListener('change', render);
 document.getElementById('toggleGroup').addEventListener('change', e=>{
   groupView = e.target.checked;
@@ -3272,6 +3357,7 @@ function applyActiveModule(){
   document.querySelectorAll('.side-nav-btn[data-module]').forEach(btn=>{
     btn.classList.toggle('active', btn.dataset.module === activeModule);
   });
+  if(activeModule==='stock' || activeModule==='planning') populateFilter();
 }
 
 function setSideSectionOpen(mod, open){
@@ -4671,47 +4757,129 @@ async function exportStateToOneDrive(){
   alert('Se ha descargado el archivo de datos. Guárdalo en la carpeta compartida de OneDrive para usarlo en el otro ordenador.');
 }
 
-async function importStateFile(file){
-  if(!file) return;
-  try{
-    const text = await file.text();
-    const state = JSON.parse(text);
-    applyAppState(state);
-    saveState();
-    populateFilter();
-    document.getElementById('toggleGroup').checked = groupView;
-    render();
-    setSaveStatus('Datos OneDrive cargados');
-    alert(`Datos cargados desde ${file.name}.`);
-  } catch(err){
-    alert('No se pudieron cargar los datos: ' + (err.message || 'archivo no reconocido.'));
-  }
+const RESTORE_ADMIN_EMAIL='mariaurzay@aquarelle.es';
+let restoreCandidate=null;
+function isRestoreAdmin(){ return String(supabaseUser?.email||'').toLowerCase()===RESTORE_ADMIN_EMAIL; }
+function refreshRestorePermission(){
+  const allowed=isRestoreAdmin();
+  const button=document.getElementById('btnRestoreBackup');
+  const note=document.getElementById('restoreAdminNote');
+  if(button) button.hidden=!allowed;
+  if(note) note.textContent=allowed?'Restauración disponible para administradores.':'La restauración está limitada a usuarios administradores.';
 }
-
-document.getElementById('btnSaveOneDrive').addEventListener('click', exportStateToOneDrive);
-document.getElementById('btnLoadOneDrive').addEventListener('click', async ()=>{
-  if(window.showDirectoryPicker){
-    try{
-      if(await loadStateFromOneDrive({ask:true})){
-        populateFilter();
-        document.getElementById('toggleGroup').checked = groupView;
-        render();
-        alert(`Datos cargados desde ${ONE_DRIVE_DATA_FILE}.`);
-      }
-      return;
-    } catch(err){
-      if(err && err.name === 'AbortError') return;
-      console.warn('No se pudo leer el archivo de la carpeta Datos', err);
-      alert(`No he encontrado ${ONE_DRIVE_DATA_FILE}. Pulsa primero Guardar datos OneDrive en el ordenador donde tienes los datos buenos.`);
-      return;
-    }
-  }
+function downloadAppState(state,filename){
+  const url=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));
+  const link=document.createElement('a');
+  link.href=url; link.download=filename; link.click();
+  setTimeout(()=>URL.revokeObjectURL(url),0);
+}
+function backupFilename(prefix='copia-seguridad'){
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  return `${prefix}-${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}.json`;
+}
+function validateRestoreState(state){
+  const errors=[];
+  if(!state || typeof state!=='object' || Array.isArray(state)) errors.push('El JSON no contiene un estado de aplicación válido.');
+  if(state?.app!==undefined && state.app!=='aquarelle-control-stock') errors.push('La copia pertenece a otra aplicación.');
+  if(state?.version!==undefined && (!Number.isFinite(Number(state.version)) || Number(state.version)>4)) errors.push('La versión de la copia no es compatible.');
+  if(!Array.isArray(state?.data) || state.data.length===0) errors.push('La copia no contiene referencias de stock.');
+  if(state?.genericoData!==undefined && (!state.genericoData || typeof state.genericoData!=='object' || Array.isArray(state.genericoData))) errors.push('Los datos genéricos no son válidos.');
+  if(!state?.weekState || typeof state.weekState!=='object' || !Number.isFinite(Number(state.weekState.week))) errors.push('Falta la semana activa.');
+  if(state?.weekSnapshots!==undefined && (!state.weekSnapshots || typeof state.weekSnapshots!=='object' || Array.isArray(state.weekSnapshots))) errors.push('El histórico de semanas no es válido.');
+  const nomenclatures=state?.nomenclatures;
+  if(nomenclatures!==undefined && !Array.isArray(nomenclatures)) errors.push('Las nomenclaturas no son válidas.');
+  if(!Array.isArray(nomenclatures) || nomenclatures.length===0) errors.push('La copia está incompleta: no contiene nomenclaturas.');
+  return errors;
+}
+function restoreSummaryHtml(state,file){
+  const saved=state.savedAt?new Date(state.savedAt):new Date(file.lastModified);
+  const weeks=state.weekSnapshots&&typeof state.weekSnapshots==='object'?Object.keys(state.weekSnapshots).length:0;
+  const active=state.activeWeekKey||`${state.weekState?.year||'—'}-W${String(state.weekState?.week||'—').padStart(2,'0')}`;
+  const items=[
+    ['Fecha de la copia',Number.isNaN(saved.getTime())?'No disponible':saved.toLocaleString('es-ES')],
+    ['Versión',state.version??'No indicada'],
+    ['Referencias de stock',state.data.length],
+    ['Nomenclaturas',state.nomenclatures.length],
+    ['Semanas guardadas',weeks],
+    ['Semana activa',active],
+    ['Objetivo semanal',state.weekState?.objetivo??0]
+  ];
+  return items.map(([label,value])=>`<div><strong>${escapeHtml(String(label))}</strong>${escapeHtml(String(value))}</div>`).join('');
+}
+function resetRestorePreview(){
+  restoreCandidate=null;
+  document.getElementById('restorePreview').hidden=true;
+  document.getElementById('restoreSummary').innerHTML='';
+  document.getElementById('restoreStatus').textContent='';
+}
+document.getElementById('btnSettings').addEventListener('click',()=>{
+  resetRestorePreview(); refreshRestorePermission();
+  document.getElementById('settingsModal').classList.add('open');
+});
+document.getElementById('btnCloseSettings').addEventListener('click',()=>document.getElementById('settingsModal').classList.remove('open'));
+document.getElementById('btnExportBackup').addEventListener('click',()=>{
+  downloadAppState(buildAppState(),backupFilename());
+  setSaveStatus('Copia de seguridad exportada');
+});
+document.getElementById('btnRestoreBackup').addEventListener('click',()=>{
+  if(!isRestoreAdmin()){ alert('Solo un usuario administrador puede restaurar copias.'); return; }
+  const warning='Esta acción puede reemplazar los datos actuales de la aplicación. Antes de continuar se creará una copia de seguridad del estado actual.';
+  if(!confirm(warning)) return;
+  downloadAppState(buildAppState(),backupFilename('copia-antes-de-restaurar'));
   document.getElementById('stateFileInput').click();
 });
-
-document.getElementById('stateFileInput').addEventListener('change', async e=>{
-  await importStateFile(e.target.files[0]);
-  e.target.value = '';
+document.getElementById('stateFileInput').addEventListener('change',async e=>{
+  const file=e.target.files?.[0]; e.target.value='';
+  if(!file) return;
+  resetRestorePreview();
+  try{
+    const state=JSON.parse(await file.text());
+    const errors=validateRestoreState(state);
+    if(errors.length) throw new Error(errors.join(' '));
+    restoreCandidate=JSON.parse(JSON.stringify(state));
+    document.getElementById('restoreSummary').innerHTML=restoreSummaryHtml(state,file);
+    document.getElementById('restorePreview').hidden=false;
+  }catch(err){
+    document.getElementById('restoreStatus').textContent=`Restauración bloqueada: ${err.message||'archivo vacío, incompleto o incompatible.'}`;
+  }
+});
+document.getElementById('btnCancelRestore').addEventListener('click',()=>{
+  resetRestorePreview();
+  document.getElementById('restoreStatus').textContent='Restauración cancelada. Los datos no se han modificado.';
+});
+document.getElementById('btnConfirmRestore').addEventListener('click',async()=>{
+  if(!restoreCandidate || !isRestoreAdmin()) return;
+  if(!confirm('¿Confirmas que quieres reemplazar los datos actuales por esta copia? Esta operación afectará a todos los usuarios.')) return;
+  const previous=JSON.parse(JSON.stringify(buildAppState()));
+  const candidate=JSON.parse(JSON.stringify(restoreCandidate));
+  const status=document.getElementById('restoreStatus');
+  const button=document.getElementById('btnConfirmRestore');
+  button.disabled=true; status.textContent='Restaurando y guardando en Supabase…';
+  suppressOneDriveAutoSave=true;
+  suppressSupabaseAutoSave=true;
+  try{
+    applyAppState(candidate);
+    suppressSupabaseAutoSave=false;
+    const saved=await saveStateToSupabase(false);
+    suppressSupabaseAutoSave=true;
+    if(!saved) throw new Error('Supabase no confirmó el guardado.');
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(buildAppState()));
+    refreshAppAfterCloudLoad();
+    restoreCandidate=null;
+    document.getElementById('restorePreview').hidden=true;
+    status.textContent='Restauración completada y guardada en Supabase.';
+    setSaveStatus('Restauración completada');
+  }catch(err){
+    applyAppState(previous);
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(previous));
+    refreshAppAfterCloudLoad();
+    status.textContent=`No se pudo restaurar. Se conserva el estado anterior: ${err.message||err}`;
+  }finally{
+    suppressSupabaseAutoSave=false;
+    suppressOneDriveAutoSave=false;
+    button.disabled=false;
+  }
 });
 
 async function initOneDriveAutoSave(){

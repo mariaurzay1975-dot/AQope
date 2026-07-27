@@ -393,6 +393,10 @@
      quede visible sin scroll horizontal en pantallas normales. */
   #nomenclatureProductsPanel table.nomenclature-table{min-width:820px;}
   .nomenclature-table th{background:var(--moss-deep);color:#fff;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:8px 6px;text-align:left;}
+  .nomenclature-sort-button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:4px;padding:0;border:0;background:transparent;color:inherit;font:inherit;text-transform:inherit;letter-spacing:inherit;text-align:left;cursor:pointer;}
+  .nomenclature-sort-button:hover,.nomenclature-sort-button:focus{color:#ffe4a3;outline:none;}
+  .nomenclature-sort-indicator{flex:0 0 auto;font-size:10px;line-height:1;color:#ffe4a3;}
+  .nomenclature-table th[aria-sort="none"] .nomenclature-sort-indicator{color:rgba(255,255,255,.55);}
   .nomenclature-table td{border-bottom:1px solid var(--line);padding:4px 5px;vertical-align:middle;background:#fff;}
   .nomenclature-table input,.nomenclature-table select{
     width:100%;border:1px solid transparent;background:transparent;padding:5px 4px;font-size:12px;
@@ -402,6 +406,56 @@
   .nomenclature-actions{display:flex;gap:4px;flex-wrap:wrap;}
   .btn-mini{font-size:10.5px;padding:4px 6px;border:1px solid var(--line);background:#fff;border-radius:2px;cursor:pointer;color:var(--ink);white-space:nowrap;}
   .btn-mini.warn{color:var(--neg);border-color:rgba(179,66,47,.35);}
+  #nomenclatureFlowersPanel .nomenclature-table-wrap{overflow-x:hidden;}
+  #nomenclatureFlowersPanel table.nomenclature-table{min-width:0;}
+  #nomenclatureFlowersPanel .nomenclature-table th{font-size:9px;line-height:1.15;white-space:normal;}
+  #nomenclatureFlowersPanel .nomenclature-table td{overflow:hidden;}
+  #nomenclatureFlowersPanel .nomenclature-table tbody tr:hover td{background:#faf8f2;}
+  #nomenclatureFlowersPanel .nomenclature-actions{justify-content:flex-start;}
+  .flower-readonly{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;}
+  .flower-readonly.muted{color:var(--ink-soft);}
+  .flower-status{display:inline-block;padding:3px 6px;border-radius:999px;background:#dce9d9;color:#31563c;font:600 9px var(--mono);}
+  .flower-status.inactive{background:#e9e7e0;color:#66706a;}
+  .nomenclature-edit-hint{color:var(--ink-soft);font-size:11px;}
+  .flower-editor-modal{max-height:calc(100vh - 28px);overflow-y:auto;padding:16px 18px;}
+  .flower-editor-modal>h3{margin-bottom:2px;}
+  .flower-editor-modal>p{margin-bottom:7px;font-size:11.5px;}
+  .flower-editor-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 9px;margin-top:7px;}
+  .flower-editor-grid label,.flower-provider-row label{font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--ink-soft);display:flex;flex-direction:column;gap:5px;}
+  .flower-editor-grid input,.flower-editor-grid select,.flower-editor-grid textarea,
+  .flower-provider-row input{width:100%;border:1px solid var(--line);background:#fff;padding:6px 7px;border-radius:2px;font:12px var(--sans);}
+  .flower-editor-grid input:focus,.flower-editor-grid select:focus,.flower-editor-grid textarea:focus,
+  .flower-provider-row input:focus{outline:none;border-color:var(--gold);background:#fffaf0;}
+  .flower-editor-grid .wide{grid-column:1/-1;}
+  .flower-editor-grid textarea{min-height:54px;max-height:90px;resize:vertical;}
+  .flower-editor-section{margin-top:9px;padding-top:8px;border-top:1px solid var(--line);}
+  .flower-editor-section h4{margin:0 0 2px;font:600 14px var(--serif);color:var(--moss-deep);}
+  .flower-editor-section>p{margin:0 0 6px;font-size:10.5px;color:var(--ink-soft);}
+  .flower-provider-row{display:grid;grid-template-columns:minmax(140px,2fr) minmax(110px,1.3fr) minmax(90px,1fr) auto;gap:6px;align-items:end;margin-bottom:5px;}
+  .flower-history-placeholder{padding:8px;border:1px dashed #c9c4b6;border-radius:4px;background:#faf8f2;color:var(--ink-soft);font-size:10.5px;}
+  .flower-photo-editor{display:grid;grid-template-columns:92px 1fr;gap:10px;align-items:center;margin:7px 0;padding:7px 9px;border:1px solid var(--line);border-radius:4px;background:#faf8f2;}
+  .flower-photo-preview{width:92px;height:72px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px dashed #bbb5a7;border-radius:4px;background:#fff;color:var(--ink-soft);font-size:10px;text-align:center;}
+  .flower-photo-preview img{width:100%;height:100%;object-fit:contain;}
+  .flower-photo-actions{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px;}
+  .flower-photo-actions .btn{padding:6px 9px;font-size:11px;}
+  .flower-photo-editor small{display:block;color:var(--ink-soft);font-size:9.5px;line-height:1.3;}
+  .flower-catalog-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .flower-catalog-panel{min-width:0;padding:7px;border:1px solid var(--line);border-radius:4px;background:#faf8f2;}
+  .flower-catalog-panel h4{margin:0 0 5px;font:600 13px var(--serif);color:var(--moss-deep);}
+  .flower-catalog-add{display:flex;gap:5px;margin-bottom:5px;}
+  .flower-catalog-add input{min-width:0;flex:1;border:1px solid var(--line);background:#fff;padding:5px 6px;border-radius:2px;font-size:11px;}
+  .flower-catalog-table-wrap{max-height:105px;overflow-y:auto;border:1px solid var(--line);background:#fff;}
+  .flower-catalog-table{width:100%;border-collapse:collapse;font-size:11px;}
+  .flower-catalog-table td{padding:3px 6px;border-bottom:1px solid #ece8dc;}
+  .flower-catalog-table td:last-child{width:50px;text-align:right;}
+  .flower-catalog-table tr.selected{background:#fff1bf;color:#5f4a16;font-weight:700;}
+  .flower-editor-modal>.modal-actions{position:sticky;bottom:0;z-index:5;margin:10px -18px -16px;padding:9px 18px 12px;border-top:1px solid var(--line);background:var(--panel);box-shadow:0 -8px 14px rgba(35,61,44,.08);}
+  @media(max-width:760px){
+    .flower-editor-grid{grid-template-columns:1fr 1fr;}
+    .flower-provider-row{grid-template-columns:1fr 1fr;}
+    .flower-catalog-grid{grid-template-columns:1fr;}
+    .flower-photo-editor{grid-template-columns:1fr;}
+  }
   .empty-state{padding:28px;text-align:center;color:var(--ink-soft);font-size:13px;}
   .product-editor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
   .product-editor-grid label{font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--ink-soft);display:flex;flex-direction:column;gap:5px;}
@@ -687,6 +741,17 @@
         <button class="btn btn-coral" id="btnResetPlanning">Restaurar planificacion</button>
       </div>
     </div>
+    <div class="side-nav-item" data-item="annual">
+      <div class="side-nav-row">
+        <button type="button" class="side-nav-btn" id="btnNavAnual" data-module="annual">Planificación anual</button>
+        <button type="button" class="side-nav-toggle" data-toggle-for="annual" aria-label="Desplegar/plegar Planificación anual">▾</button>
+      </div>
+      <div class="side-nav-actions" data-actions-for="annual">
+        <button class="btn btn-primary" id="btnAnnualCreate">Crear planificación anual</button>
+        <button class="btn btn-ghost" id="btnAnnualImport">Importar informe BO</button>
+        <button class="btn btn-ghost" id="btnAnnualProject">Aplicar proyección</button>
+      </div>
+    </div>
     <div class="side-nav-item" data-item="compras">
       <div class="side-nav-row">
         <button type="button" class="side-nav-btn" id="btnNavCompras" data-module="compras">Compras</button>
@@ -724,17 +789,6 @@
         <button class="btn btn-ghost" id="btnPrintNomenclatures">Imprimir nomenclaturas</button>
         <button class="btn btn-coral" id="btnDedupNomenclatures">Depurar duplicados</button>
         <input type="file" id="nomenclatureFileInput" accept=".xlsx,.xls,.csv" style="display:none;">
-      </div>
-    </div>
-    <div class="side-nav-item" data-item="annual">
-      <div class="side-nav-row">
-        <button type="button" class="side-nav-btn" id="btnNavAnual" data-module="annual">Planificación anual</button>
-        <button type="button" class="side-nav-toggle" data-toggle-for="annual" aria-label="Desplegar/plegar Planificación anual">▾</button>
-      </div>
-      <div class="side-nav-actions" data-actions-for="annual">
-        <button class="btn btn-primary" id="btnAnnualCreate">Crear planificación anual</button>
-        <button class="btn btn-ghost" id="btnAnnualImport">Importar informe BO</button>
-        <button class="btn btn-ghost" id="btnAnnualProject">Aplicar proyección</button>
       </div>
     </div>
     <div class="side-nav-divider"></div>
@@ -857,9 +911,9 @@
       <table class="nomenclature-table">
         <thead>
           <tr>
-            <th style="width:70px;">Codigo producto</th>
-            <th style="width:190px;">Nombre producto</th>
-            <th style="width:80px;">Categoria</th>
+            <th style="width:70px;" aria-sort="ascending"><button type="button" class="nomenclature-sort-button" data-product-sort="productCode">Codigo producto <span class="nomenclature-sort-indicator">▲</span></button></th>
+            <th style="width:190px;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-product-sort="productName">Nombre producto <span class="nomenclature-sort-indicator">↕</span></button></th>
+            <th style="width:80px;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-product-sort="category">Categoria <span class="nomenclature-sort-indicator">↕</span></button></th>
             <th style="width:46px;">Precios</th>
             <th style="width:70px;">Precio inicial</th>
             <th style="width:66px;">Estado</th>
@@ -884,23 +938,22 @@
           <option value="active">Solo activas</option>
           <option value="inactive">Solo inactivas</option>
         </select>
+        <span class="nomenclature-edit-hint">Tabla de consulta. Pulsa Editar para abrir la ficha completa.</span>
       </div>
       <div class="nomenclature-table-wrap">
         <table class="nomenclature-table">
           <thead>
             <tr>
-              <th style="width:130px;">Codigo flor</th>
-              <th style="width:180px;">Flor / articulo</th>
-              <th style="width:110px;">Familia</th>
-              <th style="width:100px;">Color</th>
-              <th style="width:120px;">Longitud/formato</th>
-              <th style="width:150px;">Proveedor principal</th>
-              <th style="width:220px;">Proveedores alternativos</th>
-              <th style="width:100px;">Precio tallo</th>
-              <th style="width:100px;">Unidad</th>
-              <th style="width:80px;">Activo</th>
-              <th style="width:145px;">Actualizado</th>
-              <th style="width:145px;">Acciones</th>
+              <th style="width:8%;">Codigo</th>
+              <th style="width:22%;" aria-sort="ascending"><button type="button" class="nomenclature-sort-button" data-flower-sort="articleName">Flor / articulo <span class="nomenclature-sort-indicator">▲</span></button></th>
+              <th style="width:9%;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-flower-sort="family">Familia <span class="nomenclature-sort-indicator">↕</span></button></th>
+              <th style="width:8%;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-flower-sort="color">Color <span class="nomenclature-sort-indicator">↕</span></button></th>
+              <th style="width:13%;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-flower-sort="primarySupplier">Proveedor principal <span class="nomenclature-sort-indicator">↕</span></button></th>
+              <th style="width:8%;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-flower-sort="primaryPrice">Precio tallo <span class="nomenclature-sort-indicator">↕</span></button></th>
+              <th style="width:6%;">Unidad</th>
+              <th style="width:7%;">Estado</th>
+              <th style="width:8%;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-flower-sort="updatedAt">Actualizado <span class="nomenclature-sort-indicator">↕</span></button></th>
+              <th style="width:11%;">Acciones</th>
             </tr>
           </thead>
           <tbody id="flowersTbody"></tbody>
@@ -1264,6 +1317,17 @@
 <div class="modal-overlay" id="productEditorModal">
   <div class="modal" style="max-width:1120px;">
     <h3 id="productEditorTitle">Editar producto</h3>
+    <div class="flower-photo-editor">
+      <div class="flower-photo-preview" id="productPhotoPreview"><span>Sin foto</span></div>
+      <div>
+        <div class="flower-photo-actions">
+          <button type="button" class="btn btn-ghost" id="btnProductSelectPhoto">Adjuntar foto del producto</button>
+          <button type="button" class="btn btn-ghost" id="btnProductRemovePhoto">Quitar foto</button>
+          <input type="file" id="productPhotoInput" accept=".jpg,.jpeg,.png,image/jpeg,image/png" style="display:none;">
+        </div>
+        <small>Formatos admitidos: JPG y PNG. La imagen se optimiza antes de guardarla y se comparte entre todos los precios y composiciones del producto.</small>
+      </div>
+    </div>
     <div class="product-editor-grid">
       <label>Codigo producto / ramo<input id="productEditCode"></label>
       <label>Nombre producto / ramo<input id="productEditName"></label>
@@ -1308,6 +1372,80 @@
         <button class="btn btn-ghost" id="btnProductEditorCancel">Cancelar</button>
         <button class="btn btn-primary" id="btnProductEditorSave">Guardar producto</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="flowerEditorModal">
+  <div class="modal flower-editor-modal" style="max-width:880px;">
+    <h3 id="flowerEditorTitle">Editar flor / articulo</h3>
+    <p>Completa la ficha de la flor. El codigo es opcional y los cambios solo se aplican al pulsar Guardar.</p>
+    <div class="flower-photo-editor">
+      <div class="flower-photo-preview" id="flowerPhotoPreview"><span>Sin foto</span></div>
+      <div>
+        <div class="flower-photo-actions">
+          <button type="button" class="btn btn-ghost" id="btnFlowerSelectPhoto">Adjuntar foto</button>
+          <button type="button" class="btn btn-ghost" id="btnFlowerRemovePhoto">Quitar foto</button>
+          <input type="file" id="flowerPhotoInput" accept=".jpg,.jpeg,.png,image/jpeg,image/png" style="display:none;">
+        </div>
+        <small>Formatos admitidos: JPG y PNG. La imagen se reduce y optimiza antes de guardarla para no sobrecargar los datos.</small>
+      </div>
+    </div>
+    <div class="flower-editor-grid">
+      <label>Codigo flor / articulo<input id="flowerEditCode"></label>
+      <label style="grid-column:span 2;">Flor / articulo<input id="flowerEditName"></label>
+      <label>Familia<select id="flowerEditFamily"></select></label>
+      <label>Color<select id="flowerEditColor"></select></label>
+      <label>Longitud / formato<input id="flowerEditFormat"></label>
+      <label>Proveedor principal<input id="flowerEditPrimarySupplier" list="supplierSuggestions"></label>
+      <label>Codigo del proveedor<input id="flowerEditPrimarySupplierCode"></label>
+      <label>Precio por tallo<input id="flowerEditPrimaryPrice" type="number" step="0.0001" min="0"></label>
+      <label>Unidad<input id="flowerEditUnit"></label>
+      <label>Estado<select id="flowerEditActive"><option value="true">Activo</option><option value="false">Inactivo</option></select></label>
+      <label class="wide">Observaciones<textarea id="flowerEditNotes" placeholder="Informacion util sobre la flor, calidad, presentacion, condiciones de compra..."></textarea></label>
+    </div>
+    <datalist id="supplierSuggestions"></datalist>
+
+    <div class="flower-editor-section">
+      <h4>Catalogos de clasificacion</h4>
+      <p>Selecciona una familia o color con el boton Usar. Si falta alguno, puedes añadirlo a la lista.</p>
+      <div class="flower-catalog-grid">
+        <div class="flower-catalog-panel">
+          <h4>Familias</h4>
+          <div class="flower-catalog-add">
+            <input id="flowerNewFamily" placeholder="Nueva familia">
+            <button type="button" class="btn-mini" id="btnFlowerAddFamily">Anadir</button>
+          </div>
+          <div class="flower-catalog-table-wrap"><table class="flower-catalog-table"><tbody id="flowerFamilyCatalogBody"></tbody></table></div>
+        </div>
+        <div class="flower-catalog-panel">
+          <h4>Colores</h4>
+          <div class="flower-catalog-add">
+            <input id="flowerNewColor" placeholder="Nuevo color">
+            <button type="button" class="btn-mini" id="btnFlowerAddColor">Anadir</button>
+          </div>
+          <div class="flower-catalog-table-wrap"><table class="flower-catalog-table"><tbody id="flowerColorCatalogBody"></tbody></table></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flower-editor-section">
+      <h4>Proveedores alternativos</h4>
+      <p>Puedes indicar proveedor, codigo propio del proveedor y precio. Estos datos no aparecen en la tabla general.</p>
+      <div id="flowerAlternativeProviders"></div>
+      <button type="button" class="btn btn-ghost" id="btnFlowerAddProvider">Anadir proveedor alternativo</button>
+    </div>
+
+    <div class="flower-editor-section">
+      <h4>Historico de precios</h4>
+      <div class="flower-history-placeholder" id="flowerPriceHistoryPlaceholder">
+        Esta ficha queda preparada para mostrar aqui las variaciones de precio, proveedor y fecha cuando se active el historico.
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="btnFlowerEditorCancel">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btnFlowerEditorSave">Guardar flor</button>
     </div>
   </div>
 </div>
@@ -1820,11 +1958,29 @@ let comprasTallosOverrides = {};
 let pendingNomenclatureImport = [];
 let flowers = [];
 let flowerMeta = {updatedAt:null, importedAt:null};
+const DEFAULT_FLOWER_FAMILIES = [
+  'Alstroemeria','Amaryllis','Asclepia','Astilbe','Celosia','Clavel','Clematis','Crisantemo',
+  'Follaje','Freesia','Girasol','Gramínea','Gypsophila','Hortensia','Lilium','Limonium / Statice',
+  'Lisianthus','Peonía','Rosa GR','Rosa SP','Rosa PQ','Tanacetum','Tulipán','Verde / relleno',
+  'Waxflower','Otros'
+];
+const DEFAULT_FLOWER_COLORS = [
+  'Amarillo','Azul','Blanco','Burdeos','Champagne','Crema','Fucsia','Lavanda','Lila','Naranja',
+  'Rojo','Rosa','Salmón','Verde','Violeta','Multicolor','Otros'
+];
+let flowerFamilyCatalog = [...DEFAULT_FLOWER_FAMILIES];
+let flowerColorCatalog = [...DEFAULT_FLOWER_COLORS];
 let pendingFlowerImport = [];
 let nomenclatureTab = 'products';
+let productTableSort = {key:'productCode', direction:1};
+let flowerTableSort = {key:'articleName', direction:1};
 let productEditorLines = [];
 let productEditorOriginalKey = null;
 let productEditorPrices = [];
+let productEditorPhotoData = '';
+let flowerEditorOriginalId = null;
+let flowerEditorProviders = [];
+let flowerEditorPhotoData = '';
 let productPriceCatalog = {};
 const STORAGE_KEY = 'aquarelle-control-stock-state-v1';
 const HANDLE_DB = 'aquarelle-control-stock-handles';
@@ -2020,7 +2176,7 @@ function storageAvailable(){
   }
 }
 
-function buildAppState(){ storeActiveSnapshot(); return {app:'aquarelle-control-stock', version:4, savedAt:new Date().toISOString(), data, genericoData, prevExpedicionProducto, simplesPrea, forecastAdjustments, recapLoaded, weekState, groupView, activeWeekKey, currentWeekKey, planningMode, weekSnapshots, nomenclatures, nomenclatureMeta, productPriceCatalog, flowers, flowerMeta, preasignDia, comprasTallosOverrides, annualPlanning:ensureAnnualPlanning()}; }
+function buildAppState(){ storeActiveSnapshot(); return {app:'aquarelle-control-stock', version:5, savedAt:new Date().toISOString(), data, genericoData, prevExpedicionProducto, simplesPrea, forecastAdjustments, recapLoaded, weekState, groupView, activeWeekKey, currentWeekKey, planningMode, weekSnapshots, nomenclatures, nomenclatureMeta, productPriceCatalog, flowers, flowerMeta, flowerFamilyCatalog, flowerColorCatalog, preasignDia, comprasTallosOverrides, annualPlanning:ensureAnnualPlanning()}; }
 
 function openHandleDb(){
   return new Promise((resolve, reject)=>{
@@ -2154,8 +2310,10 @@ function applyAppState(state){
   nomenclatures = Array.isArray(state.nomenclatures) ? state.nomenclatures.map(normalizeNomenclatureLine) : [];
   nomenclatureMeta = state.nomenclatureMeta || {updatedAt:null, importedAt:null};
   productPriceCatalog = state.productPriceCatalog && typeof state.productPriceCatalog === 'object' ? state.productPriceCatalog : buildProductPriceCatalogFromNomenclatures(nomenclatures);
-  flowers = Array.isArray(state.flowers) ? state.flowers : [];
   flowerMeta = state.flowerMeta || {updatedAt:null, importedAt:null};
+  flowers = Array.isArray(state.flowers) ? state.flowers.map(normalizeFlower) : [];
+  flowerFamilyCatalog = normalizeFlowerCatalog(DEFAULT_FLOWER_FAMILIES, state.flowerFamilyCatalog, flowers.map(f=>f.family));
+  flowerColorCatalog = normalizeFlowerCatalog(DEFAULT_FLOWER_COLORS, state.flowerColorCatalog, flowers.map(f=>f.color));
   preasignDia = state.preasignDia ? {...preasignDiaDefaults(), ...state.preasignDia} : preasignDiaDefaults();
   comprasTallosOverrides = state.comprasTallosOverrides && typeof state.comprasTallosOverrides === 'object' ? state.comprasTallosOverrides : {};
   annualPlanning = normalizeAnnualPlanning(state.annualPlanning);
@@ -3170,7 +3328,7 @@ function renderNomenclatureFilters(){
   if(!supplierSelect || !sizeSelect) return;
   const currentSupplier = supplierSelect.value;
   const currentSize = sizeSelect.value;
-  const suppliers = [...new Set(nomenclatures.map(n=>n.supplier).filter(Boolean))].sort();
+  const suppliers = [...new Set(nomenclatures.map(n=>n.supplier).filter(Boolean))].sort(alphabeticalCompareEs);
   const sizes = [...new Set(nomenclatures.map(n=>n.size).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'es',{numeric:true}));
   supplierSelect.innerHTML = '<option value="">Todos los proveedores</option>' + suppliers.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
   sizeSelect.innerHTML = '<option value="">Todas las tallas</option>' + sizes.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
@@ -4737,6 +4895,42 @@ document.querySelectorAll('[data-tallos-day]').forEach(btn=>{
   });
 });
 
+function alphabeticalCompareEs(a,b){
+  return String(a || '').localeCompare(String(b || ''),'es',{sensitivity:'base',numeric:true});
+}
+function compareNomenclatureSortValues(a,b,type='text'){
+  const emptyA = a === '' || a === null || a === undefined;
+  const emptyB = b === '' || b === null || b === undefined;
+  if(emptyA || emptyB) return emptyA === emptyB ? 0 : (emptyA ? 1 : -1);
+  if(type === 'number') return parseAppNumber(a) - parseAppNumber(b);
+  if(type === 'date'){
+    const timeA = new Date(a).getTime();
+    const timeB = new Date(b).getTime();
+    if(Number.isFinite(timeA) && Number.isFinite(timeB)) return timeA - timeB;
+  }
+  return alphabeticalCompareEs(a,b);
+}
+function updateNomenclatureSortIndicators(kind){
+  const config = kind === 'product' ? productTableSort : flowerTableSort;
+  document.querySelectorAll(`[data-${kind}-sort]`).forEach(button=>{
+    const active = button.dataset[`${kind}Sort`] === config.key;
+    const th = button.closest('th');
+    th.setAttribute('aria-sort',active ? (config.direction === 1 ? 'ascending' : 'descending') : 'none');
+    button.querySelector('.nomenclature-sort-indicator').textContent = active ? (config.direction === 1 ? '▲' : '▼') : '↕';
+  });
+}
+function normalizeFlowerCatalog(defaultValues, savedValues, usedValues=[]){
+  const result = [];
+  const seen = new Set();
+  [...defaultValues,...(Array.isArray(savedValues)?savedValues:[]),...(Array.isArray(usedValues)?usedValues:[])].forEach(value=>{
+    const clean = String(value || '').trim();
+    const key = clean.toLocaleLowerCase('es');
+    if(!clean || seen.has(key)) return;
+    seen.add(key);
+    result.push(clean);
+  });
+  return result.sort(alphabeticalCompareEs);
+}
 function normalizeFlower(flower){
   const updated = flower.updatedAt || nowIso();
   const providers = Array.isArray(flower.providers) ? flower.providers : [];
@@ -4754,6 +4948,7 @@ function normalizeFlower(flower){
     unit:String(flower.unit ?? 'tallo').trim() || 'tallo',
     active:flower.active === undefined ? true : !!flower.active,
     notes:String(flower.notes ?? '').trim(),
+    photoDataUrl:String(flower.photoDataUrl ?? flower.photo ?? '').trim(),
     providers:providers.map(p=>({supplier:String(p.supplier||'').trim(), supplierCode:String(p.supplierCode||'').trim(), price:p.price === '' ? '' : parseAppNumber(p.price), unit:String(p.unit||flower.unit||'tallo').trim() || 'tallo', multiple:p.multiple === '' ? '' : parseAppNumber(p.multiple||1), active:p.active === undefined ? true : !!p.active, updatedAt:p.updatedAt || updated, source:p.source || 'manual', notes:String(p.notes||'').trim()})),
     updatedAt:updated,
     importedAt:flower.importedAt || flowerMeta.importedAt || updated
@@ -4822,6 +5017,7 @@ function productSummaries(){
   }).sort((a,b)=>String(a.productCode).localeCompare(String(b.productCode),'es',{numeric:true}));
 }
 function money(n){ return n === '' || n === undefined ? '' : Number(n).toLocaleString('es-ES',{minimumFractionDigits:2, maximumFractionDigits:2}); }
+function flowerPrice(n){ return n === '' || n === undefined || n === null ? '—' : Number(n).toLocaleString('es-ES',{minimumFractionDigits:2, maximumFractionDigits:4}); }
 function pct(n){ return n === '' || n === undefined ? '' : (n*100).toLocaleString('es-ES',{minimumFractionDigits:1, maximumFractionDigits:1}) + '%'; }
 
 function renderNomenclatures(){
@@ -4885,50 +5081,278 @@ function renderFlowers(){
     if(q && ![f.articleCode,f.articleName,f.family,f.color,f.format,f.primarySupplier,providers,f.notes].join(' ').toLowerCase().includes(q)) return false;
     return true;
   });
+  rows.sort((a,b)=>{
+    const key = flowerTableSort.key;
+    const value = flower=>{
+      if(key === 'primaryPrice') return primaryProvider(flower).price;
+      return flower[key];
+    };
+    const type = key === 'primaryPrice' ? 'number' : (key === 'updatedAt' ? 'date' : 'text');
+    const main = compareNomenclatureSortValues(value(a),value(b),type);
+    return (main || alphabeticalCompareEs(a.articleName,b.articleName)) * flowerTableSort.direction;
+  });
   tbody.innerHTML = rows.length ? rows.map(f=>{
     const pp = primaryProvider(f);
     return `<tr data-flower-id="${escapeHtml(f.id)}">
-      <td><input data-flower-field="articleCode" value="${escapeHtml(f.articleCode)}"></td>
-      <td><input data-flower-field="articleName" value="${escapeHtml(f.articleName)}"></td>
-      <td><input data-flower-field="family" value="${escapeHtml(f.family)}"></td>
-      <td><input data-flower-field="color" value="${escapeHtml(f.color)}"></td>
-      <td><input data-flower-field="format" value="${escapeHtml(f.format)}"></td>
-      <td><input data-flower-field="primarySupplier" value="${escapeHtml(f.primarySupplier)}"></td>
-      <td><input data-flower-field="providersText" value="${escapeHtml((f.providers||[]).map(p=>`${p.supplier}:${p.price}`).join('; '))}" title="Formato: Proveedor:precio; Proveedor2:precio"></td>
-      <td class="num"><input data-flower-field="primaryPrice" type="number" step="0.0001" value="${escapeHtml(pp.price)}"></td>
-      <td><input data-flower-field="unit" value="${escapeHtml(f.unit)}"></td>
-      <td><select data-flower-field="active"><option value="true" ${f.active?'selected':''}>Activo</option><option value="false" ${!f.active?'selected':''}>Inactivo</option></select></td>
-      <td style="font-family:var(--mono);font-size:11px;color:var(--ink-soft);">${escapeHtml(formatDateTime(f.updatedAt))}</td>
-      <td><div class="nomenclature-actions"><button class="btn-mini" data-flower-action="duplicate">Duplicar</button><button class="btn-mini" data-flower-action="toggle">${f.active?'Desactivar':'Activar'}</button><button class="btn-mini warn" data-flower-action="delete">Borrar</button></div></td>
+      <td><span class="flower-readonly ${f.articleCode?'':'muted'}" title="${escapeHtml(f.articleCode || 'Sin codigo')}">${escapeHtml(f.articleCode || '—')}</span></td>
+      <td><span class="flower-readonly" title="${escapeHtml(f.articleName)}">${escapeHtml(f.articleName)}</span></td>
+      <td><span class="flower-readonly ${f.family?'':'muted'}" title="${escapeHtml(f.family || '')}">${escapeHtml(f.family || '—')}</span></td>
+      <td><span class="flower-readonly ${f.color?'':'muted'}" title="${escapeHtml(f.color || '')}">${escapeHtml(f.color || '—')}</span></td>
+      <td><span class="flower-readonly ${f.primarySupplier?'':'muted'}" title="${escapeHtml(f.primarySupplier || '')}">${escapeHtml(f.primarySupplier || '—')}</span></td>
+      <td class="num"><span class="flower-readonly">${flowerPrice(pp.price)}</span></td>
+      <td><span class="flower-readonly">${escapeHtml(f.unit || 'tallo')}</span></td>
+      <td><span class="flower-status ${f.active?'':'inactive'}">${f.active?'Activo':'Inactivo'}</span></td>
+      <td><span class="flower-readonly muted" title="${escapeHtml(formatDateTime(f.updatedAt))}">${escapeHtml(formatDateTime(f.updatedAt))}</span></td>
+      <td><div class="nomenclature-actions"><button class="btn-mini" data-flower-action="edit">Editar</button></div></td>
     </tr>`;
-  }).join('') : `<tr><td colspan="12"><div class="empty-state">No hay flores que coincidan con los filtros.</div></td></tr>`;
+  }).join('') : `<tr><td colspan="10"><div class="empty-state">No hay flores que coincidan con los filtros.</div></td></tr>`;
+  updateNomenclatureSortIndicators('flower');
   renderFlowerSuggestions();
 }
 function renderFlowerSuggestions(){
   const dl = document.getElementById('flowerSuggestions');
   if(!dl) return;
-  dl.innerHTML = flowers.map(f=>`<option value="${escapeHtml(f.articleCode || f.articleName)}">${escapeHtml(f.articleName)}</option>`).join('');
+  dl.innerHTML = flowers.slice().sort((a,b)=>alphabeticalCompareEs(a.articleName || a.articleCode,b.articleName || b.articleCode))
+    .map(f=>`<option value="${escapeHtml(f.articleCode || f.articleName)}">${escapeHtml(f.articleName)}</option>`).join('');
+  renderSupplierSuggestions();
 }
-function updateFlower(id, field, value){
-  const f = flowers.find(x=>x.id === id);
-  if(!f) return;
-  if(field === 'active') f.active = value === 'true';
-  else if(field === 'providersText'){
-    f.providers = String(value).split(';').map(part=>{
-      const [supplier, price] = part.split(':');
-      return supplier?.trim() ? {supplier:supplier.trim(), price:price === undefined ? '' : parseAppNumber(price), unit:f.unit||'tallo', multiple:'', active:true, updatedAt:nowIso(), source:'manual', notes:''} : null;
-    }).filter(Boolean);
-    if(!f.primarySupplier && f.providers[0]) f.primarySupplier = f.providers[0].supplier;
-  } else if(field === 'primaryPrice'){
-    let pp = f.providers.find(p=>p.supplier === f.primarySupplier) || f.providers[0];
-    if(!pp){ pp = {supplier:f.primarySupplier || 'Proveedor', unit:f.unit||'tallo', multiple:'', active:true, source:'manual', notes:''}; f.providers.push(pp); }
-    pp.price = value === '' ? '' : parseAppNumber(value);
-    pp.updatedAt = nowIso();
-  } else f[field] = value;
-  f.updatedAt = nowIso();
-  flowerMeta.updatedAt = f.updatedAt;
+function renderSupplierSuggestions(extraSuppliers=[]){
+  const dl = document.getElementById('supplierSuggestions');
+  if(!dl) return;
+  const names = [];
+  flowers.forEach(f=>{
+    if(f.primarySupplier) names.push(f.primarySupplier);
+    (f.providers || []).forEach(provider=>{ if(provider.supplier) names.push(provider.supplier); });
+  });
+  extraSuppliers.forEach(value=>{ if(value) names.push(value); });
+  const unique = normalizeFlowerCatalog([],names);
+  dl.innerHTML = unique.map(name=>`<option value="${escapeHtml(name)}"></option>`).join('');
+}
+function normalizeFlowerEditorProvider(provider={}){
+  return {
+    supplier:String(provider.supplier || '').trim(),
+    supplierCode:String(provider.supplierCode || '').trim(),
+    price:provider.price === '' || provider.price === undefined ? '' : parseAppNumber(provider.price),
+    unit:String(provider.unit || 'tallo').trim() || 'tallo',
+    multiple:provider.multiple === '' || provider.multiple === undefined ? '' : parseAppNumber(provider.multiple),
+    active:provider.active !== false,
+    updatedAt:provider.updatedAt || nowIso(),
+    source:provider.source || 'manual',
+    notes:String(provider.notes || '').trim()
+  };
+}
+function renderFlowerAlternativeProviders(){
+  const container = document.getElementById('flowerAlternativeProviders');
+  container.innerHTML = flowerEditorProviders.length ? flowerEditorProviders.map((provider,index)=>`
+    <div class="flower-provider-row" data-flower-provider-index="${index}">
+      <label>Proveedor<input data-provider-field="supplier" list="supplierSuggestions" value="${escapeHtml(provider.supplier)}"></label>
+      <label>Codigo proveedor<input data-provider-field="supplierCode" value="${escapeHtml(provider.supplierCode)}"></label>
+      <label>Precio tallo<input data-provider-field="price" type="number" min="0" step="0.0001" value="${escapeHtml(provider.price)}"></label>
+      <button type="button" class="btn-mini warn" data-provider-action="remove">Quitar</button>
+    </div>
+  `).join('') : '<div class="flower-history-placeholder">No hay proveedores alternativos.</div>';
+}
+function syncFlowerAlternativeProviders(){
+  document.querySelectorAll('#flowerAlternativeProviders [data-flower-provider-index]').forEach(row=>{
+    const provider = flowerEditorProviders[parseInt(row.dataset.flowerProviderIndex,10)];
+    if(!provider) return;
+    row.querySelectorAll('[data-provider-field]').forEach(input=>{
+      const field = input.dataset.providerField;
+      provider[field] = field === 'price' ? (input.value === '' ? '' : parseAppNumber(input.value)) : input.value.trim();
+    });
+  });
+}
+function updateFlowerPhotoPreview(){
+  const preview = document.getElementById('flowerPhotoPreview');
+  preview.innerHTML = '';
+  if(!flowerEditorPhotoData){
+    const empty = document.createElement('span');
+    empty.textContent = 'Sin foto';
+    preview.appendChild(empty);
+    document.getElementById('btnFlowerRemovePhoto').disabled = true;
+    return;
+  }
+  const image = document.createElement('img');
+  image.src = flowerEditorPhotoData;
+  image.alt = 'Foto de la flor';
+  preview.appendChild(image);
+  document.getElementById('btnFlowerRemovePhoto').disabled = false;
+}
+function updateProductPhotoPreview(){
+  const preview = document.getElementById('productPhotoPreview');
+  preview.innerHTML = '';
+  if(!productEditorPhotoData){
+    const empty = document.createElement('span');
+    empty.textContent = 'Sin foto';
+    preview.appendChild(empty);
+    document.getElementById('btnProductRemovePhoto').disabled = true;
+    return;
+  }
+  const image = document.createElement('img');
+  image.src = productEditorPhotoData;
+  image.alt = 'Foto del producto';
+  preview.appendChild(image);
+  document.getElementById('btnProductRemovePhoto').disabled = false;
+}
+function optimizeFlowerPhotoFile(file){
+  return new Promise((resolve,reject)=>{
+    if(!['image/jpeg','image/png'].includes(file.type)){ reject(new Error('Selecciona una imagen JPG o PNG.')); return; }
+    const reader = new FileReader();
+    reader.onerror = ()=> reject(new Error('No se ha podido leer la imagen.'));
+    reader.onload = ()=>{
+      const image = new Image();
+      image.onerror = ()=> reject(new Error('La imagen no es valida.'));
+      image.onload = ()=>{
+        const maxSide = 640;
+        const scale = Math.min(1, maxSide / Math.max(image.width,image.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1,Math.round(image.width*scale));
+        canvas.height = Math.max(1,Math.round(image.height*scale));
+        const context = canvas.getContext('2d');
+        context.fillStyle = '#ffffff';
+        context.fillRect(0,0,canvas.width,canvas.height);
+        context.drawImage(image,0,0,canvas.width,canvas.height);
+        let quality = .82;
+        let data = canvas.toDataURL('image/jpeg',quality);
+        while(data.length > 180000 && quality > .45){
+          quality -= .08;
+          data = canvas.toDataURL('image/jpeg',quality);
+        }
+        resolve(data);
+      };
+      image.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function renderFlowerCatalogs(selectedFamily,selectedColor){
+  const currentFamily = selectedFamily === undefined ? document.getElementById('flowerEditFamily').value : selectedFamily;
+  const currentColor = selectedColor === undefined ? document.getElementById('flowerEditColor').value : selectedColor;
+  flowerFamilyCatalog = normalizeFlowerCatalog(DEFAULT_FLOWER_FAMILIES,flowerFamilyCatalog,[currentFamily]);
+  flowerColorCatalog = normalizeFlowerCatalog(DEFAULT_FLOWER_COLORS,flowerColorCatalog,[currentColor]);
+  const renderSelect = (id,values,selected,label)=>{
+    const select = document.getElementById(id);
+    select.innerHTML = `<option value="">${label}</option>` + values.map(value=>`<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('');
+    select.value = values.includes(selected) ? selected : '';
+  };
+  renderSelect('flowerEditFamily',flowerFamilyCatalog,currentFamily,'Sin familia');
+  renderSelect('flowerEditColor',flowerColorCatalog,currentColor,'Sin color');
+  const renderTable = (bodyId,values,selected,kind)=>{ document.getElementById(bodyId).innerHTML = values.map(value=>`
+    <tr class="${value===selected?'selected':''}">
+      <td>${escapeHtml(value)}</td>
+      <td><button type="button" class="btn-mini" data-flower-catalog-kind="${kind}" data-flower-catalog-value="${escapeHtml(value)}">${value===selected?'Elegido':'Usar'}</button></td>
+    </tr>`).join('');
+  };
+  renderTable('flowerFamilyCatalogBody',flowerFamilyCatalog,currentFamily,'family');
+  renderTable('flowerColorCatalogBody',flowerColorCatalog,currentColor,'color');
+}
+function addFlowerCatalogValue(kind){
+  const input = document.getElementById(kind === 'family' ? 'flowerNewFamily' : 'flowerNewColor');
+  const value = input.value.trim();
+  if(!value) return;
+  const catalog = kind === 'family' ? flowerFamilyCatalog : flowerColorCatalog;
+  const existing = catalog.find(item=>item.toLocaleLowerCase('es') === value.toLocaleLowerCase('es'));
+  const selected = existing || value;
+  if(!existing) catalog.push(value);
+  input.value = '';
+  if(kind === 'family') renderFlowerCatalogs(selected,document.getElementById('flowerEditColor').value);
+  else renderFlowerCatalogs(document.getElementById('flowerEditFamily').value,selected);
+}
+function openFlowerEditor(flower=null){
+  const item = flower ? normalizeFlower(flower) : normalizeFlower({articleCode:'',articleName:'',active:true,unit:'tallo',updatedAt:nowIso()});
+  flowerEditorOriginalId = flower?.id || null;
+  document.getElementById('flowerEditorTitle').textContent = flower ? 'Editar flor / articulo' : 'Anadir nueva flor';
+  document.getElementById('flowerEditCode').value = item.articleCode;
+  document.getElementById('flowerEditName').value = item.articleName;
+  renderFlowerCatalogs(item.family,item.color);
+  document.getElementById('flowerEditFormat').value = item.format;
+  document.getElementById('flowerEditUnit').value = item.unit;
+  document.getElementById('flowerEditActive').value = item.active ? 'true' : 'false';
+  document.getElementById('flowerEditNotes').value = item.notes;
+  flowerEditorPhotoData = item.photoDataUrl;
+  updateFlowerPhotoPreview();
+  const providers = item.providers.map(normalizeFlowerEditorProvider);
+  let primaryIndex = providers.findIndex(provider=>provider.supplier === item.primarySupplier);
+  if(primaryIndex < 0 && providers.length) primaryIndex = 0;
+  const primary = primaryIndex >= 0 ? providers[primaryIndex] : normalizeFlowerEditorProvider({supplier:item.primarySupplier,unit:item.unit});
+  document.getElementById('flowerEditPrimarySupplier').value = primary.supplier || item.primarySupplier;
+  document.getElementById('flowerEditPrimarySupplierCode').value = primary.supplierCode;
+  document.getElementById('flowerEditPrimaryPrice').value = primary.price;
+  flowerEditorProviders = providers.filter((provider,index)=>index !== primaryIndex);
+  flowerEditorProviders.sort((a,b)=>alphabeticalCompareEs(a.supplier,b.supplier));
+  renderFlowerAlternativeProviders();
+  renderSupplierSuggestions([primary.supplier,...flowerEditorProviders.map(provider=>provider.supplier)]);
+  document.getElementById('flowerPriceHistoryPlaceholder').textContent = flower
+    ? `Precio principal actual: ${flowerPrice(primary.price)}. Ultima actualizacion: ${formatDateTime(item.updatedAt)}. El historico completo se mostrara aqui cuando se active.`
+    : 'El historico de precios aparecera aqui despues de crear la flor y registrar sus cambios.';
+  const flowerModal = document.getElementById('flowerEditorModal');
+  const flowerModalPanel = flowerModal.querySelector('.flower-editor-modal');
+  flowerModalPanel.scrollTop = 0;
+  flowerModal.classList.add('open');
+  requestAnimationFrame(()=>{ flowerModalPanel.scrollTop = 0; });
+}
+function saveFlowerEditor(){
+  syncFlowerAlternativeProviders();
+  const articleName = document.getElementById('flowerEditName').value.trim();
+  if(!articleName){ alert('Indica el nombre de la flor o articulo.'); return; }
+  const primarySupplier = document.getElementById('flowerEditPrimarySupplier').value.trim();
+  const primaryPriceValue = document.getElementById('flowerEditPrimaryPrice').value;
+  if(!primarySupplier && primaryPriceValue !== ''){ alert('Indica el proveedor principal para guardar su precio.'); return; }
+  const existing = flowerEditorOriginalId ? flowers.find(f=>f.id === flowerEditorOriginalId) : null;
+  const updatedAt = nowIso();
+  const unit = document.getElementById('flowerEditUnit').value.trim() || 'tallo';
+  const providers = [];
+  if(primarySupplier){
+    const previousPrimary = existing ? primaryProvider(existing) : {};
+    providers.push(normalizeFlowerEditorProvider({
+      ...previousPrimary,
+      supplier:primarySupplier,
+      supplierCode:document.getElementById('flowerEditPrimarySupplierCode').value.trim(),
+      price:primaryPriceValue === '' ? '' : parseAppNumber(primaryPriceValue),
+      unit,
+      updatedAt,
+      source:'manual'
+    }));
+  }
+  const providerNames = new Set(providers.map(provider=>provider.supplier.toLowerCase()));
+  flowerEditorProviders.filter(provider=>provider.supplier).sort((a,b)=>alphabeticalCompareEs(a.supplier,b.supplier)).forEach(provider=>{
+    const supplierKey = provider.supplier.toLowerCase();
+    if(providerNames.has(supplierKey)) return;
+    providerNames.add(supplierKey);
+    providers.push(normalizeFlowerEditorProvider({...provider,unit,updatedAt,source:provider.source || 'manual'}));
+  });
+  const previousCode = existing?.articleCode || '';
+  const previousName = existing?.articleName || '';
+  const saved = normalizeFlower({
+    id:existing?.id,
+    articleCode:document.getElementById('flowerEditCode').value.trim(),
+    articleName,
+    family:document.getElementById('flowerEditFamily').value.trim(),
+    color:document.getElementById('flowerEditColor').value.trim(),
+    format:document.getElementById('flowerEditFormat').value.trim(),
+    primarySupplier,
+    unit,
+    active:document.getElementById('flowerEditActive').value === 'true',
+    notes:document.getElementById('flowerEditNotes').value.trim(),
+    photoDataUrl:flowerEditorPhotoData,
+    providers,
+    updatedAt,
+    importedAt:existing?.importedAt
+  });
+  if(existing) Object.assign(existing,saved,{id:existing.id});
+  else flowers.unshift(saved);
+  nomenclatures.forEach(line=>{
+    const sameFlower = (previousCode && line.articleCode === previousCode) || (!previousCode && previousName && line.articleName === previousName);
+    if(!sameFlower) return;
+    line.articleCode = saved.articleCode;
+    line.articleName = saved.articleName;
+    line.updatedAt = updatedAt;
+  });
+  flowerMeta.updatedAt = updatedAt;
+  nomenclatureMeta.updatedAt = updatedAt;
   markNomenclatureDirty();
   saveState();
+  document.getElementById('flowerEditorModal').classList.remove('open');
   renderNomenclatures();
 }
 function openProductEditor(summary=null){
@@ -5236,10 +5660,23 @@ function exportFlowersExcel(){
 
 document.getElementById('btnNomenclatureProductsTab').addEventListener('click', ()=> setNomenclatureTab('products'));
 document.getElementById('btnNomenclatureFlowersTab').addEventListener('click', ()=> setNomenclatureTab('flowers'));
-document.getElementById('btnAddFlower').addEventListener('click', ()=>{
-  const f = normalizeFlower({articleCode:'', articleName:'Nueva flor', active:true, updatedAt:nowIso()});
-  flowers.unshift(f); flowerMeta.updatedAt = f.updatedAt; markNomenclatureDirty(); saveState(); renderNomenclatures();
+document.querySelector('#nomenclatureProductsPanel thead').addEventListener('click', e=>{
+  const button = e.target.closest('[data-product-sort]');
+  if(!button) return;
+  const key = button.dataset.productSort;
+  if(productTableSort.key === key) productTableSort.direction *= -1;
+  else productTableSort = {key,direction:1};
+  renderProductSummaries();
 });
+document.querySelector('#nomenclatureFlowersPanel thead').addEventListener('click', e=>{
+  const button = e.target.closest('[data-flower-sort]');
+  if(!button) return;
+  const key = button.dataset.flowerSort;
+  if(flowerTableSort.key === key) flowerTableSort.direction *= -1;
+  else flowerTableSort = {key,direction:1};
+  renderFlowers();
+});
+document.getElementById('btnAddFlower').addEventListener('click', ()=> openFlowerEditor());
 document.getElementById('btnImportFlowers').addEventListener('click', ()=> document.getElementById('flowerFileInput').click());
 document.getElementById('flowerFileInput').addEventListener('change', e=>{ const file=e.target.files?.[0]; e.target.value=''; if(file) importFlowerFile(file); });
 document.getElementById('btnExportFlowers').addEventListener('click', exportFlowersExcel);
@@ -5263,14 +5700,77 @@ document.getElementById('nomenclatureTbody').addEventListener('click', e=>{
   if(btn.dataset.productAction === 'restore') setProductsDeleted(summary.key, false);
   if(btn.dataset.productAction === 'hard-delete') hardDeleteProduct(summary.key);
 });
-document.getElementById('flowersTbody').addEventListener('change', e=>{ const input=e.target.closest('[data-flower-field]'); if(!input) return; const tr=input.closest('[data-flower-id]'); updateFlower(tr.dataset.flowerId, input.dataset.flowerField, input.value); });
 document.getElementById('flowersTbody').addEventListener('click', e=>{
   const btn=e.target.closest('[data-flower-action]'); if(!btn) return;
   const id=btn.closest('[data-flower-id]').dataset.flowerId; const item=flowers.find(f=>f.id===id); if(!item) return;
-  if(btn.dataset.flowerAction==='duplicate') flowers.unshift(normalizeFlower({...item,id:null,articleCode:item.articleCode + '-COPY',updatedAt:nowIso()}));
-  if(btn.dataset.flowerAction==='toggle') item.active=!item.active;
-  if(btn.dataset.flowerAction==='delete'){ if(!confirm('Borrar esta flor/articulo?')) return; flowers=flowers.filter(f=>f.id!==id); }
-  flowerMeta.updatedAt=nowIso(); markNomenclatureDirty(); saveState(); renderNomenclatures();
+  if(btn.dataset.flowerAction==='edit') openFlowerEditor(item);
+});
+document.getElementById('btnFlowerEditorCancel').addEventListener('click', ()=> document.getElementById('flowerEditorModal').classList.remove('open'));
+document.getElementById('btnFlowerEditorSave').addEventListener('click', saveFlowerEditor);
+document.getElementById('btnProductSelectPhoto').addEventListener('click', ()=> document.getElementById('productPhotoInput').click());
+document.getElementById('productPhotoInput').addEventListener('change', async e=>{
+  const file = e.target.files?.[0];
+  e.target.value = '';
+  if(!file) return;
+  try{
+    productEditorPhotoData = await optimizeFlowerPhotoFile(file);
+    updateProductPhotoPreview();
+  }catch(err){ alert(err.message); }
+});
+document.getElementById('btnProductRemovePhoto').addEventListener('click', ()=>{
+  productEditorPhotoData = '';
+  updateProductPhotoPreview();
+});
+document.getElementById('btnFlowerSelectPhoto').addEventListener('click', ()=> document.getElementById('flowerPhotoInput').click());
+document.getElementById('flowerPhotoInput').addEventListener('change', async e=>{
+  const file = e.target.files?.[0];
+  e.target.value = '';
+  if(!file) return;
+  try{
+    flowerEditorPhotoData = await optimizeFlowerPhotoFile(file);
+    updateFlowerPhotoPreview();
+  }catch(err){ alert(err.message); }
+});
+document.getElementById('btnFlowerRemovePhoto').addEventListener('click', ()=>{
+  flowerEditorPhotoData = '';
+  updateFlowerPhotoPreview();
+});
+document.getElementById('btnFlowerAddFamily').addEventListener('click', ()=> addFlowerCatalogValue('family'));
+document.getElementById('btnFlowerAddColor').addEventListener('click', ()=> addFlowerCatalogValue('color'));
+['flowerNewFamily','flowerNewColor'].forEach(id=>document.getElementById(id).addEventListener('keydown', e=>{
+  if(e.key !== 'Enter') return;
+  e.preventDefault();
+  addFlowerCatalogValue(id === 'flowerNewFamily' ? 'family' : 'color');
+}));
+['flowerEditFamily','flowerEditColor'].forEach(id=>document.getElementById(id).addEventListener('change', ()=> renderFlowerCatalogs()));
+document.getElementById('flowerEditorModal').addEventListener('click', e=>{
+  const btn = e.target.closest('[data-flower-catalog-kind]');
+  if(!btn) return;
+  const family = btn.dataset.flowerCatalogKind === 'family' ? btn.dataset.flowerCatalogValue : document.getElementById('flowerEditFamily').value;
+  const color = btn.dataset.flowerCatalogKind === 'color' ? btn.dataset.flowerCatalogValue : document.getElementById('flowerEditColor').value;
+  renderFlowerCatalogs(family,color);
+});
+document.getElementById('btnFlowerAddProvider').addEventListener('click', ()=>{
+  syncFlowerAlternativeProviders();
+  flowerEditorProviders.push(normalizeFlowerEditorProvider());
+  renderFlowerAlternativeProviders();
+});
+document.getElementById('flowerEditPrimarySupplier').addEventListener('change', ()=>{
+  syncFlowerAlternativeProviders();
+  renderSupplierSuggestions([document.getElementById('flowerEditPrimarySupplier').value,...flowerEditorProviders.map(provider=>provider.supplier)]);
+});
+document.getElementById('flowerAlternativeProviders').addEventListener('change', e=>{
+  if(!e.target.closest('[data-provider-field="supplier"]')) return;
+  syncFlowerAlternativeProviders();
+  renderSupplierSuggestions([document.getElementById('flowerEditPrimarySupplier').value,...flowerEditorProviders.map(provider=>provider.supplier)]);
+});
+document.getElementById('flowerAlternativeProviders').addEventListener('click', e=>{
+  const btn=e.target.closest('[data-provider-action="remove"]');
+  if(!btn) return;
+  syncFlowerAlternativeProviders();
+  const row=btn.closest('[data-flower-provider-index]');
+  flowerEditorProviders.splice(parseInt(row.dataset.flowerProviderIndex,10),1);
+  renderFlowerAlternativeProviders();
 });
 ['productEditCode','productEditName','productEditCategory','productEditVariantCode','productEditVariantName','productEditSize','productEditSalePrice','productEditVat','productEditActive','productEditNotes'].forEach(id=>{ document.getElementById(id).addEventListener('input', renderProductEditorLines); document.getElementById(id).addEventListener('change', renderProductEditorLines); });
 document.getElementById('btnProductAddFlower').addEventListener('click', ()=>{ productEditorLines.push({articleCode:'',articleName:'',stemsPerBouquet:0,supplier:'',unitCost:'',active:true,notes:''}); renderProductEditorLines(); });
@@ -5557,7 +6057,7 @@ function markNomenclatureDirty(){
   window.nomenclatureAutoSaveTimer = setTimeout(saveNomenclaturesToOneDrive, 2500);
 }
 function buildNomenclatureTechnicalState(){
-  return {type:'aquarelle-nomenclaturas', version:1, savedAt:new Date().toISOString(), productos:productSummaries(), nomenclaturas, flores:flowers, flowerMeta, nomenclatureMeta};
+  return {type:'aquarelle-nomenclaturas', version:2, savedAt:new Date().toISOString(), productos:productSummaries(), nomenclaturas, productPriceCatalog, flores:flowers, flowerMeta, flowerFamilyCatalog, flowerColorCatalog, nomenclatureMeta};
 }
 function buildNomenclatureWorkbook(){
   const wb = XLSX.utils.book_new();
@@ -5621,7 +6121,10 @@ async function loadNomenclaturesFromOneDrive(){
     const parsed = JSON.parse(await (await handle.getFile()).text());
     if(parsed?.type !== 'aquarelle-nomenclaturas') return false;
     nomenclatures = Array.isArray(parsed.nomenclaturas) ? parsed.nomenclaturas.map(normalizeNomenclatureLine) : [];
+    productPriceCatalog = parsed.productPriceCatalog && typeof parsed.productPriceCatalog === 'object' ? parsed.productPriceCatalog : buildProductPriceCatalogFromNomenclatures(nomenclatures);
     flowers = Array.isArray(parsed.flores) ? parsed.flores.map(normalizeFlower) : [];
+    flowerFamilyCatalog = normalizeFlowerCatalog(DEFAULT_FLOWER_FAMILIES,parsed.flowerFamilyCatalog,flowers.map(f=>f.family));
+    flowerColorCatalog = normalizeFlowerCatalog(DEFAULT_FLOWER_COLORS,parsed.flowerColorCatalog,flowers.map(f=>f.color));
     nomenclatureMeta = parsed.nomenclatureMeta || nomenclatureMeta;
     flowerMeta = parsed.flowerMeta || flowerMeta;
     nomenclatureDirty = false;
@@ -6787,6 +7290,10 @@ function renderProductSummaries(){
     if(q && ![p.productCode,p.productName,p.category,p.notes].join(' ').toLowerCase().includes(q)) return false;
     return true;
   });
+  rows.sort((a,b)=>{
+    const main = compareNomenclatureSortValues(a[productTableSort.key],b[productTableSort.key]);
+    return (main || alphabeticalCompareEs(a.productCode,b.productCode)) * productTableSort.direction;
+  });
   tbody.innerHTML = rows.length ? rows.map(p=>`
     <tr data-product-master="${escapeHtml(p.key)}">
       <td>${escapeHtml(p.productCode)}</td>
@@ -6805,6 +7312,7 @@ function renderProductSummaries(){
       </div></td>
     </tr>
   `).join('') : `<tr><td colspan="8"><div class="empty-state">No hay productos que coincidan con los filtros.</div></td></tr>`;
+  updateNomenclatureSortIndicators('product');
 }
 function renderNomenclatures(){
   document.body.classList.toggle('nomenclature-products-tab', nomenclatureTab === 'products');
@@ -7114,7 +7622,7 @@ function collectProductModel(code){
     const n = lines.find(l=>productPriceNumber(l) === i+1 && l.salePrice !== '' && l.salePrice !== undefined);
     return n ? n.salePrice : (catalogInfo.prices?.[i] ?? '');
   });
-  productPriceCatalog[code] = {priceCount, prices:prices.slice()};
+  if(code) productPriceCatalog[code] = {...catalogInfo, priceCount, prices:prices.slice()};
   const flowerMap = new Map();
   lines.forEach(l=>{
     const key = (l.articleCode || l.articleName || '').toLowerCase();
@@ -7133,6 +7641,7 @@ function collectProductModel(code){
     active:first.active !== false,
     deleted:first.deleted || false,
     notes:first.productNotes || '',
+    photoDataUrl:String(catalogInfo.photoDataUrl || ''),
     flowers:[...flowerMap.values()]
   };
 }
@@ -7150,6 +7659,8 @@ function openProductEditor(summary=null){
   document.getElementById('productEditPriceCount').dataset.previous = String(model.priceCount);
   document.getElementById('productEditActive').value = model.active ? 'true' : 'false';
   document.getElementById('productEditNotes').value = model.notes;
+  productEditorPhotoData = model.photoDataUrl || '';
+  updateProductPhotoPreview();
   renderProductPriceFields(model.prices);
   renderProductEditorLines();
   modal.classList.add('open');
@@ -7264,7 +7775,7 @@ function saveProductEditor(){
   const updated = nowIso();
   nomenclatures = nomenclatures.filter(n=>productMasterCode(n.productCode) !== (productEditorOriginalKey || base.productCode));
   if(productEditorOriginalKey && productEditorOriginalKey !== base.productCode) delete productPriceCatalog[productEditorOriginalKey];
-  productPriceCatalog[base.productCode] = {priceCount:base.priceCount, prices:base.prices.slice(0, base.priceCount)};
+  productPriceCatalog[base.productCode] = {priceCount:base.priceCount, prices:base.prices.slice(0, base.priceCount), photoDataUrl:productEditorPhotoData};
   const lines = productEditorLines.length ? productEditorLines : [];
   lines.forEach(line=>{
     for(let p=1; p<=base.priceCount; p++){
@@ -7349,7 +7860,7 @@ function structuredNomenclatureProducts(){
   });
 }
 function buildNomenclatureTechnicalState(){
-  return {type:'aquarelle-nomenclaturas', version:1, savedAt:new Date().toISOString(), productos:structuredNomenclatureProducts(), nomenclaturas, flores:flowers, flowerMeta, nomenclatureMeta};
+  return {type:'aquarelle-nomenclaturas', version:2, savedAt:new Date().toISOString(), productos:structuredNomenclatureProducts(), nomenclaturas, productPriceCatalog, flores:flowers, flowerMeta, flowerFamilyCatalog, flowerColorCatalog, nomenclatureMeta};
 }
 function buildNomenclatureWorkbook(productCodes){
   const wb = XLSX.utils.book_new();
@@ -7537,6 +8048,8 @@ async function openProductEditorFinal(summary=null){
   document.getElementById('productEditPriceCount').dataset.previous = String(model.priceCount);
   document.getElementById('productEditActive').value = model.active ? 'true' : 'false';
   document.getElementById('productEditNotes').value = model.notes;
+  productEditorPhotoData = model.photoDataUrl || '';
+  updateProductPhotoPreview();
   renderProductPriceFields(model.prices);
   renderProductEditorLines();
   modal.classList.add('open');
@@ -7549,7 +8062,7 @@ async function saveProductEditorFinal(){
   const updated = nowIso();
   nomenclatures = nomenclatures.filter(n=>productMasterCode(n.productCode) !== (productEditorOriginalKey || base.productCode));
   if(productEditorOriginalKey && productEditorOriginalKey !== base.productCode) delete productPriceCatalog[productEditorOriginalKey];
-  productPriceCatalog[base.productCode] = {priceCount:base.priceCount, prices:base.prices.slice(0, base.priceCount)};
+  productPriceCatalog[base.productCode] = {priceCount:base.priceCount, prices:base.prices.slice(0, base.priceCount), photoDataUrl:productEditorPhotoData};
   const lines = productEditorLines.length ? productEditorLines : [{articleCode:'', articleName:'', supplier:'', unitCost:'', stems:{}, active:base.active, notes:''}];
   lines.forEach(line=>{
     for(let p=1; p<=base.priceCount; p++){
@@ -7631,6 +8144,8 @@ async function openProductEditor(summary=null){
   document.getElementById('productEditPriceCount').dataset.previous = String(model.priceCount);
   document.getElementById('productEditActive').value = model.active ? 'true' : 'false';
   document.getElementById('productEditNotes').value = model.notes;
+  productEditorPhotoData = model.photoDataUrl || '';
+  updateProductPhotoPreview();
   renderProductPriceFields(model.prices);
   renderProductEditorLines();
   modal.classList.add('open');
@@ -8464,5 +8979,6 @@ loadNomenclaturesFromOneDrive().then(loaded=>{ if(loaded) renderNomenclatures();
 initMigrationControls();
 initSupabaseAuth();
 </script>
+<script src="nomenclature-supabase.js"></script>
 </body>
 </html>

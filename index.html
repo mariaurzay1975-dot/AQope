@@ -554,6 +554,40 @@
   .settings-error{color:var(--neg);font-size:12px;min-height:18px;margin-top:10px;}
   @media(max-width:650px){.multi-filter{width:100%}.multi-filter-menu{position:fixed;left:16px;right:16px;top:auto;width:auto;max-height:45vh}.settings-summary{grid-template-columns:1fr}.modal{width:calc(100% - 24px)}}
 
+  /* Planificacion anual */
+  .annual-view{display:none;}
+  body[data-module="annual"] .annual-view{display:block;}
+  body[data-module="annual"] .stock-view,
+  body[data-module="annual"] .nomenclature-view,
+  body[data-module="annual"] .preasignDia-view{display:none!important;}
+  .annual-head,.annual-controls,.annual-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .annual-head{margin-bottom:7px;padding:8px 12px;background:var(--panel);border:1px solid var(--line);border-radius:6px}.annual-head-main{display:grid;grid-template-columns:minmax(260px,1fr) 118px auto;align-items:end;gap:12px;width:100%}.annual-head h2{font-family:var(--serif);font-size:25px;line-height:1;color:var(--moss-deep);margin:0}.annual-head p{margin:2px 0 0;color:var(--ink-soft);font-size:11px}.annual-year-picker label{font:8px var(--mono);text-transform:uppercase;color:var(--ink-soft)}.annual-year-picker select{display:block;width:100%;min-width:0;margin-top:3px;padding:6px 27px 6px 8px;border:1px solid var(--moss);border-radius:4px;background:#fff;font-weight:700;color:var(--moss-deep)}.annual-actions{width:100%;justify-content:flex-start;flex-wrap:nowrap}.annual-actions .btn{padding:7px 10px;font-size:11px;white-space:nowrap}
+  .annual-controls{justify-content:flex-start;padding:0;margin:0;background:transparent;border:0;border-radius:0;flex-wrap:nowrap}
+  .annual-controls label{font:8px var(--mono);text-transform:uppercase;color:var(--ink-soft)}.annual-controls select,.annual-controls input{display:block;width:92px;margin-top:3px;padding:5px 7px;border:1px solid var(--line);border-radius:3px;background:#fff}.annual-controls select{width:80px}
+  .annual-summary{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-bottom:7px}.annual-kpi{min-height:49px;background:var(--panel);border:1px solid var(--line);padding:6px 9px;border-radius:5px}.annual-kpi span{display:block;font:7.5px var(--mono);text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);margin-bottom:2px}.annual-kpi strong{font:600 16px var(--serif);line-height:1;color:var(--moss-deep)}.annual-kpi small{display:block;margin-top:2px;color:var(--ink-soft);font-size:8.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .annual-chart{height:270px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;margin-bottom:16px}.annual-chart[hidden],#annualChartSeriesControl[hidden]{display:none!important}.annual-chart svg{width:100%;height:calc(100% - 24px)}.annual-chart-legend{display:flex;gap:18px;font-size:11px;color:var(--ink-soft);margin-bottom:8px}.annual-chart-legend i{display:inline-block;width:18px;height:3px;margin-right:6px;vertical-align:middle}
+  .annual-layout{display:grid;grid-template-columns:minmax(0,7fr) minmax(300px,3fr);gap:14px;align-items:start}.annual-table-wrap{overflow-y:auto;overflow-x:hidden;max-height:72vh;background:var(--panel);border:1px solid var(--line);border-radius:6px}.annual-table{width:100%;min-width:0;font-size:10.5px;table-layout:fixed}.annual-table col.annual-w-week{width:6%}.annual-table col.annual-w-status{width:8%}.annual-table col.annual-w-exp{width:8%}.annual-table col.annual-w-exp-current{width:9%}.annual-table col.annual-w-category{width:6.5%}.annual-table col.annual-w-mailing{width:10%}.annual-table col.annual-w-code{width:9%}.annual-table col.annual-w-campaign{width:12%}.annual-table thead{position:sticky;top:0;z-index:8}.annual-table th{white-space:normal;line-height:1.15;padding:8px 4px;vertical-align:middle;text-align:center;font-size:9.5px}.annual-table td{height:38px;padding:5px 4px;white-space:normal;overflow:visible;border-bottom:1px solid var(--line);text-align:center;overflow-wrap:anywhere}.annual-table tbody tr{cursor:pointer}.annual-table tbody tr:nth-child(even){background:#faf8f2}.annual-table tbody tr.future{background:#fbfaf6}.annual-table tbody tr.current{background:#fff4d8}.annual-table tbody tr.partial{background:#f8eee2}.annual-table tbody tr.closed{background:#eef4ec}.annual-table tbody tr.has-campaign{box-shadow:inset 4px 0 var(--gold)}.annual-table tbody tr.selected{box-shadow:inset 4px 0 var(--moss),inset 0 0 0 2px rgba(60,92,71,.35)}.annual-table tbody tr.selected.has-campaign{box-shadow:inset 4px 0 var(--gold),inset 0 0 0 2px rgba(60,92,71,.45)}.annual-table input{width:100%;min-width:0;padding:6px 4px;border:1px solid #d29a54;border-radius:4px;background:#fff8df;color:#7b4d12;text-align:right;font-weight:700}.annual-table input:focus{outline:2px solid rgba(199,101,63,.24);border-color:var(--coral)}.annual-week-cell{position:relative;cursor:help;font:700 11px var(--mono);color:var(--moss-deep)}.annual-week-tooltip{display:none;position:absolute;left:82%;top:50%;z-index:30;transform:translateY(-50%);padding:7px 9px;border-radius:4px;background:var(--moss-deep);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.18);white-space:nowrap;font:10px var(--mono);pointer-events:none}.annual-week-cell:hover .annual-week-tooltip,.annual-week-cell:focus-within .annual-week-tooltip{display:block}.annual-expedition-real{font-weight:700;color:var(--moss-deep)}.annual-expedition-forecast small{display:block;margin-top:2px;color:#9a5a25;font-size:8px}.annual-category-percent{font:600 10px var(--mono);color:var(--moss-deep)}.annual-campaign-badge{display:inline-block;padding:3px 6px;border:1px solid #d7a747;border-radius:999px;background:#fff1bf;color:#725410;font-weight:700}.annual-status{display:inline-flex;align-items:center;justify-content:center;min-width:0;max-width:100%;padding:4px 6px;border-radius:999px;font:600 9px var(--mono);white-space:nowrap}.annual-status.closed{background:#dce9d9;color:#31563c}.annual-status.current{background:#f7dfa0;color:#6b5215}.annual-status.partial{background:#f2d9c6;color:#8a4a27}.annual-status.future{background:#e9e7e0;color:#66706a}
+  .annual-table col.annual-w-week{width:5.5%}.annual-table col.annual-w-status{width:7%}.annual-table col.annual-w-exp{width:7.5%}.annual-table col.annual-w-exp-current{width:8.5%}.annual-table col.annual-w-growth{width:7%}.annual-table col.annual-w-category{width:6%}.annual-table col.annual-w-mailing{width:11%}.annual-table col.annual-w-code{width:10%}.annual-table th.annual-category-start,.annual-table td.annual-category-start{border-left:2px solid #8da091}.annual-table th.annual-category-end,.annual-table td.annual-category-end{border-right:2px solid #8da091}.annual-week-cell.has-campaign{background:#fff1bf!important;color:#725410;box-shadow:inset 4px 0 var(--gold)}.annual-week-tooltip strong{display:block;margin-top:4px;color:#ffe08a;font-weight:700}.annual-growth{font:700 10px var(--mono)}.annual-growth.positive{color:#2f6941}.annual-growth.negative{color:#a6462d}.annual-growth.neutral{color:var(--ink-soft)}
+  .annual-table td.annual-mailing-cell,.annual-history-table td.annual-mailing-cell{font:500 8px/1.12 var(--mono);letter-spacing:-.02em;overflow-wrap:anywhere}
+  .annual-week-cell:hover .annual-week-tooltip,.annual-week-cell:focus-within .annual-week-tooltip{display:none}.annual-floating-tooltip{position:fixed;z-index:10000;width:max-content;max-width:min(330px,calc(100vw - 16px));padding:8px 10px;border-radius:5px;background:var(--moss-deep);color:#fff;box-shadow:0 7px 20px rgba(0,0,0,.3);font:10px/1.4 var(--mono);white-space:normal;pointer-events:none}.annual-floating-tooltip[hidden]{display:none!important}.annual-floating-tooltip strong{display:block;margin-top:4px;color:#ffe08a;font-weight:700}
+  .annual-panel{position:sticky;top:16px;background:#f8f6ef;border:1px solid var(--line);border-radius:6px;padding:10px;max-height:86vh;overflow:auto}.annual-panel-header{display:flex;align-items:center;gap:6px;padding:2px 3px 8px}.annual-panel h3{margin:0 auto 0 0;font-family:var(--serif);font-size:21px;color:var(--moss-deep)}.annual-panel-mailing{display:inline-flex;max-width:46%;padding:4px 6px;border:1px solid #d7a747;border-radius:999px;background:#fff1bf;color:#725410;font:700 9px var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.annual-panel-section{background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:9px;margin-bottom:7px}.annual-panel-section h4{margin:0 0 6px;font:600 9px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--moss-deep)}.annual-week-info{display:grid;grid-template-columns:52px 58px minmax(0,1fr);align-items:center}.annual-week-info div{min-width:0;padding:2px 7px;border-right:1px solid var(--line)}.annual-week-info div:last-child{border-right:0}.annual-week-info span{display:block;font:8px var(--mono);text-transform:uppercase;color:var(--ink-soft)}.annual-week-info strong{display:block;margin-top:1px;color:var(--moss-deep);white-space:nowrap}.annual-panel label{display:block;font:9px var(--mono);text-transform:uppercase;color:var(--ink-soft);margin:5px 0 3px}.annual-panel input,.annual-panel textarea,.annual-panel select{width:100%;min-width:0;padding:6px 7px;border:1px solid var(--line);border-radius:4px;background:#fff}.annual-panel input:disabled,.annual-panel textarea:disabled{background:#f1efe8;color:var(--ink);border-color:transparent}.annual-panel textarea{min-height:42px;resize:vertical}.annual-result-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.annual-result{min-width:0;padding:6px;background:#f5f3ec;border-radius:4px}.annual-result span{display:block;font:8px var(--mono);text-transform:uppercase;color:var(--ink-soft)}.annual-result strong{display:block;margin-top:2px;color:var(--moss-deep)}.annual-result input{margin-top:2px;padding:4px 5px;font-weight:700;color:#7b4d12}.annual-category-note{margin:0 0 6px;line-height:1.25}.annual-category-grid{display:grid;grid-template-columns:minmax(68px,1fr) minmax(58px,64px) minmax(42px,50px);gap:4px;align-items:center;font-size:10px}.annual-category-grid>*{min-width:0}.annual-category-grid input{padding:5px;text-align:right}.annual-category-value{padding:5px 1px;text-align:right;font:600 10px var(--mono);color:var(--moss-deep);white-space:nowrap}.annual-category-total{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;margin-top:3px;padding-top:6px;border-top:1px solid var(--line);font:700 10px var(--mono)}.annual-category-total.valid{color:#2f6941}.annual-category-total.invalid{color:#a6462d}.annual-category-warning{min-height:13px;margin:4px 0 0;color:#a6462d;font-size:9px}.annual-category-bar{height:3px;background:#e5e1d7;border-radius:3px;overflow:hidden;margin-top:2px}.annual-category-bar i{display:block;height:100%;background:var(--moss)}.annual-fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 7px}.annual-fields-grid .wide{grid-column:1/-1}.annual-hours{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:7px 9px}.annual-hours h4{margin:0}.annual-hours p{margin:0;text-align:right}.annual-panel-primary{display:flex;justify-content:flex-end;margin:7px 0}.annual-panel-primary .btn:disabled{opacity:.48;cursor:not-allowed}.annual-panel-secondary,.annual-panel-sync{display:flex;gap:5px;flex-wrap:wrap;padding-top:7px;border-top:1px solid var(--line)}.annual-panel-secondary .btn{padding:6px 8px}.annual-panel-sync{margin-top:7px;background:#fdf1d6;border:1px solid var(--gold);padding:7px;border-radius:4px}.annual-panel-locked{background:#eef4ec;border:1px solid #b8cbb7;border-radius:4px;padding:8px;color:#31563c;font-size:10px}.annual-history{margin-top:7px}.annual-history summary{cursor:pointer;font:600 9px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--moss-deep)}.annual-history-item{font-size:10px;padding:6px 0;border-bottom:1px solid var(--line);line-height:1.35}.annual-muted{color:var(--ink-soft);font-size:10px}.annual-import-preview{max-height:48vh;overflow:auto}.annual-import-preview table{width:100%;font-size:11px}.annual-import-preview td{padding:4px 6px;border-bottom:1px solid var(--line)}
+  .annual-panel{padding:7px;max-height:none;overflow:visible}.annual-panel-header{padding:1px 2px 6px}.annual-panel h3{font-size:19px}.annual-panel-mailing{padding:3px 5px;font-size:8px}.annual-panel-section{padding:7px;margin-bottom:5px}.annual-panel-section h4{margin-bottom:4px;font-size:8px}.annual-week-info div{padding:1px 6px}.annual-panel label{margin:3px 0 2px;font-size:8px}.annual-panel input,.annual-panel textarea,.annual-panel select{padding:4px 6px}.annual-panel textarea{min-height:30px}.annual-result{padding:5px}.annual-category-note{margin-bottom:4px;font-size:9px}.annual-category-grid{row-gap:2px}.annual-category-grid input{padding:4px 5px}.annual-category-value{padding:4px 1px}.annual-category-total{margin-top:2px;padding-top:4px}.annual-category-warning{min-height:10px;margin-top:2px}.annual-category-bar{height:2px;margin-top:1px}.annual-category-reset{width:100%;margin-top:3px;padding:4px 6px!important;font-size:9px}.annual-hours{padding:5px 7px}.annual-panel-actions{display:grid;grid-template-columns:1.15fr 1fr auto;gap:4px;margin:5px 0}.annual-panel-actions .btn{min-width:0;padding:5px 6px;font-size:9px;white-space:nowrap}.annual-panel-actions .btn:disabled{opacity:.48;cursor:not-allowed}.annual-history{margin-top:5px}
+  .annual-column-toggles{display:flex;gap:6px;flex-wrap:wrap;font-size:11px}.annual-column-toggles label{display:flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;text-transform:none;cursor:pointer}.annual-column-toggles label:has(input:checked){background:var(--moss-deep);color:#fff;border-color:var(--moss-deep)}.annual-column-toggles input{position:absolute;opacity:0;pointer-events:none}.annual-hidden-historical .annual-col-historical,.annual-hidden-forecast .annual-col-forecast,.annual-hidden-categories .annual-col-categories,.annual-hidden-operations .annual-col-operations{display:none}.annual-import-tabs{display:flex;gap:4px;margin:12px 0}.annual-import-tabs button{flex:1;padding:9px;border:1px solid var(--line);background:#f3f0e8;cursor:pointer;font-weight:600}.annual-import-tabs button.active{background:var(--moss-deep);color:#fff;border-color:var(--moss-deep)}.annual-paste-panel textarea{width:100%;min-height:210px;padding:11px;border:1px solid var(--line);border-radius:4px;font:12px/1.45 var(--mono);resize:vertical}.annual-file-panel[hidden],.annual-paste-panel[hidden]{display:none}
+  .annual-history-browser{margin:0 0 16px;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:6px}.annual-history-browser h3{margin:0 0 4px;font:600 18px var(--serif);color:var(--moss-deep)}.annual-history-browser>p{margin:0 0 12px;color:var(--ink-soft);font-size:11px}.annual-history-filters{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}.annual-history-filters label{font:10px var(--mono);text-transform:uppercase;color:var(--ink-soft)}.annual-history-filters input,.annual-history-filters select{display:block;margin-top:4px;padding:7px 9px;border:1px solid var(--line);border-radius:3px;background:#fff}.annual-history-status{min-height:20px;margin:9px 0 4px;color:var(--ink-soft);font-size:11px}.annual-history-table-wrap{max-height:360px;overflow:auto;border:1px solid var(--line);border-radius:4px}.annual-history-table{width:100%;font-size:11px}.annual-history-table thead{position:sticky;top:0;z-index:2}.annual-history-table th,.annual-history-table td{padding:7px 9px;text-align:right;border-bottom:1px solid var(--line)}.annual-history-table th:first-child,.annual-history-table td:first-child{text-align:left}.annual-import-sample{margin-top:10px;overflow:auto;border:1px solid var(--line);border-radius:4px}.annual-import-sample table{min-width:650px}.annual-import-warning{margin:8px 0;padding:8px 10px;background:#fff4d8;border:1px solid #e4c978;border-radius:4px;color:#6b5215;font-size:11px}
+  .annual-subview[hidden]{display:none!important}.annual-history-subview{width:100%}.annual-history-subview .annual-head{align-items:center}.annual-history-back{white-space:nowrap}.annual-history-browser{padding:18px}.annual-history-summary{display:grid;grid-template-columns:repeat(5,minmax(135px,1fr));gap:10px;margin:14px 0}.annual-history-kpi{min-height:82px;padding:12px 14px;background:#f8f6ef;border:1px solid var(--line);border-radius:5px;text-align:right}.annual-history-kpi span{display:block;font:9.5px var(--mono);text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft)}.annual-history-kpi strong{display:block;margin-top:6px;font:600 22px var(--serif);color:var(--moss-deep)}.annual-history-kpi small{display:block;margin-top:3px;color:var(--ink-soft);font:10.5px var(--mono)}.annual-history-table-wrap{max-height:calc(100vh - 390px);min-height:260px}.annual-history-table{table-layout:fixed;font-size:12px}.annual-history-table tbody tr:nth-child(even){background:#faf8f2}.annual-history-table th,.annual-history-table td{padding:10px 12px}.annual-history-table th:first-child{width:31%}.annual-history-value{display:block;font-weight:700;color:var(--ink)}.annual-history-percent{display:block;margin-top:2px;color:var(--ink-soft);font:10px var(--mono)}.annual-history-filtered-out{color:#aaa}.annual-history-empty{text-align:center!important;color:var(--ink-soft);padding:28px!important}
+  .annual-history-browser{padding:10px}.annual-history-filters{gap:7px}.annual-history-filters input,.annual-history-filters select{padding:5px 7px}.annual-history-status{min-height:16px;margin:5px 0}.annual-history-summary{gap:6px;margin:6px 0}.annual-history-kpi{min-height:48px;padding:6px 9px}.annual-history-kpi span{font-size:7.5px}.annual-history-kpi strong{margin-top:2px;font-size:16px;line-height:1}.annual-history-kpi small{margin-top:2px;font-size:8.5px}.annual-history-layout{display:grid;grid-template-columns:minmax(0,7fr) minmax(300px,3fr);gap:10px;align-items:start}.annual-history-table-wrap{max-height:calc(100vh - 255px);min-height:300px;overflow:auto}.annual-history-table{width:100%;table-layout:fixed;font-size:10.5px}.annual-history-table thead{position:sticky;top:0;z-index:4}.annual-history-table th,.annual-history-table td{height:36px;padding:5px 4px;text-align:center}.annual-history-table th:first-child{width:12%}.annual-history-table th:nth-child(2){width:11%}.annual-history-table th:nth-child(n+3):nth-child(-n+6){width:10%}.annual-history-table th:nth-child(7){width:16%}.annual-history-table th:nth-child(8){width:13%}.annual-history-table tbody tr{cursor:pointer}.annual-history-table tbody tr.selected{background:#fff4d8;box-shadow:inset 4px 0 var(--moss)}.annual-history-table tbody tr.has-campaign{box-shadow:inset 4px 0 var(--gold)}.annual-history-table tbody tr.selected.has-campaign{box-shadow:inset 4px 0 var(--gold),inset 0 0 0 2px rgba(60,92,71,.35)}.annual-history-table th.annual-category-start,.annual-history-table td.annual-category-start{border-left:2px solid #8da091}.annual-history-table th.annual-category-end,.annual-history-table td.annual-category-end{border-right:2px solid #8da091}.annual-history-detail{position:sticky;top:8px;padding:9px;background:#f8f6ef;border:1px solid var(--line);border-radius:6px}.annual-history-detail h3{margin:0;font:600 19px var(--serif);color:var(--moss-deep)}.annual-history-detail-meta{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0 7px}.annual-history-detail-meta span{padding:3px 5px;background:#eef4ec;border-radius:999px;font:9px var(--mono);color:var(--moss-deep)}.annual-history-product-filter{display:flex;align-items:end;gap:6px;margin-bottom:7px}.annual-history-product-filter label{flex:1;font:8px var(--mono);text-transform:uppercase;color:var(--ink-soft)}.annual-history-product-filter select{display:block;width:100%;margin-top:3px;padding:5px;border:1px solid var(--line);border-radius:3px;background:#fff}.annual-history-products-wrap{max-height:calc(100vh - 390px);overflow:auto;border:1px solid var(--line);border-radius:4px;background:#fff}.annual-history-products{width:100%;table-layout:fixed;font-size:9.5px}.annual-history-products thead{position:sticky;top:0;z-index:2}.annual-history-products th,.annual-history-products td{padding:5px 4px;border-bottom:1px solid var(--line);text-align:right}.annual-history-products th:first-child,.annual-history-products td:first-child{text-align:left;width:53%}.annual-history-products th:nth-child(2){width:10%}.annual-history-products th:nth-child(3){width:14%}.annual-history-products th:nth-child(4){width:23%}.annual-history-product-name strong,.annual-history-product-name small{display:block}.annual-history-product-name small{margin-top:2px;color:var(--ink-soft);font-size:8px}.annual-history-product-category{font:700 9px var(--mono);text-align:center!important}.annual-history-product-percent{display:block;color:var(--moss-deep);font-weight:700}.annual-history-product-percent small{display:block;color:var(--ink-soft);font-weight:400}
+  @media(max-width:1180px){.annual-layout{grid-template-columns:1fr}.annual-panel{position:static;max-height:none}.annual-summary{grid-template-columns:repeat(2,minmax(180px,1fr))}}
+  @media(max-width:680px){.annual-head{align-items:flex-start}.annual-head-main,.annual-actions{width:100%}.annual-actions .btn{flex:1 1 160px}.annual-summary{grid-template-columns:1fr}.annual-controls{align-items:stretch}.annual-layout{display:block}.annual-table-wrap{max-height:68vh}.annual-panel{margin-top:14px}.annual-result-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.annual-category-grid{grid-template-columns:minmax(68px,1fr) minmax(58px,64px) minmax(42px,50px)}}
+  .annual-mailing-highlight{background:#fde7e3!important;color:#a62f25!important;font-weight:800!important;box-shadow:inset 0 0 0 1px #e1a39c}.annual-mailing-highlight .annual-category-percent,.annual-mailing-highlight .annual-category-value,.annual-mailing-highlight strong{color:#a62f25!important}.annual-mailing-highlight .annual-category-bar i{background:#c94a3e!important}.annual-mailing-product>td{background:#fde7e3!important;color:#a62f25!important;font-weight:700}.annual-mailing-product>td:first-child{border-left:4px solid #c94a3e}.annual-mailing-product .annual-history-product-name strong,.annual-mailing-product .annual-history-product-percent{color:#a62f25!important}.annual-mailing-badge{border-color:#c94a3e!important;background:#fde7e3!important;color:#a62f25!important}
+  .annual-panel-product-detail{padding:0;overflow:hidden}.annual-panel-product-detail>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px;cursor:pointer;font:700 9px var(--mono);text-transform:uppercase;letter-spacing:.04em;color:var(--moss-deep);list-style:none}.annual-panel-product-detail>summary::-webkit-details-marker{display:none}.annual-panel-product-detail>summary::after{content:"Abrir";padding:2px 5px;border:1px solid var(--line);border-radius:999px;font-size:8px;color:var(--ink-soft)}.annual-panel-product-detail[open]>summary::after{content:"Cerrar"}.annual-panel-product-content{padding:0 7px 7px}.annual-panel-product-meta{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 6px}.annual-panel-product-meta span{max-width:100%;padding:3px 5px;border-radius:999px;background:#eef4ec;color:var(--moss-deep);font:8.5px var(--mono);overflow-wrap:anywhere}.annual-panel-product-filter{margin-bottom:6px}.annual-panel-product-filter label{font:8px var(--mono);text-transform:uppercase;color:var(--ink-soft)}.annual-panel-product-filter select{display:block;width:100%;margin-top:3px;padding:4px 5px;border:1px solid var(--line);border-radius:3px;background:#fff}.annual-panel-products-wrap{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:4px;background:#fff}.annual-panel-products-wrap .annual-history-products{font-size:9px}.annual-panel-products-wrap .annual-history-products th,.annual-panel-products-wrap .annual-history-products td{padding:4px 3px}
+  @media(max-width:900px){.annual-history-summary{grid-template-columns:repeat(2,minmax(140px,1fr))}.annual-history-kpi:first-child{grid-column:1/-1}.annual-history-layout{grid-template-columns:1fr}.annual-history-table-wrap{max-height:58vh}.annual-history-table{min-width:760px}.annual-history-detail{position:static}}
+  #annualImportModal .modal{max-height:calc(100vh - 32px);overflow-y:auto;overscroll-behavior:contain}
+  #annualImportModal .annual-import-preview{max-height:34vh}
+  #annualCampaignModal .modal{width:min(780px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto}.annual-campaign-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0;padding:10px 12px;background:#f3f0e8;border:1px solid var(--line);border-radius:4px}.annual-campaign-toolbar strong{color:var(--moss-deep)}.annual-campaign-toolbar span{font:700 13px var(--mono)}.annual-campaign-table-head,.annual-campaign-row{display:grid;grid-template-columns:minmax(170px,1fr) 145px 70px 72px 78px;gap:8px;align-items:center}.annual-campaign-table-head{padding:4px 7px;color:var(--ink-soft);font:9px var(--mono);text-transform:uppercase}.annual-campaign-row{margin-bottom:6px;padding:7px;background:#faf8f2;border:1px solid var(--line);border-radius:4px}.annual-campaign-row input[type="text"],.annual-campaign-row input[type="date"]{width:100%;min-width:0;padding:7px;border:1px solid var(--line);border-radius:3px;background:#fff}.annual-campaign-date-field{min-width:0}.annual-campaign-weekday{display:block;margin-top:2px;color:var(--ink-soft);font:9px var(--mono);text-transform:capitalize}.annual-campaign-active{display:flex;align-items:center;justify-content:center;gap:5px;font-size:10px}.annual-campaign-week{text-align:center;font:700 11px var(--mono);color:var(--moss-deep)}.annual-campaign-row .btn{padding:7px 8px}.annual-campaign-empty{padding:18px;text-align:center;color:var(--ink-soft);border:1px dashed var(--line);border-radius:4px}.annual-campaign-add{display:grid;grid-template-columns:minmax(170px,1fr) 145px auto;gap:8px;align-items:end;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}.annual-campaign-add label{font:9px var(--mono);text-transform:uppercase;color:var(--ink-soft)}.annual-campaign-add input{display:block;width:100%;margin-top:4px;padding:7px;border:1px solid var(--line);border-radius:3px}.annual-campaign-status{min-height:18px;margin:7px 0;color:var(--ink-soft);font-size:10px}
+  @media(max-width:680px){.annual-campaign-table-head{display:none}.annual-campaign-row{grid-template-columns:1fr 1fr}.annual-campaign-row [data-campaign-name]{grid-column:1/-1}.annual-campaign-add{grid-template-columns:1fr}.annual-campaign-toolbar{align-items:flex-start;flex-direction:column}}
+  #annualImportModal .annual-import-footer{position:sticky;bottom:-26px;z-index:12;margin:16px -28px -26px;padding:12px 28px 16px;background:var(--panel);border-top:1px solid var(--line);box-shadow:0 -8px 18px rgba(35,61,44,.08)}
+  @media(max-width:680px){#annualImportModal .modal{max-height:calc(100vh - 16px);padding:18px 16px}#annualImportModal .annual-import-preview{max-height:30vh}#annualImportModal .annual-import-footer{bottom:-18px;margin:14px -16px -18px;padding:12px 16px 14px}}
+
 </style>
 </head>
 <body>
@@ -692,8 +726,16 @@
         <input type="file" id="nomenclatureFileInput" accept=".xlsx,.xls,.csv" style="display:none;">
       </div>
     </div>
-    <div class="side-nav-item">
-      <button type="button" class="side-nav-btn" id="btnNavAnual" disabled title="Proximamente">Planificación anual<span class="side-nav-sub">Proximamente</span></button>
+    <div class="side-nav-item" data-item="annual">
+      <div class="side-nav-row">
+        <button type="button" class="side-nav-btn" id="btnNavAnual" data-module="annual">Planificación anual</button>
+        <button type="button" class="side-nav-toggle" data-toggle-for="annual" aria-label="Desplegar/plegar Planificación anual">▾</button>
+      </div>
+      <div class="side-nav-actions" data-actions-for="annual">
+        <button class="btn btn-primary" id="btnAnnualCreate">Crear planificación anual</button>
+        <button class="btn btn-ghost" id="btnAnnualImport">Importar informe BO</button>
+        <button class="btn btn-ghost" id="btnAnnualProject">Aplicar proyección</button>
+      </div>
     </div>
     <div class="side-nav-divider"></div>
     <div class="side-nav-actions side-nav-actions-persistent">
@@ -964,6 +1006,66 @@
       </table>
     </div>
   </section>
+
+  <section class="annual-view" id="annualView">
+    <div class="annual-subview" id="annualPlanningSubview">
+    <div class="annual-head">
+      <div class="annual-head-main"><div><h2>Planificación anual</h2><p>Previsión, históricos y seguimiento semanal de expediciones.</p></div><div class="annual-year-picker"><label>Año de planificación<select id="annualSelectedYear"></select></label></div>
+        <div class="annual-controls">
+          <label>Año anterior<input type="number" id="annualPreviousYear" value="2025"></label>
+          <label>Año comparable<input type="number" id="annualComparableYear" value="2015"></label>
+          <label id="annualChartSeriesControl" hidden>Gráfico<select id="annualChartSeries"><option value="total">Total</option><option value="ROSAS">ROSAS</option><option value="COMPUESTOS">COMPUESTOS</option><option value="SIMPLES">SIMPLES</option><option value="PLANTAS">PLANTAS</option></select></label>
+          <label>Estado<select id="annualStatusFilter"><option value="">Todas</option><option value="closed">Cerradas</option><option value="partial">Parciales</option><option value="current">Actual</option><option value="future">Futuras</option></select></label>
+        </div>
+      </div>
+      <div class="annual-actions"><button class="btn btn-primary" id="btnAnnualCreateTop">Crear nuevo año</button><button class="btn btn-ghost" id="btnAnnualImportTop">Importar BO</button><button class="btn btn-ghost" id="btnAnnualProjectTop">Proyectar semanas futuras</button><button class="btn btn-ghost" id="btnAnnualCampaigns">Gestionar campañas</button><button class="btn btn-ghost" id="btnAnnualOpenHistory">Histórico de expediciones</button><button type="button" class="btn btn-ghost" id="btnAnnualChartToggle" aria-expanded="false" aria-controls="annualChartPanel">Mostrar gráfico</button></div>
+    </div>
+    <div class="annual-summary" id="annualSummary"></div>
+    <div class="annual-chart" id="annualChartPanel" hidden><div class="annual-chart-legend" id="annualChartLegend"></div><svg id="annualChart" viewBox="0 0 1000 190" preserveAspectRatio="none" aria-label="Gráfico anual"></svg></div>
+    <div class="annual-layout" id="annualLayout">
+      <div class="annual-table-wrap">
+        <table class="annual-table">
+          <colgroup><col class="annual-w-week"><col class="annual-w-status"><col class="annual-w-exp"><col class="annual-w-exp"><col class="annual-w-exp-current"><col class="annual-w-growth"><col class="annual-w-growth"><col class="annual-w-category"><col class="annual-w-category"><col class="annual-w-category"><col class="annual-w-category"><col class="annual-w-mailing"><col class="annual-w-code"></colgroup>
+          <thead><tr>
+            <th>Semana</th><th>Estado</th>
+            <th id="annualComparableHeader">Exp. comparable</th><th id="annualPreviousHeader">Exp. anterior</th><th id="annualCurrentHeader">Exp. actual</th><th id="annualGrowthHeader">Crec. vs comparable</th><th id="annualPreviousGrowthHeader">Crec. vs anterior</th>
+            <th class="annual-category-start">Rosas %</th><th>Compuestos %</th><th>Simples %</th><th class="annual-category-end">Plantas %</th>
+            <th>Mailing</th><th>Código mailing</th>
+          </tr></thead>
+          <tbody id="annualTbody"></tbody>
+        </table>
+      </div>
+      <aside class="annual-panel" id="annualWeekPanel"><p class="annual-muted">Selecciona una semana para ver y editar el detalle.</p></aside>
+    </div>
+    </div>
+    <div class="annual-subview annual-history-subview" id="annualHistorySubview" hidden>
+      <div class="annual-head">
+        <div><h2>Histórico de expediciones</h2><p>Consulta por día, semana, mes o todo el periodo, con campañas, mailing y detalle por producto.</p></div>
+        <button type="button" class="btn btn-ghost annual-history-back" id="btnAnnualBackToPlanning">← Volver a Planificación anual</button>
+      </div>
+      <section class="annual-history-browser">
+        <div class="annual-history-filters">
+          <label>Año<select id="annualHistoryYear"></select></label>
+          <label>Desde<input type="date" id="annualHistoryFrom"></label>
+          <label>Hasta<input type="date" id="annualHistoryTo"></label>
+          <label>Agrupar<select id="annualHistoryGroup"><option value="day">Día</option><option value="week" selected>Semana</option><option value="month">Mes</option><option value="period">Todo el periodo</option></select></label>
+          <button type="button" class="btn btn-ghost" id="btnAnnualHistoryLoad">Consultar / actualizar</button>
+        </div>
+        <div class="annual-history-status" id="annualHistoryStatus">Selecciona un periodo para consultar el histórico.</div>
+        <div class="annual-history-summary" id="annualHistorySummary"></div>
+        <div class="annual-history-layout" id="annualHistoryTableWrap" hidden>
+          <div class="annual-history-table-wrap">
+            <table class="annual-history-table">
+              <thead><tr><th id="annualHistoryPeriodHeading">Semana</th><th id="annualHistoryExpHeading">Expediciones</th><th class="annual-category-start">Rosas %</th><th>Compuestos %</th><th>Simples %</th><th class="annual-category-end">Plantas %</th><th>Mailing</th><th>Código mailing</th></tr></thead>
+              <tbody id="annualHistoryTbody"></tbody>
+            </table>
+          </div>
+          <aside class="annual-history-detail" id="annualHistoryProductDetail"><p class="annual-muted">Selecciona un periodo para ver el detalle por productos.</p></aside>
+        </div>
+      </section>
+    </div>
+  </section>
+  <div class="annual-floating-tooltip" id="annualWeekFloatingTooltip" role="tooltip" hidden></div>
 
   </main>
   </div>
@@ -1253,6 +1355,78 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div class="modal-overlay" id="annualCreateModal">
+  <div class="modal">
+    <h3>Crear planificación anual</h3>
+    <p>Se crearán todas las semanas ISO del ejercicio sin modificar los datos semanales existentes.</p>
+    <div class="settings-summary">
+      <label>Año<input type="number" id="annualCreateYear" value="2026"></label>
+      <label>Año anterior<input type="number" id="annualCreatePrevious" value="2025"></label>
+      <label>Año comparable<input type="number" id="annualCreateComparable" value="2015"></label>
+      <label>Crecimiento inicial %<input type="number" step="0.1" id="annualCreateGrowth" value="0"></label>
+    </div>
+    <label class="view-toggle"><input type="checkbox" id="annualCreateCopyCampaigns" checked> Duplicar calendario de campañas del año anterior</label>
+    <label class="view-toggle"><input type="checkbox" id="annualCreateImportObjectives"> Importar objetivos semanales existentes como previsión inicial y actual</label>
+    <div class="settings-error" id="annualCreateStatus"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" data-close-annual="annualCreateModal">Cancelar</button><button class="btn btn-primary" id="btnAnnualCreateConfirm">Crear año</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="annualImportModal">
+  <div class="modal" style="max-width:820px;">
+    <h3>Importar informe BO</h3>
+    <p>Indica el año del informe. Analizar los datos no modifica la planificación; solo se guardarán al confirmar.</p>
+    <label>Año asignado<input type="number" id="annualImportYear" value="2026" style="display:block;margin-top:4px;padding:8px;border:1px solid var(--line);border-radius:4px;"></label>
+    <div class="annual-import-tabs" role="tablist">
+      <button type="button" class="active" id="btnAnnualImportPasteTab" data-annual-import-method="paste">Pegar tabla</button>
+      <button type="button" id="btnAnnualImportFileTab" data-annual-import-method="file">Seleccionar archivo</button>
+    </div>
+    <div class="annual-paste-panel" id="annualImportPastePanel">
+      <p>Copia la tabla completa del BO, incluyendo la fila de encabezados, y pégala aquí.</p>
+      <textarea id="annualImportPasteArea" placeholder="code	type	reference	Total	Jeudi 2026/01/01	…"></textarea>
+      <div class="modal-actions"><button type="button" class="btn btn-primary" id="btnAnnualAnalyzePaste">Validar datos pegados</button></div>
+    </div>
+    <div class="annual-file-panel" id="annualImportFilePanel" hidden>
+      <p>Se mantienen los formatos XLSX, XLS, CSV y TXT.</p>
+      <button class="btn btn-primary" id="btnAnnualChooseFile">Seleccionar XLSX, XLS, CSV o TXT</button>
+      <input type="file" id="annualImportFile" accept=".xlsx,.xls,.csv,.txt,text/csv,text/plain" style="display:none;">
+    </div>
+    <div class="annual-import-preview" id="annualImportPreview"></div>
+    <div class="settings-error" id="annualImportStatus"></div>
+    <div class="modal-actions annual-import-footer"><button type="button" class="btn btn-ghost" data-close-annual="annualImportModal">Cancelar</button><button type="button" class="btn btn-primary" id="btnAnnualImportConfirm" onclick="confirmAnnualImport(event)">Confirmar importación</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="annualProjectionModal">
+  <div class="modal">
+    <h3>Aplicar proyección</h3>
+    <p>La previsión se calcula desde el año base y no sustituye ajustes manuales sin confirmación.</p>
+    <div class="settings-summary">
+      <label>Crecimiento %<input type="number" step="0.1" id="annualProjectionGrowth" value="0"></label>
+      <label>Base<select id="annualProjectionBase"><option value="comparable">Año comparable</option><option value="previous">Año anterior</option></select></label>
+      <label>Desde semana<input type="number" min="1" max="53" id="annualProjectionFrom" value="1"></label>
+      <label>Hasta semana<input type="number" min="1" max="53" id="annualProjectionTo" value="53"></label>
+    </div>
+    <label class="view-toggle"><input type="checkbox" id="annualProjectionOverwrite"> Sobrescribir previsiones ajustadas manualmente</label>
+    <div id="annualProjectionPreview" class="migration-warning"></div>
+    <div class="settings-error" id="annualProjectionStatus"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" data-close-annual="annualProjectionModal">Cancelar</button><button class="btn btn-primary" id="btnAnnualProjectionConfirm">Aplicar proyección</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="annualCampaignModal">
+  <div class="modal">
+    <h3>Calendario anual de campañas</h3>
+    <p>Cada campaña se aplica automáticamente a la semana que contiene su fecha. Las semanas con campaña quedan destacadas en la planificación anual.</p>
+    <div class="annual-campaign-toolbar"><div><small>Ejercicio</small><br><span id="annualCampaignYearLabel">—</span></div><button class="btn btn-ghost" id="btnAnnualCampaignDuplicate">Duplicar calendario del año anterior</button></div>
+    <div class="annual-campaign-table-head"><span>Campaña</span><span>Fecha concreta</span><span>Activa</span><span>Semana</span><span></span></div>
+    <div id="annualCampaignListEditor"></div>
+    <div class="annual-campaign-add"><label>Nueva campaña<input id="annualCampaignNewName" placeholder="Nombre"></label><label>Fecha concreta<input type="date" id="annualCampaignNewDate"><small class="annual-campaign-weekday" id="annualCampaignNewWeekday"></small></label><button class="btn btn-primary" id="btnAnnualCampaignAdd">Añadir campaña</button></div>
+    <div class="annual-campaign-status" id="annualCampaignStatus"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" data-close-annual="annualCampaignModal">Cerrar</button></div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1662,6 +1836,7 @@ let oneDriveDirHandle = null;
 let oneDriveAutoSaveTimer = null;
 let suppressOneDriveAutoSave = false;
 let weekSnapshots = {};
+let annualPlanning = null;
 let activeWeekKey = '';
 let currentWeekKey = '';
 let planningMode = false;
@@ -1715,7 +1890,7 @@ function switchToWeek(year, week){
     saveState();
     return;
   }
-  weekState={year,week,objetivo:0,acumulado:0,baseWeekKey:null};
+  weekState={year,week,objetivo:annualWeek(year,week)?.currentForecast||0,acumulado:0,baseWeekKey:null};
   activeWeekKey=key;
   currentWeekKey=key;
   planningMode=false;
@@ -1845,7 +2020,7 @@ function storageAvailable(){
   }
 }
 
-function buildAppState(){ storeActiveSnapshot(); return {app:'aquarelle-control-stock', version:4, savedAt:new Date().toISOString(), data, genericoData, prevExpedicionProducto, simplesPrea, forecastAdjustments, recapLoaded, weekState, groupView, activeWeekKey, currentWeekKey, planningMode, weekSnapshots, nomenclatures, nomenclatureMeta, productPriceCatalog, flowers, flowerMeta, preasignDia, comprasTallosOverrides}; }
+function buildAppState(){ storeActiveSnapshot(); return {app:'aquarelle-control-stock', version:4, savedAt:new Date().toISOString(), data, genericoData, prevExpedicionProducto, simplesPrea, forecastAdjustments, recapLoaded, weekState, groupView, activeWeekKey, currentWeekKey, planningMode, weekSnapshots, nomenclatures, nomenclatureMeta, productPriceCatalog, flowers, flowerMeta, preasignDia, comprasTallosOverrides, annualPlanning:ensureAnnualPlanning()}; }
 
 function openHandleDb(){
   return new Promise((resolve, reject)=>{
@@ -1983,6 +2158,8 @@ function applyAppState(state){
   flowerMeta = state.flowerMeta || {updatedAt:null, importedAt:null};
   preasignDia = state.preasignDia ? {...preasignDiaDefaults(), ...state.preasignDia} : preasignDiaDefaults();
   comprasTallosOverrides = state.comprasTallosOverrides && typeof state.comprasTallosOverrides === 'object' ? state.comprasTallosOverrides : {};
+  annualPlanning = normalizeAnnualPlanning(state.annualPlanning);
+  annualShipmentYearsLoaded.clear();
   weekSnapshots=state.weekSnapshots||{}; currentWeekKey=state.currentWeekKey||weekKey(new Date().getFullYear(), getISOWeek(new Date())); activeWeekKey=state.activeWeekKey||weekKey((state.weekState||weekState).year,(state.weekState||weekState).week);
   if(weekSnapshots[activeWeekKey]){ applyWeekSnapshot({...weekSnapshots[activeWeekKey], key:activeWeekKey}); openCurrentWeekAfterLoad(); }
   else { data=state.data; genericoData=state.genericoData||{}; prevExpedicionProducto=state.prevExpedicionProducto||{}; simplesPrea=state.simplesPrea||{}; forecastAdjustments=state.forecastAdjustments||{}; weekState={...weekState,...(state.weekState||{})}; groupView=state.groupView!==undefined?!!state.groupView:groupView; recapLoaded=!!state.recapLoaded; planningMode=!!state.planningMode; activeWeekKey=weekKey(weekState.year,weekState.week); data.forEach(d=>{ genericoFor(d.generico); prevExpedicionFor(d.producto); }); weekSnapshots[activeWeekKey]=captureWeekSnapshot(); }
@@ -2143,7 +2320,10 @@ function renderWeekPanel(){
   panel.innerHTML=`${modeBanner}<div class="week-block"><div class="label">${planningMode?'Semana planificada':'Semana de produccion'}</div><div class="week-select-row"><select id="weekSelect">${weekOptions.map(w=>`<option value="${w}" ${w===weekState.week?'selected':''}>Semana ${w}</option>`).join('')}</select><select id="yearSelect">${[weekState.year-1,weekState.year,weekState.year+1].map(y=>`<option value="${y}" ${y===weekState.year?'selected':''}>${y}</option>`).join('')}</select></div><div class="week-dates" style="margin-top:8px;">${fmtDateShort(start)} - ${fmtDateShort(end)}</div></div><div class="divider"></div><div class="week-block"><div class="label">Objetivo expediciones</div><input type="number" class="week-input" id="objetivoInput" value="${weekState.objetivo||0}"></div><div class="week-block"><div class="label">Acumuladas hoy</div><input type="number" class="week-input" id="acumuladoInput" value="${weekState.acumulado||0}"></div><div class="week-block"><div class="label">${planningMode?'Pendiente por prever':'Pendiente por salir'}</div><div class="week-val accent" id="weekPendingValue">${fmtNum(pendiente)}</div><div class="week-sub">objetivo - acumulado</div></div><div class="week-block"><div class="label">% completado</div><div class="week-val ${pendiente<0?'warn':''}" id="weekPercentValue">${weekState.objetivo>0?Math.round(weekState.acumulado/weekState.objetivo*100):0}%</div><div class="week-sub" id="weekPercentSub">${pendiente<0?'objetivo superado':'de la semana'}</div></div>`;
   document.getElementById('weekSelect').addEventListener('change', e=>switchToWeek(parseInt(document.getElementById('yearSelect').value,10),parseInt(e.target.value,10)));
   document.getElementById('yearSelect').addEventListener('change', e=>switchToWeek(parseInt(e.target.value,10),parseInt(document.getElementById('weekSelect').value,10)));
-  document.getElementById('objetivoInput').addEventListener('input', e=>{ weekState.objetivo=parseAppNumber(e.target.value); saveState(); updateWeekSummary(); });
+  document.getElementById('objetivoInput').addEventListener('change', e=>{
+    const old=weekState.objetivo;
+    if(!changeWeeklyObjective(e.target.value,planningMode?'weekly-planning':'weekly-stock')) e.target.value=old;
+  });
   document.getElementById('acumuladoInput').addEventListener('input', e=>{ weekState.acumulado=parseAppNumber(e.target.value); saveState(); updateWeekSummary(); });
 }
 
@@ -2580,7 +2760,7 @@ function buildPlanningFromCurrent(){
     prevExpedicionProducto=nextPrev;
     simplesPrea={};
     forecastAdjustments={};
-    weekState={year:next.year,week:next.week,objetivo:0,acumulado:0,baseWeekKey:baseKey};
+    weekState={year:next.year,week:next.week,objetivo:annualWeek(next.year,next.week)?.currentForecast||0,acumulado:0,baseWeekKey:baseKey};
     activeWeekKey=nextKey;
     planningMode=true;
     planningStatusMessage = 'Planificacion creada con saldo inicial desde la semana actual.';
@@ -3346,6 +3526,778 @@ function exportFlowerPurchase(dayIndex){
   if(missing.length) alert('Hay productos sin nomenclatura. Se han incluido en una pestana aparte.');
 }
 
+// ---------- Planificacion anual ----------
+const ANNUAL_CATEGORIES=['ROSAS','COMPUESTOS','SIMPLES','PLANTAS'];
+const ANNUAL_CAMPAIGNS=['San Valentín','Día de la Mujer','San José','San Jordi','Día de la Madre','Todos los Santos','Black Friday','Navidad'];
+let annualSelectedWeekKey=null;
+let annualImportCandidate=null;
+let annualShipmentYearsLoaded=new Set();
+let annualShipmentLoadPromise=null;
+let annualSubView='planning';
+let annualCenterCurrentWeekOnRender=false;
+let annualHistoryRows=[];
+let annualHistorySelectedKey=null;
+let annualHistoryProductCategory='';
+let annualPanelProductCategory='';
+
+function emptyAnnualPlanning(){
+  return {selectedYear:2026,previousYear:2025,comparableYear:2015,projectionSettings:{defaultGrowthPercent:0,projectionBase:'comparable',distributionWindow:8},imports:{},years:{},campaignCatalog:ANNUAL_CAMPAIGNS.map((name,index)=>({id:`campaign-${index+1}`,name,active:true,notes:''})),changeHistory:[]};
+}
+function normalizeAnnualPlanning(value){
+  const base=emptyAnnualPlanning();
+  if(!value||typeof value!=='object'||Array.isArray(value)) return base;
+  const normalized={...base,...value,projectionSettings:{...base.projectionSettings,...(value.projectionSettings||{})},imports:value.imports&&typeof value.imports==='object'?cloneData(value.imports):{},years:value.years&&typeof value.years==='object'?value.years:{},campaignCatalog:Array.isArray(value.campaignCatalog)?value.campaignCatalog:base.campaignCatalog,changeHistory:Array.isArray(value.changeHistory)?value.changeHistory:[]};
+  Object.values(normalized.imports).forEach(item=>{ if(item&&typeof item==='object'){ delete item.days; delete item.records; delete item.legacyWeeks; } });
+  Object.values(normalized.years).forEach(yearData=>{ if(yearData.previousYear===undefined) yearData.previousYear=normalized.previousYear; if(yearData.comparableYear===undefined) yearData.comparableYear=normalized.comparableYear; if(!yearData.projectionSettings) yearData.projectionSettings={...normalized.projectionSettings}; migrateAnnualCampaignsForYear(yearData); });
+  return normalized;
+}
+function ensureAnnualPlanning(){ annualPlanning=normalizeAnnualPlanning(annualPlanning); return annualPlanning; }
+function annualKey(year,week){ return `${year}-${String(week).padStart(2,'0')}`; }
+function dateIso(date){ return date.toISOString().slice(0,10); }
+function isoYearForDate(input){ const date=new Date(Date.UTC(input.getUTCFullYear(),input.getUTCMonth(),input.getUTCDate())); date.setUTCDate(date.getUTCDate()+4-(date.getUTCDay()||7)); return date.getUTCFullYear(); }
+function annualWeekStatus(year,week){ const {start,end}=getISOWeekRange(year,week),today=new Date(),utc=new Date(Date.UTC(today.getFullYear(),today.getMonth(),today.getDate())); return utc>end?'closed':utc>=start&&utc<=end?'current':'future'; }
+function emptyAnnualCategories(){ return Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,{percent:25,projected:0,real:null,manual:false}])); }
+function createAnnualWeek(year,week){ const {start,end}=getISOWeekRange(year,week); return {year,week,startDate:dateIso(start),endDate:dateIso(end),status:annualWeekStatus(year,week),campaign:'',mailing:'',mailingProductCode:'',notes:'',comparableRealTotal:null,previousYearRealTotal:null,initialForecast:null,currentForecast:null,currentRealTotal:null,partialRealTotal:null,growthPercentApplied:null,categoryDistributionProjected:emptyAnnualCategories(),categoryReal:{},manualCategoryAdjustment:false,distributionMethod:'Sin datos: reparto neutro',hoursNeeded:null,lastUpdatedAt:null,lastUpdatedBy:null}; }
+function objectivesForAnnualYear(year){ const result={}; Object.values(weekSnapshots||{}).forEach(s=>{ if(Number(s?.year)===Number(year)&&Number(s.objetivo)>0) result[Number(s.week)]=Math.round(Number(s.objetivo)); }); if(Number(weekState?.year)===Number(year)&&Number(weekState.objetivo)>0) result[Number(weekState.week)]=Math.round(Number(weekState.objetivo)); return result; }
+function normalizedCampaignName(value){ return String(value||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }
+function defaultAnnualCampaignDate(name,year){
+  const key=normalizedCampaignName(name),fixed=key.includes('san valentin')?'02-14':key.includes('dia de la mujer')?'03-08':key.includes('san jose')?'03-19':key.includes('san jordi')?'04-23':key.includes('todos los santos')?'11-01':key==='navidad'?'12-25':null;
+  if(fixed) return `${year}-${fixed}`;
+  if(key.includes('dia de la madre')){ const date=new Date(Date.UTC(year,4,1)); date.setUTCDate(1+(7-date.getUTCDay())%7); return dateIso(date); }
+  if(key.includes('black friday')){ const date=new Date(Date.UTC(year,10,1)); date.setUTCDate(1+(5-date.getUTCDay()+7)%7+21); return dateIso(date); }
+  return '';
+}
+function shiftAnnualCampaignDate(value,targetYear){
+  const match=String(value||'').match(/^\d{4}-(\d{2})-(\d{2})$/);
+  if(!match) return '';
+  const month=Number(match[1]),day=Number(match[2]),lastDay=new Date(Date.UTC(targetYear,month,0)).getUTCDate();
+  return `${targetYear}-${String(month).padStart(2,'0')}-${String(Math.min(day,lastDay)).padStart(2,'0')}`;
+}
+function migrateAnnualCampaignsForYear(yearData){
+  const year=Number(yearData?.year);
+  if(!Number.isFinite(year)) return;
+  if(!Array.isArray(yearData.campaigns)) yearData.campaigns=[];
+  if(!yearData.campaigns.length&&!(Number(yearData.campaignCalendarVersion)>=1)){
+    const migrated=[];
+    Object.values(yearData.weeks||{}).forEach(row=>String(row?.campaign||'').split(/\s+·\s+/).map(value=>value.trim()).filter(Boolean).forEach(name=>{
+      if(migrated.some(item=>item.name===name)) return;
+      migrated.push({id:`campaign-${year}-${migrated.length+1}`,name,date:defaultAnnualCampaignDate(name,year)||row.startDate||'',active:true,notes:''});
+    }));
+    yearData.campaigns=migrated;
+  }else yearData.campaigns=yearData.campaigns.map((item,index)=>({id:item.id||`campaign-${year}-${index+1}`,name:String(item.name||'').trim(),date:String(item.date||defaultAnnualCampaignDate(item.name,year)||'').slice(0,10),active:item.active!==false,notes:item.notes||''})).filter(item=>item.name);
+  yearData.campaignCalendarVersion=1;
+}
+function createAnnualYear(year,previousYear,comparableYear,growthPercent=0,importObjectives=false,copyCampaigns=true){
+  const plan=ensureAnnualPlanning(),key=String(year);
+  if(plan.years[key]) return false;
+  const objectives=importObjectives?objectivesForAnnualYear(year):{},weeks={},totalWeeks=isoWeeksInYear(year);
+  for(let week=1;week<=totalWeeks;week++){ const row=createAnnualWeek(year,week); if(objectives[week]!==undefined){ row.initialForecast=objectives[week]; row.currentForecast=objectives[week]; row.categoryDistributionProjected=distributeAnnualForecast(row,objectives[week]); } weeks[annualKey(year,week)]=row; }
+  plan.selectedYear=year; plan.previousYear=previousYear; plan.comparableYear=comparableYear; plan.projectionSettings.defaultGrowthPercent=growthPercent; plan.years[key]={year,createdAt:new Date().toISOString(),weeks,campaigns:[],campaignCalendarVersion:1};
+  plan.years[key].previousYear=previousYear; plan.years[key].comparableYear=comparableYear; plan.years[key].projectionSettings={...plan.projectionSettings,defaultGrowthPercent:growthPercent};
+  const campaignSourceYear=year-1;
+  if(copyCampaigns&&plan.years[String(campaignSourceYear)]?.campaigns) plan.years[key].campaigns=plan.years[String(campaignSourceYear)].campaigns.map((item,index)=>({...cloneData(item),id:`campaign-${year}-${Date.now()}-${index}`,date:shiftAnnualCampaignDate(item.date,year)}));
+  applyAnnualCampaignCalendar(year);
+  addAnnualHistory({year,week:null,type:'create-year',origin:'annual-planning',oldValue:null,newValue:{previousYear,comparableYear,weeks:totalWeeks},reason:'Creación de planificación anual'});
+  annualSelectedWeekKey=annualKey(year,Math.min(getISOWeek(new Date()),totalWeeks)); saveState(); renderAnnualPlanning(); return true;
+}
+function annualYearData(year=ensureAnnualPlanning().selectedYear){ return ensureAnnualPlanning().years[String(year)]||null; }
+function annualYearSettings(year=ensureAnnualPlanning().selectedYear){ const plan=ensureAnnualPlanning(),data=annualYearData(year); return {previousYear:data?.previousYear??plan.previousYear,comparableYear:data?.comparableYear??plan.comparableYear,projectionSettings:{...plan.projectionSettings,...(data?.projectionSettings||{})}}; }
+function annualWeek(year,week){ return annualYearData(year)?.weeks?.[annualKey(year,week)]||null; }
+function annualImportWeek(year,week){ return ensureAnnualPlanning().imports?.[String(year)]?.weeks?.[annualKey(year,week)]||null; }
+function annualCampaignsForYear(year=ensureAnnualPlanning().selectedYear){ const data=annualYearData(year); if(!data) return []; migrateAnnualCampaignsForYear(data); return data.campaigns; }
+function annualCampaignWeekNumber(item){ const date=parseAnnualDate(item?.date); return date?getISOWeek(date):null; }
+function annualCampaignWeekday(value){ const date=parseAnnualDate(value); return date?date.toLocaleDateString('es-ES',{weekday:'long',timeZone:'UTC'}):''; }
+function annualCampaignsForWeek(year,week){ return annualCampaignsForYear(year).filter(item=>item.active!==false&&annualCampaignWeekNumber(item)===Number(week)&&isoYearForDate(parseAnnualDate(item.date))===Number(year)); }
+function applyAnnualCampaignCalendar(year=ensureAnnualPlanning().selectedYear){
+  const data=annualYearData(year);
+  if(!data) return;
+  Object.values(data.weeks||{}).forEach(row=>{ row.campaign=''; });
+  const grouped={};
+  annualCampaignsForYear(year).filter(item=>item.active!==false&&item.date).forEach(item=>{
+    const date=parseAnnualDate(item.date);
+    if(!date||isoYearForDate(date)!==Number(year)) return;
+    const week=getISOWeek(date);
+    if(!grouped[week]) grouped[week]=[];
+    if(!grouped[week].includes(item.name)) grouped[week].push(item.name);
+  });
+  Object.entries(grouped).forEach(([week,names])=>{ const row=data.weeks?.[annualKey(year,Number(week))]; if(row) row.campaign=names.join(' · '); });
+}
+function duplicateAnnualCampaignCalendar(year,sourceYear=Number(year)-1){
+  const target=annualYearData(year),source=annualYearData(sourceYear);
+  if(!target) throw new Error(`No existe la planificación de ${year}.`);
+  if(!source?.campaigns?.length) throw new Error(`No hay campañas en ${sourceYear} para duplicar.`);
+  target.campaigns=source.campaigns.map((item,index)=>({...cloneData(item),id:`campaign-${year}-${Date.now()}-${index}`,date:shiftAnnualCampaignDate(item.date,year)}));
+  target.campaignCalendarVersion=1;
+  applyAnnualCampaignCalendar(year);
+  addAnnualHistory({year,week:null,type:'campaign-calendar-copy',origin:'annual-campaigns',oldValue:null,newValue:{sourceYear,campaigns:target.campaigns.length},reason:`Calendario duplicado desde ${sourceYear}`});
+}
+function annualUser(){ return supabaseUser?.email||'usuario-local'; }
+function addAnnualHistory({year,week,type,origin,oldValue,newValue,reason='',oldDistribution=null,newDistribution=null}){ ensureAnnualPlanning().changeHistory.unshift({id:`annual-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,timestamp:new Date().toISOString(),user:annualUser(),year,week,type,origin,oldValue:cloneData(oldValue),newValue:cloneData(newValue),reason,oldDistribution:cloneData(oldDistribution),newDistribution:cloneData(newDistribution)}); if(annualPlanning.changeHistory.length>1000) annualPlanning.changeHistory.length=1000; }
+function annualHistoryFor(year,week){ return ensureAnnualPlanning().changeHistory.filter(item=>Number(item.year)===Number(year)&&Number(item.week)===Number(week)); }
+function annualPercent(value,base){ return value===null||value===undefined||base===null||base===undefined||!Number.isFinite(Number(base))||Number(base)===0?'—':`${Number(value)>=Number(base)?'+':''}${Math.round((Number(value)-Number(base))/Number(base)*100)}%`; }
+function annualNumber(value){ return value===null||value===undefined||!Number.isFinite(Number(value))?'—':fmtNum(Math.round(Number(value))); }
+function largestRemainder(total,weights){ total=Math.max(0,Math.round(Number(total)||0)); const clean=ANNUAL_CATEGORIES.map(cat=>Math.max(0,Number(weights?.[cat])||0)),sum=clean.reduce((a,b)=>a+b,0),normalized=sum>0?clean:clean.map(()=>1),divisor=normalized.reduce((a,b)=>a+b,0),raw=normalized.map(value=>value/divisor*total),ints=raw.map(Math.floor); let remaining=total-ints.reduce((a,b)=>a+b,0); raw.map((value,index)=>({index,remainder:value-ints[index]})).sort((a,b)=>b.remainder-a.remainder||a.index-b.index).slice(0,remaining).forEach(item=>ints[item.index]++); return Object.fromEntries(ANNUAL_CATEGORIES.map((cat,index)=>[cat,ints[index]])); }
+function annualDistributionWeights(row){
+  const plan=ensureAnnualPlanning(),settings=annualYearSettings(row.year),windowSize=8,currentImport=plan.imports[String(row.year)]?.weeks||{},prior=Object.values(currentImport).filter(item=>item.week<row.week&&item.isComplete&&item.total>0&&!String(annualWeek(row.year,item.week)?.campaign||'').trim()).sort((a,b)=>b.week-a.week).slice(0,windowSize);
+  if(prior.length){ const totals=Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,prior.reduce((sum,item)=>sum+(item.categories?.[cat]||0),0)])); if(Object.values(totals).some(Boolean)) return {weights:totals,method:`Últimas ${prior.length} semanas cerradas sin campaña`}; }
+  const comparable=annualImportWeek(settings.comparableYear,row.week); if(comparable?.total>0) return {weights:comparable.categories,method:`Misma semana de ${settings.comparableYear}`};
+  const all=Object.values(plan.imports).flatMap(item=>Object.values(item.weeks||{})).filter(item=>item.total>0); if(all.length) return {weights:Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,all.reduce((sum,item)=>sum+(item.categories?.[cat]||0),0)])),method:'Distribución acumulada disponible'};
+  return {weights:Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,1])),method:'Sin datos: reparto neutro'};
+}
+function distributeAnnualForecast(row,total,weightsOverride=null,manual=false){ const source=weightsOverride?{weights:weightsOverride,method:'Ajuste manual'}:annualDistributionWeights(row),units=largestRemainder(total,source.weights),result={}; ANNUAL_CATEGORIES.forEach(cat=>{ result[cat]={percent:total>0?units[cat]/total*100:25,projected:units[cat],real:row.categoryReal?.[cat]??null,manual}; }); row.distributionMethod=source.method; return result; }
+function recalculateAnnualCategories(row,manualWeights=null){ row.categoryDistributionProjected=distributeAnnualForecast(row,row.currentForecast||0,manualWeights,!!manualWeights); row.manualCategoryAdjustment=!!manualWeights; row.lastUpdatedAt=new Date().toISOString(); row.lastUpdatedBy=annualUser(); }
+function annualCategoryPercentages(values){
+  const weights=Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,Math.max(0,Number(values?.[cat])||0)])),tenths=largestRemainder(1000,weights);
+  return Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,tenths[cat]/10]));
+}
+function parseAnnualDate(value){
+  if(value instanceof Date&&!Number.isNaN(value.getTime())) return new Date(Date.UTC(value.getFullYear(),value.getMonth(),value.getDate()));
+  if(typeof value==='number'&&window.XLSX){ const p=XLSX.SSF.parse_date_code(value); if(p) return new Date(Date.UTC(p.y,p.m-1,p.d)); }
+  const text=String(value??'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); if(!text) return null;
+  let m=text.match(/\b(20\d{2})[-/.](\d{1,2})[-/.](\d{1,2})\b/); if(m) return new Date(Date.UTC(+m[1],+m[2]-1,+m[3]));
+  m=text.match(/\b(\d{1,2})[-/.](\d{1,2})[-/.](20\d{2})\b/); if(m) return new Date(Date.UTC(+m[3],+m[2]-1,+m[1]));
+  const months={ene:0,enero:0,jan:0,janv:0,feb:1,febr:1,fev:1,mar:2,mars:2,abr:3,abril:3,avril:3,may:4,mayo:4,mai:4,jun:5,junio:5,juin:5,jul:6,julio:6,juil:6,ago:7,agosto:7,aout:7,sep:8,sept:8,oct:9,nov:10,dic:11,diciembre:11,dec:11,decembre:11}; m=text.match(/\b(\d{1,2})\s+([a-z]+)\.?\s+(20\d{2})\b/); if(m){ const month=Object.entries(months).find(([key])=>m[2].startsWith(key))?.[1]; if(month!==undefined) return new Date(Date.UTC(+m[3],month,+m[1])); } return null;
+}
+function normalizeBoReference(value){ return String(value??'').trim().toUpperCase().replace(/[\s_-]+/g,'-'); }
+function annualReferenceCategory(value){ const raw=String(value??'').trim().toUpperCase(); if(/^A\s*-/.test(raw)) return 'ROSAS'; if(/^C\s*-/.test(raw)) return 'COMPUESTOS'; if(/^S\s*-/.test(raw)) return 'SIMPLES'; if(/^P\s*-/.test(raw)) return 'PLANTAS'; return null; }
+function isAnnualExcludedReference(value){ const normalized=normalizeBoReference(value); return /^(TF|X)-/.test(normalized)||/^S-(POT|ZINC|POP)(-|$)/.test(normalized); }
+function annualExclusionReason(value){
+  const normalized=normalizeBoReference(value);
+  if(/^TF-/.test(normalized)) return 'Teleflora (TF-)';
+  if(/^X-/.test(normalized)) return 'Referencia excluida (X-)';
+  if(/^S-POT(-|$)/.test(normalized)) return 'Recipiente (S-POT)';
+  if(/^S-ZINC(-|$)/.test(normalized)) return 'Recipiente (S-ZINC)';
+  if(/^S-POP(-|$)/.test(normalized)) return 'Referencia excluida (S-POP)';
+  return 'Referencia excluida';
+}
+function parseAnnualBoNumber(value){
+  if(typeof value==='number') return Number.isFinite(value)?value:0;
+  let text=String(value??'').trim().replace(/[\s\u00a0\u202f]/g,'');
+  if(!text) return 0;
+  const comma=text.lastIndexOf(','),dot=text.lastIndexOf('.');
+  if(comma>=0&&dot>=0) text=comma>dot?text.replace(/\./g,'').replace(',','.'):text.replace(/,/g,'');
+  else if(comma>=0) text=text.replace(',','.');
+  else if(/^-?\d{1,3}(?:\.\d{3})+$/.test(text)) text=text.replace(/\./g,'');
+  const parsed=Number(text);
+  return Number.isFinite(parsed)?parsed:0;
+}
+function annualStableProductCode(code,reference){
+  const normalizedCode=String(code??'').trim();
+  return normalizedCode||`REF:${normalizeBoReference(reference)}`;
+}
+function annualShipmentCoverageIntervals(records=[],fallbackDates=[],declaredIntervals=[]){
+  const intervals=[];
+  (declaredIntervals||[]).forEach(interval=>{
+    const startDate=parseAnnualDate(interval?.start||interval?.periodStart),endDate=parseAnnualDate(interval?.end||interval?.periodEnd);
+    if(!startDate||!endDate) return;
+    const start=dateIso(startDate),end=dateIso(endDate);
+    intervals.push(start<=end?{start,end}:{start:end,end:start});
+  });
+  (records||[]).forEach(record=>{
+    const startDate=parseAnnualDate(record?.source_period_start),endDate=parseAnnualDate(record?.source_period_end);
+    if(!startDate||!endDate) return;
+    const start=dateIso(startDate),end=dateIso(endDate);
+    intervals.push(start<=end?{start,end}:{start:end,end:start});
+  });
+  if(!intervals.length){
+    const dates=[...new Set((fallbackDates||[]).map(value=>parseAnnualDate(value)).filter(Boolean).map(dateIso))].sort();
+    if(dates.length) intervals.push({start:dates[0],end:dates.at(-1)});
+  }
+  return intervals.sort((a,b)=>a.start.localeCompare(b.start)||a.end.localeCompare(b.end)).reduce((merged,interval)=>{
+    const previous=merged.at(-1);
+    if(!previous){ merged.push({...interval}); return merged; }
+    const dayAfterPrevious=new Date(`${previous.end}T00:00:00Z`);
+    dayAfterPrevious.setUTCDate(dayAfterPrevious.getUTCDate()+1);
+    if(interval.start<=dateIso(dayAfterPrevious)){
+      if(interval.end>previous.end) previous.end=interval.end;
+    }else merged.push({...interval});
+    return merged;
+  },[]);
+}
+function annualWeekCoverage(year,week,coverageIntervals=[]){
+  const range=getISOWeekRange(year,week),operationalEnd=new Date(range.end),yearStart=`${year}-01-01`,yearEnd=`${year}-12-31`;
+  operationalEnd.setUTCDate(operationalEnd.getUTCDate()-1); // BO cubre expediciones de lunes a sabado.
+  const start=[dateIso(range.start),yearStart].sort().at(-1),end=[dateIso(operationalEnd),yearEnd].sort()[0];
+  const covered=coverageIntervals.some(interval=>interval.start<=end&&interval.end>=start);
+  const complete=coverageIntervals.some(interval=>interval.start<=start&&interval.end>=end);
+  return {covered,complete,start,end};
+}
+function annualWeeksFromShipmentRecords(records,assignedYear,detectedDates=[],declaredIntervals=[]){
+  const coverageIntervals=annualShipmentCoverageIntervals(records,detectedDates,declaredIntervals);
+  const weeks={};
+  function ensureWeek(week){
+    const key=annualKey(assignedYear,week);
+    if(!weeks[key]) weeks[key]={year:assignedYear,week,total:0,categories:Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,0])),products:{},dates:[]};
+    return weeks[key];
+  }
+  [...new Set(detectedDates)].sort().forEach(isoDate=>{
+    const date=parseAnnualDate(isoDate);
+    if(!date||isoYearForDate(date)!==assignedYear) return;
+    ensureWeek(getISOWeek(date)).dates.push(isoDate);
+  });
+  coverageIntervals.forEach(interval=>{
+    const start=new Date(`${[interval.start,`${assignedYear}-01-01`].sort().at(-1)}T00:00:00Z`);
+    const end=[interval.end,`${assignedYear}-12-31`].sort()[0];
+    while(dateIso(start)<=end){
+      if(isoYearForDate(start)===assignedYear) ensureWeek(getISOWeek(start));
+      start.setUTCDate(start.getUTCDate()+1);
+    }
+  });
+  (records||[]).forEach(record=>{
+    const date=parseAnnualDate(record.shipment_date);
+    if(!date||isoYearForDate(date)!==assignedYear) return;
+    const item=ensureWeek(getISOWeek(date));
+    item.dates.push(record.shipment_date);
+    const amount=Math.max(0,Number(record.quantity)||0);
+    item.total+=amount;
+    if(ANNUAL_CATEGORIES.includes(record.category)) item.categories[record.category]+=amount;
+    const productCode=String(record.product_code||'').trim(),reference=String(record.product_reference||record.product_type||productCode||'Sin referencia').trim(),category=ANNUAL_CATEGORIES.includes(record.category)?record.category:'SIN CATEGORÍA',productKey=`${productCode}|${reference}|${category}`;
+    if(!item.products[productKey]) item.products[productKey]={product_code:productCode,product_type:String(record.product_type||'').trim(),product_reference:reference,category,quantity:0};
+    item.products[productKey].quantity+=amount;
+  });
+  Object.values(weeks).forEach(item=>{
+    const coverage=annualWeekCoverage(assignedYear,item.week,coverageIntervals);
+    item.dates=[...new Set(item.dates)].sort();
+    item.dateCount=item.dates.length;
+    item.isCovered=coverage.covered;
+    item.isComplete=coverage.complete;
+  });
+  return weeks;
+}
+function isAnnualBoNonProductRow(row){
+  const first=String((row||[]).find(value=>String(value??'').trim())??'').trim();
+  const joined=(row||[]).map(value=>String(value??'').trim()).filter(Boolean).join(' ');
+  return /^total\b/i.test(first)||/^(fichier\s+export\s+csv|camenbert|courbe|bar)\b/i.test(first)||/^(fichier\s+export\s+csv|camenbert|courbe|bar)\b/i.test(joined);
+}
+function parseAnnualBoRows(rows,assignedYear,fileName=''){
+  if(!Array.isArray(rows)||!rows.length) throw new Error('El archivo está vacío.');
+  let headerIndex=-1,codeIndex=-1,typeIndex=-1,referenceIndex=-1,totalIndex=-1;
+  for(let index=0;index<Math.min(rows.length,60);index++){
+    const normalized=(rows[index]||[]).map(value=>String(value??'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''));
+    const indexes={code:normalized.indexOf('code'),type:normalized.indexOf('type'),reference:normalized.findIndex(value=>['reference','referencia'].includes(value)),total:normalized.indexOf('total')};
+    if(Object.values(indexes).every(value=>value>=0)){ headerIndex=index; codeIndex=indexes.code; typeIndex=indexes.type; referenceIndex=indexes.reference; totalIndex=indexes.total; break; }
+  }
+  if(headerIndex<0) throw new Error('No se ha encontrado una cabecera con code, type, reference y Total.');
+  const header=rows[headerIndex],dateColumns=[]; header.forEach((value,index)=>{ const date=parseAnnualDate(value); if(date) dateColumns.push({index,date}); }); if(!dateColumns.length) throw new Error('No hay columnas de fecha válidas.');
+  const reasonable=dateColumns.filter(item=>Math.abs(isoYearForDate(item.date)-assignedYear)<=1); if(reasonable.length<Math.max(1,dateColumns.length*.7)) throw new Error(`Las fechas no coinciden razonablemente con el año ${assignedYear}.`);
+  const included=[],excluded=[],unrecognized=[],warnings=[],includedProducts=new Set(),recordsByKey=new Map();
+  rows.slice(headerIndex+1).forEach(row=>{
+    if(!Array.isArray(row)||isAnnualBoNonProductRow(row)) return;
+    const reference=String(row?.[referenceIndex]??'').trim();
+    if(!reference) return;
+    const productCode=annualStableProductCode(row?.[codeIndex],reference),productType=String(row?.[typeIndex]??'').trim(),declaredTotal=Math.max(0,Math.round(parseAnnualBoNumber(row?.[totalIndex])));
+    const dailyTotal=dateColumns.reduce((sum,{index,date})=>sum+(isoYearForDate(date)===assignedYear?Math.max(0,Math.round(parseAnnualBoNumber(row[index]))):0),0);
+    const summary={product_code:productCode,product_type:productType||null,product_reference:reference,declaredTotal,dailyTotal,difference:dailyTotal-declaredTotal};
+    if(!declaredTotal&&!dailyTotal) return;
+    if(declaredTotal!==dailyTotal) warnings.push(summary);
+    if(isAnnualExcludedReference(reference)){ excluded.push({...summary,reason:annualExclusionReason(reference)}); return; }
+    const category=annualReferenceCategory(reference);
+    if(!category){ unrecognized.push({...summary,reason:'Prefijo no reconocido'}); return; }
+    included.push({...summary,category});
+    includedProducts.add(productCode);
+    dateColumns.forEach(({index,date})=>{
+      if(isoYearForDate(date)!==assignedYear) return;
+      const quantity=Math.max(0,Math.round(parseAnnualBoNumber(row[index])));
+      if(!quantity) return;
+      const shipmentDate=dateIso(date);
+      recordsByKey.set(`${shipmentDate}\u0000${productCode}`,{shipment_date:shipmentDate,product_code:productCode,product_type:productType||null,product_reference:reference,category,quantity});
+    });
+  });
+  const records=[...recordsByKey.values()];
+  if(!includedProducts.size) throw new Error('No hay referencias reconocibles A-, C-, S- o P-.');
+  if(!records.length) throw new Error('Todas las expediciones incluidas suman cero.');
+  const detected=dateColumns.map(item=>item.date).sort((a,b)=>a-b),detectedDates=detected.filter(date=>isoYearForDate(date)===assignedYear).map(dateIso);
+  const weeks=annualWeeksFromShipmentRecords(records,assignedYear,detectedDates);
+  const total=records.reduce((sum,record)=>sum+record.quantity,0);
+  return {year:assignedYear,fileName,importedAt:new Date().toISOString(),periodStart:detectedDates[0],periodEnd:detectedDates[detectedDates.length-1],dateCount:detectedDates.length,dates:detectedDates,includedRefs:included.length,includedProducts:includedProducts.size,included,excludedRefs:excluded.length,excluded,unrecognized,warnings,uninterpretedColumns:Math.max(0,header.length-dateColumns.length-4),records,weeks,total,categories:Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,records.filter(record=>record.category===cat).reduce((sum,record)=>sum+record.quantity,0)])),estimatedNew:null,estimatedUpdated:null,estimateWarning:''};
+}
+async function readAnnualBoFile(file){ if(!window.XLSX) throw new Error('No se ha cargado SheetJS.'); const workbook=XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true}),sheet=workbook.Sheets[workbook.SheetNames[0]]; return XLSX.utils.sheet_to_json(sheet,{header:1,defval:'',raw:true}); }
+function splitAnnualDelimitedLine(line,separator){
+  const cells=[]; let current='',quoted=false;
+  for(let index=0;index<line.length;index++){ const char=line[index]; if(char==='"'){ if(quoted&&line[index+1]==='"'){ current+='"'; index++; }else quoted=!quoted; }else if(char===separator&&!quoted){ cells.push(current); current=''; }else current+=char; }
+  cells.push(current); return cells.map(cell=>{ const trimmed=cell.trim(); return trimmed.startsWith('"')&&trimmed.endsWith('"')?trimmed.slice(1,-1).replace(/""/g,'"'):trimmed; });
+}
+function parseAnnualBoPastedText(text){
+  const lines=String(text??'').replace(/\r\n?/g,'\n').split('\n');
+  while(lines.length&&!lines[0].trim()) lines.shift(); while(lines.length&&!lines.at(-1).trim()) lines.pop();
+  if(!lines.length) throw new Error('Pega una tabla BO antes de analizar.'); if(lines.length<2) throw new Error('La tabla debe contener encabezados y al menos una fila de datos.');
+  let separator=lines.some(line=>line.includes('\t'))?'\t':lines.some(line=>line.includes(';'))?';':null;
+  if(!separator){
+    const commaHeaderFound=lines.slice(0,60).some(line=>{
+      const cells=splitAnnualDelimitedLine(line,','),normalized=cells.map(value=>String(value).trim().toLowerCase());
+      return cells.length>4&&['code','type','reference','total'].every(name=>normalized.includes(name))&&cells.some(value=>parseAnnualDate(value));
+    });
+    if(commaHeaderFound) separator=',';
+  }
+  if(!separator) throw new Error('No se ha detectado un separador válido. Usa tabulaciones o punto y coma.');
+  return lines.map(line=>splitAnnualDelimitedLine(line,separator));
+}
+function annualEstimateLabel(value){ return value===null||value===undefined?'Pendiente de consultar':annualNumber(value); }
+function annualImportPreviewHtml(c){
+  const weeks=Object.values(c.weeks),complete=weeks.filter(item=>item.isComplete).length,sample=(c.records||[]).slice(0,20);
+  return `<div class="settings-summary"><div><strong>Método</strong>${escapeHtml(c.sourceMethod||'Archivo')}</div><div><strong>Periodo</strong>${c.periodStart} – ${c.periodEnd}</div><div><strong>Fechas detectadas</strong>${c.dateCount}</div><div><strong>Año asignado</strong>${c.year}</div><div><strong>Productos incluidos</strong>${c.includedProducts}</div><div><strong>Productos excluidos</strong>${c.excludedRefs}</div><div><strong>Semanas completas / parciales</strong>${complete} / ${weeks.length-complete}</div><div><strong>Registros diarios</strong>${annualNumber(c.records.length)}</div><div><strong>Total expediciones</strong>${annualNumber(c.total)}</div><div><strong>Productos no reconocidos</strong>${c.unrecognized.length}</div><div><strong>Registros nuevos estimados</strong>${annualEstimateLabel(c.estimatedNew)}</div><div><strong>Registros a actualizar</strong>${annualEstimateLabel(c.estimatedUpdated)}</div></div>
+    <table>${ANNUAL_CATEGORIES.map(cat=>`<tr><td>${cat}</td><td>${annualNumber(c.categories[cat])}</td></tr>`).join('')}</table>
+    ${c.estimateWarning?`<div class="annual-import-warning">${escapeHtml(c.estimateWarning)}</div>`:''}
+    ${c.warnings.length?`<div class="annual-import-warning"><strong>${c.warnings.length} filas no cuadran con la columna Total.</strong><table><thead><tr><th>Código</th><th>Referencia</th><th>Total declarado</th><th>Suma diaria</th><th>Diferencia</th></tr></thead><tbody>${c.warnings.map(item=>`<tr><td>${escapeHtml(item.product_code)}</td><td>${escapeHtml(item.product_reference)}</td><td>${annualNumber(item.declaredTotal)}</td><td>${annualNumber(item.dailyTotal)}</td><td>${annualNumber(item.difference)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="annual-muted"><strong>Validación de totales:</strong> todas las filas cuadran con la suma de sus columnas diarias.</p>'}
+    <h4>Referencias incluidas (${c.included.length})</h4>
+    <div class="annual-import-sample"><table><thead><tr><th>Código</th><th>Referencia</th><th>Categoría</th><th>Total declarado</th><th>Suma diaria</th></tr></thead><tbody>${c.included.map(item=>`<tr><td>${escapeHtml(item.product_code)}</td><td>${escapeHtml(item.product_reference)}</td><td>${item.category}</td><td>${annualNumber(item.declaredTotal)}</td><td>${annualNumber(item.dailyTotal)}</td></tr>`).join('')}</tbody></table></div>
+    <h4>Referencias excluidas (${c.excluded.length})</h4>
+    <div class="annual-import-sample"><table><thead><tr><th>Código</th><th>Referencia</th><th>Motivo</th><th>Total declarado</th><th>Suma diaria</th></tr></thead><tbody>${c.excluded.length?c.excluded.map(item=>`<tr><td>${escapeHtml(item.product_code)}</td><td>${escapeHtml(item.product_reference)}</td><td>${escapeHtml(item.reason)}</td><td>${annualNumber(item.declaredTotal)}</td><td>${annualNumber(item.dailyTotal)}</td></tr>`).join(''):'<tr><td colspan="5">Ninguna</td></tr>'}</tbody></table></div>
+    <h4>Referencias no reconocidas (${c.unrecognized.length})</h4>
+    <div class="annual-import-sample"><table><thead><tr><th>Código</th><th>Referencia</th><th>Motivo</th><th>Total declarado</th><th>Suma diaria</th></tr></thead><tbody>${c.unrecognized.length?c.unrecognized.map(item=>`<tr><td>${escapeHtml(item.product_code)}</td><td>${escapeHtml(item.product_reference)}</td><td>${escapeHtml(item.reason)}</td><td>${annualNumber(item.declaredTotal)}</td><td>${annualNumber(item.dailyTotal)}</td></tr>`).join(''):'<tr><td colspan="5">Ninguna</td></tr>'}</tbody></table></div>
+    <h4>Muestra de registros diarios (${Math.min(20,c.records.length)} de ${c.records.length})</h4>
+    <div class="annual-import-sample"><table><thead><tr><th>Fecha</th><th>Código</th><th>Referencia</th><th>Categoría</th><th>Cantidad</th></tr></thead><tbody>${sample.map(record=>`<tr><td>${record.shipment_date}</td><td>${escapeHtml(record.product_code)}</td><td>${escapeHtml(record.product_reference)}</td><td>${record.category}</td><td>${annualNumber(record.quantity)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function annualBoErrorMessage(error){
+  const message=String(error?.message||error||'Error desconocido');
+  if(error?.code==='42P01'||error?.code==='PGRST205'||/bo_daily_shipments.*(not find|not exist|schema cache)/i.test(message)) return 'La tabla bo_daily_shipments todavía no existe. Ejecuta primero el archivo supabase-bo-daily-shipments.sql en Supabase.';
+  if(error?.code==='42501'||/permission|row-level security|policy/i.test(message)) return `Supabase ha rechazado la operación por permisos: ${message}`;
+  return message;
+}
+async function fetchBoDailyShipments({from,to,category='',columns='shipment_date,product_code,category,quantity'}={}){
+  if(!supabaseUser) throw new Error('Inicia sesión antes de consultar el histórico.');
+  const result=[],pageSize=1000;
+  for(let offset=0;offset<200000;offset+=pageSize){
+    let query=supabaseClient.from('bo_daily_shipments').select(columns).gte('shipment_date',from).lte('shipment_date',to).order('shipment_date',{ascending:true}).range(offset,offset+pageSize-1);
+    if(category) query=query.eq('category',category);
+    const {data,error}=await query;
+    if(error) throw new Error(annualBoErrorMessage(error));
+    result.push(...(data||[]));
+    if(!data||data.length<pageSize) return result;
+  }
+  throw new Error('La consulta supera 200.000 registros. Reduce el intervalo de fechas.');
+}
+async function estimateAnnualBoUpserts(candidate){
+  try{
+    const existing=await fetchBoDailyShipments({from:candidate.periodStart,to:candidate.periodEnd,columns:'shipment_date,product_code'});
+    const keys=new Set(existing.map(item=>`${item.shipment_date}\u0000${item.product_code}`));
+    candidate.estimatedUpdated=candidate.records.filter(record=>keys.has(`${record.shipment_date}\u0000${record.product_code}`)).length;
+    candidate.estimatedNew=candidate.records.length-candidate.estimatedUpdated;
+    candidate.estimateWarning='';
+  }catch(error){
+    candidate.estimatedNew=null;
+    candidate.estimatedUpdated=null;
+    candidate.estimateWarning=`No se pudo calcular la estimación: ${annualBoErrorMessage(error)}`;
+  }
+  return candidate;
+}
+function annualShipmentCache(year,records){
+  const dates=[...new Set((records||[]).map(record=>record.shipment_date))].sort(),coverageIntervals=annualShipmentCoverageIntervals(records,dates),weeks=annualWeeksFromShipmentRecords(records,Number(year),dates,coverageIntervals),allWeeks=Object.values(weeks);
+  return {year:Number(year),fileName:'Supabase: bo_daily_shipments',sourceMethod:'Supabase',importedAt:new Date().toISOString(),periodStart:coverageIntervals[0]?.start||dates[0]||`${year}-01-01`,periodEnd:coverageIntervals.at(-1)?.end||dates.at(-1)||`${year}-12-31`,coverageIntervals,weeks,total:allWeeks.reduce((sum,week)=>sum+week.total,0),categories:Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,allWeeks.reduce((sum,week)=>sum+(week.categories?.[cat]||0),0)]))};
+}
+async function loadAnnualShipmentSummary(year){
+  const records=await fetchBoDailyShipments({from:`${year}-01-01`,to:`${year}-12-31`,columns:'shipment_date,product_code,product_type,product_reference,category,quantity,source_period_start,source_period_end'});
+  const cache=annualShipmentCache(year,records);
+  ensureAnnualPlanning().imports[String(year)]=cache;
+  annualShipmentYearsLoaded.add(Number(year));
+  return cache;
+}
+async function refreshAnnualShipmentYear(year){
+  annualShipmentYearsLoaded.delete(Number(year));
+  return loadAnnualShipmentSummary(Number(year));
+}
+async function loadAnnualPlanningShipmentData(force=false){
+  if(!supabaseUser) return false;
+  if(annualShipmentLoadPromise&&!force) return annualShipmentLoadPromise;
+  const plan=ensureAnnualPlanning(),settings=annualYearSettings(plan.selectedYear),years=[Number(plan.selectedYear),Number(settings.previousYear),Number(settings.comparableYear)].filter(Number.isFinite);
+  const pending=[...new Set(years)].filter(year=>force||!annualShipmentYearsLoaded.has(year));
+  if(!pending.length) return true;
+  annualShipmentLoadPromise=Promise.all(pending.map(loadAnnualShipmentSummary)).then(()=>{ renderAnnualPlanning(); return true; }).catch(error=>{ console.error('No se pudo cargar el histórico BO',error); document.getElementById('annualHistoryStatus').textContent=annualBoErrorMessage(error); return false; }).finally(()=>{ annualShipmentLoadPromise=null; });
+  return annualShipmentLoadPromise;
+}
+async function createAnnualImportRun(candidate){
+  try{
+    const {data,error}=await supabaseClient.from('bo_import_runs').insert({imported_by:supabaseUser.id,source_label:candidate.fileName,period_start:candidate.periodStart,period_end:candidate.periodEnd,records_processed:candidate.records.length,status:'running'}).select('id').single();
+    if(error) throw error;
+    return data?.id||null;
+  }catch(error){ console.warn('No se pudo crear el registro opcional bo_import_runs',error); return null; }
+}
+async function updateAnnualImportRun(id,values){
+  if(!id) return;
+  try{ const {error}=await supabaseClient.from('bo_import_runs').update(values).eq('id',id); if(error) throw error; }catch(error){ console.warn('No se pudo actualizar bo_import_runs',error); }
+}
+async function applyAnnualImport(candidate,onProgress=()=>{}){
+  if(!candidate?.records?.length) throw new Error('No hay registros diarios válidos para guardar.');
+  if(!supabaseUser) throw new Error('Inicia sesión antes de confirmar la importación.');
+  await estimateAnnualBoUpserts(candidate);
+  const previous=ensureAnnualPlanning().imports[String(candidate.year)];
+  const importedAt=new Date().toISOString(),rows=candidate.records.map(record=>({...record,source_label:candidate.fileName,source_period_start:candidate.periodStart,source_period_end:candidate.periodEnd,imported_at:importedAt,imported_by:supabaseUser.id})),batchSize=500,totalBatches=Math.ceil(rows.length/batchSize),runId=await createAnnualImportRun(candidate);
+  let savedRecords=0,savedBatches=0;
+  try{
+    for(let offset=0;offset<rows.length;offset+=batchSize){
+      const batch=rows.slice(offset,offset+batchSize);
+      onProgress({savedRecords,savedBatches,totalBatches});
+      const {error}=await supabaseClient.from('bo_daily_shipments').upsert(batch,{onConflict:'shipment_date,product_code'});
+      if(error) throw error;
+      savedRecords+=batch.length;
+      savedBatches++;
+    }
+  }catch(error){
+    const message=annualBoErrorMessage(error);
+    await updateAnnualImportRun(runId,{completed_at:new Date().toISOString(),records_inserted:Math.min(candidate.estimatedNew??0,savedRecords),records_updated:Math.max(0,savedRecords-Math.min(candidate.estimatedNew??0,savedRecords)),status:savedRecords?'partial':'failed',error_message:message});
+    const failure=new Error(`${message} Se guardaron ${savedBatches} de ${totalBatches} lotes (${savedRecords} registros). Puedes reintentar: el upsert no duplicará los ya guardados.`);
+    failure.savedRecords=savedRecords;
+    throw failure;
+  }
+  const cache=await refreshAnnualShipmentYear(candidate.year);
+  const plan=ensureAnnualPlanning();
+  Object.values(plan.years).forEach(yearData=>Object.values(yearData.weeks||{}).forEach(updateAnnualRowFromImports));
+  addAnnualHistory({year:candidate.year,week:null,type:'bo-import',origin:'bo-import',oldValue:null,newValue:{file:candidate.fileName,total:cache.total,weeks:Object.keys(cache.weeks).length,records:savedRecords},reason:'Importación diaria confirmada mediante upsert'});
+  saveState();
+  await updateAnnualImportRun(runId,{completed_at:new Date().toISOString(),records_inserted:candidate.estimatedNew??0,records_updated:candidate.estimatedUpdated??0,status:'completed',error_message:null});
+  return {year:candidate.year,total:cache.total,weeks:Object.keys(cache.weeks).length,records:savedRecords,inserted:candidate.estimatedNew,updated:candidate.estimatedUpdated,merged:!!previous};
+}
+function syncAnnualHistoryFilters(year=ensureAnnualPlanning().selectedYear,forceDates=false){
+  const plan=ensureAnnualPlanning(),select=document.getElementById('annualHistoryYear');
+  const years=[...new Set([...Object.keys(plan.years||{}),...Object.keys(plan.imports||{}),String(year),String(new Date().getFullYear())])].map(Number).filter(Number.isFinite).sort((a,b)=>b-a);
+  const current=forceDates?Number(year):(Number(select.value)||Number(year));
+  select.innerHTML=years.map(value=>`<option value="${value}" ${value===current?'selected':''}>${value}</option>`).join('');
+  select.value=String(current);
+  const selected=Number(select.value)||Number(year),from=document.getElementById('annualHistoryFrom'),to=document.getElementById('annualHistoryTo');
+  if(forceDates||!from.value) from.value=`${selected}-01-01`;
+  if(forceDates||!to.value) to.value=`${selected}-12-31`;
+}
+function setAnnualSubView(view,{load=false,resetDates=false}={}){
+  annualSubView=view==='history'?'history':'planning';
+  document.getElementById('annualPlanningSubview').hidden=annualSubView!=='planning';
+  document.getElementById('annualHistorySubview').hidden=annualSubView!=='history';
+  if(annualSubView==='history'){
+    syncAnnualHistoryFilters(ensureAnnualPlanning().selectedYear,resetDates);
+    if(load) loadAnnualHistoryView();
+  }
+}
+function formatAnnualCategoryPercentage(value,total){
+  if(value===null||value===undefined||total===null||total===undefined) return '—';
+  const amount=Number(value),denominator=Number(total);
+  if(!Number.isFinite(amount)||!Number.isFinite(denominator)||denominator<=0) return '—';
+  return `${(amount/denominator*100).toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})}%`;
+}
+function annualHistoryCategoryCell(value,total,visible=true){
+  if(!visible) return '<span class="annual-history-filtered-out">—</span>';
+  return `<span class="annual-history-value">${annualNumber(value)}</span><span class="annual-history-percent">${formatAnnualCategoryPercentage(value,total)}</span>`;
+}
+function annualHistorySummaryHtml(rows){
+  const totals={total:0,categories:Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,0]))};
+  rows.forEach(row=>{
+    totals.total+=Number(row.total)||0;
+    ANNUAL_CATEGORIES.forEach(cat=>{ totals.categories[cat]+=Number(row.categories?.[cat])||0; });
+  });
+  return [['TOTAL EXPEDICIONES',totals.total,null],...ANNUAL_CATEGORIES.map(cat=>[cat,totals.categories[cat],formatAnnualCategoryPercentage(totals.categories[cat],totals.total)])].map(([label,value,percentage])=>`<div class="annual-history-kpi"><span>${label}</span><strong>${annualNumber(value)}</strong>${percentage?`<small>${percentage}</small>`:''}</div>`).join('');
+}
+function annualHistoryGroupConfig(group='week'){
+  return {
+    day:{heading:'Día',singular:'día',plural:'días'},
+    week:{heading:'Semana',singular:'semana',plural:'semanas'},
+    month:{heading:'Mes',singular:'mes',plural:'meses'},
+    period:{heading:'Periodo',singular:'periodo',plural:'periodos'}
+  }[group]||{heading:'Semana',singular:'semana',plural:'semanas'};
+}
+function aggregateAnnualHistory(records,group='week',periodStart='',periodEnd=''){
+  const groups={};
+  (records||[]).forEach(record=>{
+    const date=parseAnnualDate(record.shipment_date);
+    if(!date) return;
+    const isoDate=dateIso(date),year=isoYearForDate(date),week=getISOWeek(date),range=getISOWeekRange(year,week),calendarYear=date.getUTCFullYear(),month=date.getUTCMonth();
+    let key,label,startDate,endDate;
+    if(group==='day'){
+      key=`day:${isoDate}`;
+      label=date.toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'});
+      startDate=isoDate;
+      endDate=isoDate;
+    }else if(group==='month'){
+      const monthStart=new Date(Date.UTC(calendarYear,month,1)),monthEnd=new Date(Date.UTC(calendarYear,month+1,0));
+      key=`month:${calendarYear}-${String(month+1).padStart(2,'0')}`;
+      label=date.toLocaleDateString('es-ES',{month:'long',year:'numeric',timeZone:'UTC'});
+      startDate=dateIso(monthStart);
+      endDate=dateIso(monthEnd);
+    }else if(group==='period'){
+      key=`period:${periodStart||isoDate}:${periodEnd||isoDate}`;
+      label='Todo el periodo';
+      startDate=periodStart||isoDate;
+      endDate=periodEnd||isoDate;
+    }else{
+      key=`week:${annualKey(year,week)}`;
+      label=`S${String(week).padStart(2,'0')}`;
+      startDate=dateIso(range.start);
+      endDate=dateIso(range.end);
+    }
+    if(!groups[key]) groups[key]={key,label,year,week,startDate,endDate,group,weeks:[],total:0,categories:Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,0])),products:{}};
+    if(!groups[key].weeks.some(item=>item.year===year&&item.week===week)) groups[key].weeks.push({year,week});
+    const quantity=Math.max(0,Number(record.quantity)||0);
+    groups[key].total+=quantity;
+    if(ANNUAL_CATEGORIES.includes(record.category)) groups[key].categories[record.category]+=quantity;
+    const productCode=String(record.product_code||'').trim(),reference=String(record.product_reference||record.product_type||productCode||'Sin referencia').trim(),category=ANNUAL_CATEGORIES.includes(record.category)?record.category:'SIN CATEGORÍA',productKey=`${productCode}|${reference}|${category}`;
+    if(!groups[key].products[productKey]) groups[key].products[productKey]={product_code:productCode,product_type:String(record.product_type||'').trim(),product_reference:reference,category,quantity:0};
+    groups[key].products[productKey].quantity+=quantity;
+  });
+  return Object.values(groups).sort((a,b)=>a.key.localeCompare(b.key));
+}
+function annualHistoryPlanningRows(row){
+  const weeks=Array.isArray(row?.weeks)&&row.weeks.length?row.weeks:[{year:row?.year,week:row?.week}];
+  return weeks.map(item=>annualWeek(item.year,item.week)).filter(Boolean);
+}
+function annualHistoryMetadataText(row,field){
+  return [...new Set(annualHistoryPlanningRows(row).map(item=>String(item?.[field]||'').trim()).filter(Boolean))].join(' · ');
+}
+function normalizeAnnualMailingProductCode(value){
+  return String(value??'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9]/g,'');
+}
+function annualMailingProductCodes(row){
+  const values=Array.isArray(row?.weeks)&&row.weeks.length?annualHistoryPlanningRows(row).map(item=>item.mailingProductCode):[row?.mailingProductCode];
+  return new Set(values.flatMap(value=>String(value??'').split(/[\s,;|/]+/)).map(normalizeAnnualMailingProductCode).filter(Boolean));
+}
+function isAnnualMailingProduct(row,product){
+  const codes=annualMailingProductCodes(row),productCode=normalizeAnnualMailingProductCode(product?.product_code);
+  return !!productCode&&codes.has(productCode);
+}
+function annualMailingCategories(row,products){
+  return new Set(Object.values(products||{}).filter(product=>isAnnualMailingProduct(row,product)).map(product=>product.category).filter(Boolean));
+}
+function annualHistoryCampaignText(row){
+  const weeks=Array.isArray(row?.weeks)&&row.weeks.length?row.weeks:[{year:row?.year,week:row?.week}],campaigns=new Map();
+  weeks.forEach(item=>annualCampaignsForWeek(item.year,item.week).filter(campaign=>(!row?.startDate||campaign.date>=row.startDate)&&(!row?.endDate||campaign.date<=row.endDate)).forEach(campaign=>campaigns.set(`${campaign.id||campaign.name}|${campaign.date}`,campaign)));
+  return [...campaigns.values()].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))).map(item=>`${item.name} (${new Date(`${item.date}T00:00:00Z`).toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'short',timeZone:'UTC'})})`).join(' · ');
+}
+function renderAnnualHistoryRows(){
+  const body=document.getElementById('annualHistoryTbody'),year=Number(document.getElementById('annualHistoryYear').value),group=document.getElementById('annualHistoryGroup').value,config=annualHistoryGroupConfig(group);
+  document.getElementById('annualHistoryPeriodHeading').textContent=config.heading;
+  document.getElementById('annualHistoryExpHeading').textContent=`Exp. ${year}`;
+  body.innerHTML=annualHistoryRows.length?annualHistoryRows.map(row=>{
+    const campaign=annualHistoryCampaignText(row),mailing=annualHistoryMetadataText(row,'mailing'),code=annualHistoryMetadataText(row,'mailingProductCode'),mailingCategories=annualMailingCategories(row,row.products),selected=row.key===annualHistorySelectedKey,start=new Date(`${row.startDate}T00:00:00Z`),end=new Date(`${row.endDate}T00:00:00Z`),dates=row.startDate===row.endDate?start.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}):`${start.toLocaleDateString('es-ES',{day:'numeric',month:'short',timeZone:'UTC'})} – ${end.toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'})}`,details=`${dates}${campaign?` · Campaña: ${campaign}`:''}`;
+    return `<tr data-history-period="${escapeHtml(row.key)}" class="${selected?'selected ':''}${campaign?'has-campaign':''}"><td class="annual-week-cell${campaign?' has-campaign':''}" tabindex="0" aria-label="${escapeHtml(row.label)}, ${escapeHtml(details)}">${escapeHtml(row.label)}<span class="annual-week-tooltip">${escapeHtml(dates)}${campaign?`<strong>Campaña: ${escapeHtml(campaign)}</strong>`:''}</span></td><td><span class="annual-history-value">${annualNumber(row.total)}</span></td>${ANNUAL_CATEGORIES.map((cat,index)=>`<td class="${index===0?'annual-category-start ':index===ANNUAL_CATEGORIES.length-1?'annual-category-end ':''}${mailingCategories.has(cat)?'annual-mailing-highlight':''}"><span class="annual-category-percent">${formatAnnualCategoryPercentage(row.categories[cat],row.total)}</span></td>`).join('')}<td class="annual-mailing-cell" title="${escapeHtml(mailing)}">${escapeHtml(mailing||'—')}</td><td title="${escapeHtml(code)}">${escapeHtml(code||'—')}</td></tr>`;
+  }).join(''):'<tr><td colspan="8" class="annual-history-empty">No hay expediciones en el periodo seleccionado.</td></tr>';
+}
+function annualHistoryProductSort(a,b){
+  const categoryDifference=(ANNUAL_CATEGORIES.indexOf(a.category)===-1?ANNUAL_CATEGORIES.length:ANNUAL_CATEGORIES.indexOf(a.category))-(ANNUAL_CATEGORIES.indexOf(b.category)===-1?ANNUAL_CATEGORIES.length:ANNUAL_CATEGORIES.indexOf(b.category));
+  return categoryDifference||String(a.product_reference||'').localeCompare(String(b.product_reference||''),'es',{sensitivity:'base'})||String(a.product_code||'').localeCompare(String(b.product_code||''),'es',{sensitivity:'base'});
+}
+function annualHistoryCategoryShort(category){ return {ROSAS:'R',COMPUESTOS:'C',SIMPLES:'S',PLANTAS:'P'}[category]||'—'; }
+function renderAnnualHistoryProductDetail(){
+  const panel=document.getElementById('annualHistoryProductDetail'),row=annualHistoryRows.find(item=>item.key===annualHistorySelectedKey);
+  if(!row){ panel.innerHTML='<p class="annual-muted">Selecciona un periodo para ver el detalle por productos.</p>'; return; }
+  const campaign=annualHistoryCampaignText(row),mailing=annualHistoryMetadataText(row,'mailing'),code=annualHistoryMetadataText(row,'mailingProductCode'),notes=annualHistoryMetadataText(row,'notes'),products=Object.values(row.products||{}).filter(item=>!annualHistoryProductCategory||item.category===annualHistoryProductCategory).sort(annualHistoryProductSort),start=new Date(`${row.startDate}T00:00:00Z`),end=new Date(`${row.endDate}T00:00:00Z`),dates=row.startDate===row.endDate?start.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}):`${start.toLocaleDateString('es-ES',{day:'numeric',month:'short',timeZone:'UTC'})} – ${end.toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'})}`,groupLabel=annualHistoryGroupConfig(row.group).singular;
+  panel.innerHTML=`<h3>${escapeHtml(row.label)}</h3><div class="annual-history-detail-meta"><span>${escapeHtml(dates)}</span><span>${annualNumber(row.total)} expediciones</span>${campaign?`<span>Campaña · ${escapeHtml(campaign)}</span>`:''}${mailing?`<span>Mailing · ${escapeHtml(mailing)}</span>`:''}${code?`<span>Código · ${escapeHtml(code)}</span>`:''}${notes?`<span>Observaciones · ${escapeHtml(notes)}</span>`:''}</div><div class="annual-history-product-filter"><label>Filtrar productos por categoría<select id="annualHistoryProductCategory"><option value="">Todas las categorías</option>${ANNUAL_CATEGORIES.map(cat=>`<option value="${cat}" ${annualHistoryProductCategory===cat?'selected':''}>${cat} · ${formatAnnualCategoryPercentage(row.categories[cat],row.total)}</option>`).join('')}</select></label></div><div class="annual-history-products-wrap"><table class="annual-history-products"><thead><tr><th>Producto</th><th>CAT.</th><th>Uds.</th><th>Porcentajes</th></tr></thead><tbody>${products.length?products.map(item=>`<tr class="${isAnnualMailingProduct(row,item)?'annual-mailing-product':''}"><td class="annual-history-product-name"><strong>${escapeHtml(item.product_reference||'Sin referencia')}</strong><small>${escapeHtml(item.product_code||item.product_type||'')}</small></td><td class="annual-history-product-category" title="${escapeHtml(item.category)}">${annualHistoryCategoryShort(item.category)}</td><td>${annualNumber(item.quantity)}</td><td><span class="annual-history-product-percent">${formatAnnualCategoryPercentage(item.quantity,row.total)}<small>${escapeHtml(groupLabel)}</small></span><span class="annual-history-product-percent">${formatAnnualCategoryPercentage(item.quantity,row.categories[item.category])}<small>categoría</small></span></td></tr>`).join(''):'<tr><td colspan="4" class="annual-history-empty">No hay productos en esta categoría.</td></tr>'}</tbody></table></div>`;
+}
+async function loadAnnualHistoryView(){
+  const status=document.getElementById('annualHistoryStatus'),wrap=document.getElementById('annualHistoryTableWrap'),button=document.getElementById('btnAnnualHistoryLoad'),from=document.getElementById('annualHistoryFrom').value,to=document.getElementById('annualHistoryTo').value,group=document.getElementById('annualHistoryGroup').value,groupConfig=annualHistoryGroupConfig(group);
+  if(!from||!to||from>to){ status.textContent='Revisa el intervalo de fechas.'; wrap.hidden=true; return; }
+  button.disabled=true; status.textContent='Consultando histórico en Supabase…'; wrap.hidden=true;
+  try{
+    const records=await fetchBoDailyShipments({from,to,columns:'shipment_date,product_code,product_type,product_reference,category,quantity'}),rows=aggregateAnnualHistory(records,group,from,to);
+    annualHistoryRows=rows;
+    if(!rows.some(row=>row.key===annualHistorySelectedKey)) annualHistorySelectedKey=rows.at(-1)?.key||null;
+    annualHistoryProductCategory='';
+    renderAnnualHistoryRows();
+    renderAnnualHistoryProductDetail();
+    document.getElementById('annualHistorySummary').innerHTML=annualHistorySummaryHtml(rows);
+    status.textContent=rows.length?`${annualNumber(records.length)} registros de producto · ${annualNumber(rows.reduce((sum,row)=>sum+row.total,0))} expediciones · ${rows.length} ${rows.length===1?groupConfig.singular:groupConfig.plural}`:'No hay expediciones en el periodo seleccionado.';
+    wrap.hidden=false;
+  }catch(error){ console.error('No se pudo consultar el histórico diario',error); annualHistoryRows=[]; annualHistorySelectedKey=null; status.textContent=annualBoErrorMessage(error); document.getElementById('annualHistorySummary').innerHTML=''; document.getElementById('annualHistoryProductDetail').innerHTML=''; wrap.hidden=true; }
+  finally{ button.disabled=false; }
+}
+function projectionPreview(){ const data=annualYearData(); if(!data) return null; const settings=annualYearSettings(data.year),from=Math.max(1,Number(document.getElementById('annualProjectionFrom').value)||1),to=Math.min(53,Number(document.getElementById('annualProjectionTo').value)||53),growth=Number(document.getElementById('annualProjectionGrowth').value)||0,baseType=document.getElementById('annualProjectionBase').value,baseYear=baseType==='previous'?settings.previousYear:settings.comparableYear,rows=Object.values(data.weeks).filter(row=>row.week>=from&&row.week<=to&&row.status!=='closed'),applicable=rows.map(row=>({row,base:annualImportWeek(baseYear,row.week)})).filter(item=>item.base?.total!==undefined); return {growth,baseType,baseYear,applicable,oldTotal:applicable.reduce((sum,item)=>sum+(item.row.currentForecast||0),0),newTotal:applicable.reduce((sum,item)=>sum+Math.round(item.base.total*(1+growth/100)),0),manual:applicable.filter(item=>item.row.manualForecast).length}; }
+function applyAnnualProjection(){ const p=projectionPreview(); if(!p||!p.applicable.length) throw new Error('No hay semanas con datos base para proyectar.'); const overwrite=document.getElementById('annualProjectionOverwrite').checked; if(p.manual&&!overwrite) throw new Error(`${p.manual} semanas tienen ajustes manuales. Activa la sobrescritura o limita el intervalo.`); p.applicable.forEach(({row,base})=>{ const old=row.currentForecast,next=Math.max(0,Math.round(base.total*(1+p.growth/100))); if(row.initialForecast===null) row.initialForecast=next; row.currentForecast=next; row.growthPercentApplied=p.growth; row.manualForecast=false; recalculateAnnualCategories(row); syncObjectiveToWeekly(row.year,row.week,next); addAnnualHistory({year:row.year,week:row.week,type:'forecast-projection',origin:'projection',oldValue:old,newValue:next,reason:`${p.growth}% sobre ${p.baseYear}`}); }); const data=annualYearData(); data.projectionSettings={...annualYearSettings(data.year).projectionSettings,defaultGrowthPercent:p.growth,projectionBase:p.baseType}; saveState(); renderAnnualPlanning(); }
+function syncObjectiveToWeekly(year,week,value){ const key=weekKey(year,week),snapshot=weekSnapshots[key]; if(snapshot) snapshot.objetivo=value; if(Number(weekState.year)===Number(year)&&Number(weekState.week)===Number(week)){ weekState.objetivo=value; if(weekSnapshots[ensureActiveWeekKey()]) weekSnapshots[ensureActiveWeekKey()].objetivo=value; updateWeekSummary(); } }
+function syncObjectiveToAnnual(year,week,value,origin,reason,oldValue){ const row=annualWeek(year,week); if(!row) return; const old=row.currentForecast; if(row.initialForecast===null) row.initialForecast=value; row.currentForecast=value; row.manualForecast=true; recalculateAnnualCategories(row); addAnnualHistory({year,week,type:'weekly-objective',origin,oldValue:old??oldValue,newValue:value,reason,newDistribution:row.categoryDistributionProjected}); }
+function changeWeeklyObjective(newValue,origin){ const next=Math.max(0,Math.round(Number(newValue)||0)),old=Math.max(0,Math.round(Number(weekState.objetivo)||0)); if(next===old) return true; const row=annualWeek(weekState.year,weekState.week),warning=`Vas a cambiar el objetivo de la semana ${weekState.week} de ${old} a ${next} expediciones.${row?' El cambio actualizará Stock semanal, Planificación semanal y Planificación anual, y recalculará la distribución por categorías.':''}`; if(!confirm(warning)) return false; const reason=prompt('Motivo del cambio (obligatorio):',''); if(!reason?.trim()){ alert('No se ha realizado el cambio: el motivo es obligatorio.'); return false; } if(planningMode&&Object.values(genericoData).some(item=>Object.values(item).some(value=>Number(value)>0))) alert('Esta semana ya contiene una planificación de productos. El objetivo total cambiará, pero no se borrarán los ajustes manuales de productos.'); weekState.objetivo=next; syncObjectiveToWeekly(weekState.year,weekState.week,next); syncObjectiveToAnnual(weekState.year,weekState.week,next,origin,reason.trim(),old); saveState(); updateWeekSummary(); return true; }
+function updateAnnualRowFromImports(row){ const settings=annualYearSettings(row.year),current=annualImportWeek(row.year,row.week),previous=annualImportWeek(settings.previousYear,row.week),comparable=annualImportWeek(settings.comparableYear,row.week); row.previousYearRealTotal=previous?.total??null; row.comparableRealTotal=comparable?.total??null; if(current){ const dated=annualWeekStatus(row.year,row.week),isClosed=dated==='closed'&&current.isComplete; row.categoryReal=cloneData(current.categories); row.currentRealTotal=isClosed?current.total:null; row.partialRealTotal=isClosed?null:current.total; row.status=isClosed?'closed':dated==='future'?'future':dated==='current'?'current':'partial'; }else row.status=annualWeekStatus(row.year,row.week); }
+function annualRowUsesImportedReal(row){ return annualWeekStatus(row.year,row.week)==='closed'; }
+function formatAnnualTablePercentage(value){
+  if(value===null||value===undefined||!Number.isFinite(Number(value))) return '—';
+  return `${Number(value).toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})}%`;
+}
+function annualGrowthAgainstComparable(value,comparable){
+  const current=Number(value),base=Number(comparable);
+  if(value===null||value===undefined||comparable===null||comparable===undefined||!Number.isFinite(current)||!Number.isFinite(base)||base===0) return {text:'—',className:'neutral'};
+  const percentage=(current-base)/base*100,className=percentage>0?'positive':percentage<0?'negative':'neutral',sign=percentage>0?'+':'';
+  return {text:`${sign}${percentage.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})}%`,className};
+}
+function annualTableImportedWeek(row){ return annualImportWeek(row.year,row.week); }
+function annualTableCategoryPercentages(row){
+  if(annualRowUsesImportedReal(row)){
+    const imported=annualTableImportedWeek(row),total=imported?.total;
+    return Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,total>0?(Number(imported?.categories?.[cat])||0)/total*100:null]));
+  }
+  return Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,row.categoryDistributionProjected?.[cat]?.percent??null]));
+}
+function annualWeeklySyncTargets(year,week){
+  const key=weekKey(year,week),snapshot=weekSnapshots[key],targets=[];
+  if(key===currentWeekKey||(!planningMode&&key===activeWeekKey)) targets.push('Stock semanal');
+  if(snapshot?.planningMode||snapshot?.mode==='planificacion'||(planningMode&&key===activeWeekKey)) targets.push('Planificación semanal');
+  return [...new Set(targets)];
+}
+function saveAnnualTableForecast(row,value){
+  if(annualRowUsesImportedReal(row)) throw new Error('Las semanas anteriores muestran expediciones reales y no permiten editar la previsión.');
+  const next=Math.max(0,Math.round(Number(value)||0)),old=row.currentForecast??row.initialForecast??0;
+  if(next===old) return [];
+  const reason=prompt('Motivo obligatorio del cambio de previsión:','');
+  if(!reason?.trim()) throw new Error('No se guardó: el motivo es obligatorio.');
+  const oldDistribution=cloneData(row.categoryDistributionProjected),manualWeights=row.manualCategoryAdjustment?Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,row.categoryDistributionProjected?.[cat]?.percent??0])):null;
+  row.currentForecast=next;
+  if(row.initialForecast===null) row.initialForecast=next;
+  row.manualForecast=true;
+  recalculateAnnualCategories(row,manualWeights);
+  const targets=annualWeeklySyncTargets(row.year,row.week);
+  syncObjectiveToWeekly(row.year,row.week,next);
+  addAnnualHistory({year:row.year,week:row.week,type:'forecast-manual',origin:'annual-table',oldValue:old,newValue:next,reason:reason.trim(),oldDistribution,newDistribution:row.categoryDistributionProjected});
+  saveState();
+  setSaveStatus(`Previsión S${row.week} actualizada${targets.length?` · sincronizada con ${targets.join(' y ')}`:''}`);
+  return targets;
+}
+function focusAnnualCurrentWeek(){
+  const year=Number(ensureAnnualPlanning().selectedYear),data=annualYearData(year);
+  if(!data) return;
+  const statusFilter=document.getElementById('annualStatusFilter');
+  if(statusFilter) statusFilter.value='';
+  const currentWeek=Math.min(getISOWeek(new Date()),isoWeeksInYear(year));
+  annualSelectedWeekKey=annualKey(year,currentWeek);
+  annualCenterCurrentWeekOnRender=true;
+}
+function centerAnnualSelectedWeekInTable(){
+  if(!annualCenterCurrentWeekOnRender||!annualSelectedWeekKey) return;
+  annualCenterCurrentWeekOnRender=false;
+  const week=Number(String(annualSelectedWeekKey).split('-').at(-1));
+  requestAnimationFrame(()=>{
+    const wrap=document.querySelector('#annualLayout .annual-table-wrap'),row=document.querySelector(`#annualTbody [data-annual-week="${week}"]`);
+    if(!wrap||!row) return;
+    wrap.scrollTop=Math.max(0,row.offsetTop-(wrap.clientHeight-row.offsetHeight)/2);
+  });
+}
+function renderAnnualPlanning(){
+  const plan=ensureAnnualPlanning(),year=Number(plan.selectedYear),data=annualYearData(year),settings=annualYearSettings(year),select=document.getElementById('annualSelectedYear'),years=Object.keys(plan.years).map(Number).sort((a,b)=>b-a); select.innerHTML=years.length?years.map(value=>`<option value="${value}" ${value===year?'selected':''}>${value}</option>`).join(''):'<option value="2026">2026 (sin crear)</option>'; document.getElementById('annualPreviousYear').value=settings.previousYear; document.getElementById('annualComparableYear').value=settings.comparableYear;
+  const comparableHeader=document.getElementById('annualComparableHeader'),previousHeader=document.getElementById('annualPreviousHeader'),currentHeader=document.getElementById('annualCurrentHeader'),growthHeader=document.getElementById('annualGrowthHeader'),previousGrowthHeader=document.getElementById('annualPreviousGrowthHeader');
+  comparableHeader.textContent=`Exp. ${settings.comparableYear}`; comparableHeader.title=`Expediciones reales importadas de ${settings.comparableYear}`;
+  previousHeader.textContent=`Exp. ${settings.previousYear}`; previousHeader.title=`Expediciones reales importadas de ${settings.previousYear}`;
+  currentHeader.textContent=`Exp. ${year}`; currentHeader.title=`Real importado en semanas anteriores; previsión editable en semana actual y futuras de ${year}`;
+  growthHeader.textContent=`Crec. vs ${settings.comparableYear}`; growthHeader.title=`Variación porcentual de Expediciones ${year} respecto a ${settings.comparableYear}`;
+  previousGrowthHeader.textContent=`Crec. vs ${settings.previousYear}`; previousGrowthHeader.title=`Variación porcentual de Expediciones ${year} respecto a ${settings.previousYear}`;
+  syncAnnualHistoryFilters(year);
+  if(!data){ document.getElementById('annualSummary').innerHTML='<div class="annual-kpi"><span>Estado</span><strong>Sin planificación</strong></div>'; document.getElementById('annualTbody').innerHTML=''; document.getElementById('annualWeekPanel').innerHTML='<p class="annual-muted">Crea un ejercicio para empezar.</p>'; renderAnnualChart([]); return; }
+  applyAnnualCampaignCalendar(year);
+  const rows=Object.values(data.weeks).sort((a,b)=>a.week-b.week);
+  rows.forEach(row=>{
+    updateAnnualRowFromImports(row);
+    if(!annualRowUsesImportedReal(row)&&!row.manualCategoryAdjustment) row.categoryDistributionProjected=distributeAnnualForecast(row,row.currentForecast??row.initialForecast??0);
+  });
+  const closed=rows.filter(row=>row.status==='closed'),real=closed.reduce((sum,row)=>sum+(row.currentRealTotal||0),0),remaining=rows.filter(row=>row.status!=='closed').reduce((sum,row)=>sum+(row.currentForecast||0),0),prev=closed.reduce((sum,row)=>sum+(row.previousYearRealTotal||0),0),comp=closed.reduce((sum,row)=>sum+(row.comparableRealTotal||0),0),lastImport=Object.values(plan.imports).map(item=>item.importedAt).filter(Boolean).sort().at(-1),kpis=[['Real acumulado',annualNumber(real),`${closed.length} semanas con dato definitivo`],['Previsión pendiente',annualNumber(remaining),'Semana parcial y futuras'],[`Variación frente a ${settings.previousYear}`,annualPercent(real,prev||null),'Periodos equivalentes cerrados'],[`Variación frente a ${settings.comparableYear}`,annualPercent(real,comp||null),'Periodos equivalentes cerrados'],['Semanas cerradas',`${closed.length} / ${rows.length}`,'Con informe BO completo'],['Última importación BO',lastImport?new Date(lastImport).toLocaleDateString('es-ES'):'—',lastImport?new Date(lastImport).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}):'Sin importaciones']];
+  document.getElementById('annualSummary').innerHTML=kpis.map(([label,value,sub])=>`<div class="annual-kpi"><span>${label}</span><strong>${value}</strong><small>${sub}</small></div>`).join('');
+  const statusFilter=document.getElementById('annualStatusFilter').value,visibleRows=statusFilter?rows.filter(row=>row.status===statusFilter):rows;
+  document.getElementById('annualTbody').innerHTML=visibleRows.map(row=>{
+    const statusLabel=row.status==='closed'?'Cerrada':row.status==='current'?'Actual':row.status==='partial'?'Parcial':'Futura',usesReal=annualRowUsesImportedReal(row),imported=annualTableImportedWeek(row),mailingCategories=annualMailingCategories(row,imported?.products),percentages=annualTableCategoryPercentages(row),dates=`${fmtDateShort(new Date(row.startDate+'T00:00:00Z'))} – ${fmtDateShort(new Date(row.endDate+'T00:00:00Z'))}`,campaign=String(row.campaign||'').trim(),campaignItems=annualCampaignsForWeek(year,row.week),campaignDetail=campaignItems.map(item=>`${item.name} (${new Date(`${item.date}T00:00:00Z`).toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'short',timeZone:'UTC'})})`).join(' · '),selected=annualSelectedWeekKey===annualKey(year,row.week);
+    const currentValue=usesReal?(imported?.total??null):null,forecastValue=row.currentForecast??row.initialForecast??0;
+    const displayedValue=usesReal?currentValue:forecastValue,currentCell=usesReal?`<span class="annual-expedition-real" title="Expediciones reales importadas">${annualNumber(currentValue)}</span>`:`<div class="annual-expedition-forecast"><input type="number" min="0" data-annual-forecast="${row.week}" value="${forecastValue}" aria-label="Previsión de expediciones semana ${row.week}"><small>Previsión</small></div>`,growth=annualGrowthAgainstComparable(displayedValue,row.comparableRealTotal),previousGrowth=annualGrowthAgainstComparable(displayedValue,row.previousYearRealTotal),weekDetails=`${dates}${campaign?` · Campaña: ${campaignDetail||campaign}`:''}`;
+    return `<tr data-annual-week="${row.week}" class="${row.status}${selected?' selected':''}"><td class="annual-week-cell${campaign?' has-campaign':''}" tabindex="0" aria-label="Semana ${row.week}, ${escapeHtml(weekDetails)}">S${String(row.week).padStart(2,'0')}<span class="annual-week-tooltip">${escapeHtml(dates)}${campaign?`<strong>Campaña: ${escapeHtml(campaignDetail||campaign)}</strong>`:''}</span></td><td><span class="annual-status ${row.status}">${statusLabel}</span></td><td>${annualNumber(row.comparableRealTotal)}</td><td>${annualNumber(row.previousYearRealTotal)}</td><td>${currentCell}</td><td><span class="annual-growth ${growth.className}">${growth.text}</span></td><td><span class="annual-growth ${previousGrowth.className}">${previousGrowth.text}</span></td>${ANNUAL_CATEGORIES.map((cat,index)=>`<td class="${index===0?'annual-category-start ':index===ANNUAL_CATEGORIES.length-1?'annual-category-end ':''}${mailingCategories.has(cat)?'annual-mailing-highlight':''}"><span class="annual-category-percent">${formatAnnualTablePercentage(percentages[cat])}</span></td>`).join('')}<td class="annual-mailing-cell" title="${escapeHtml(row.mailing||'')}">${escapeHtml(row.mailing||'—')}</td><td title="${escapeHtml(row.mailingProductCode||'')}">${escapeHtml(row.mailingProductCode||'—')}</td></tr>`;
+  }).join('');
+  centerAnnualSelectedWeekInTable();
+  renderAnnualChart(rows);
+  renderAnnualWeekPanel();
+}
+function setAnnualChartVisible(visible){
+  const panel=document.getElementById('annualChartPanel'),seriesControl=document.getElementById('annualChartSeriesControl'),button=document.getElementById('btnAnnualChartToggle');
+  panel.hidden=!visible;
+  seriesControl.hidden=!visible;
+  button.setAttribute('aria-expanded',String(visible));
+  button.textContent=visible?'Ocultar gráfico':'Mostrar gráfico';
+}
+function renderAnnualChart(rows){ const svg=document.getElementById('annualChart'),series=document.getElementById('annualChartSeries').value,plan=ensureAnnualPlanning(),settings=annualYearSettings(plan.selectedYear); if(!rows.length){ svg.innerHTML='<text x="500" y="95" text-anchor="middle" fill="#778078">Crea una planificación anual para mostrar el gráfico</text>'; document.getElementById('annualChartLegend').innerHTML=''; return; } const value=(row,type)=>series==='total'?(type==='comparable'?row.comparableRealTotal:type==='previous'?row.previousYearRealTotal:(row.status==='closed'?row.currentRealTotal:row.currentForecast)):(type==='comparable'?annualImportWeek(settings.comparableYear,row.week)?.categories?.[series]:type==='previous'?annualImportWeek(settings.previousYear,row.week)?.categories?.[series]:(row.status==='closed'?row.categoryReal?.[series]:row.categoryDistributionProjected?.[series]?.projected)),specs=[['comparable','#9c8560'],['previous','#75839b'],['current','#31563c']],max=Math.max(1,...rows.flatMap(row=>specs.map(([type])=>Number(value(row,type))||0))),points=type=>rows.map((row,index)=>{ const v=value(row,type); return v===null||v===undefined?null:`${20+index*(960/Math.max(1,rows.length-1))},${175-(Number(v)/max*155)}`; }).filter(Boolean).join(' '); svg.innerHTML=`<line x1="20" y1="175" x2="980" y2="175" stroke="#d5d0c5"/>${specs.map(([type,color])=>`<polyline points="${points(type)}" fill="none" stroke="${color}" stroke-width="${type==='current'?3:2}" ${type==='current'?'':'opacity=".75"'}/>`).join('')}${rows.filter(row=>row.status==='current'||row.status==='partial').map(row=>{ const x=20+(row.week-1)*(960/Math.max(1,rows.length-1)); return `<line x1="${x}" y1="10" x2="${x}" y2="175" stroke="#c7653f" stroke-dasharray="5 4"/>`; }).join('')}`; document.getElementById('annualChartLegend').innerHTML=`<span><i style="background:#9c8560"></i>${settings.comparableYear} real</span><span><i style="background:#75839b"></i>${settings.previousYear} real</span><span><i style="background:#31563c"></i>${plan.selectedYear} real / previsto</span>`; }
+function readAnnualPanelForm(){
+  const panel=document.getElementById('annualWeekPanel'),forecast=document.getElementById('annualPanelForecast');
+  return {
+    forecast:Math.max(0,Math.round(Number(forecast?.value)||0)),
+    percentages:Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,Math.max(0,Number(document.querySelector(`[data-annual-cat-percent="${cat}"]`)?.value)||0)])),
+    distributionMode:panel.dataset.pendingDistributionMode||'automatic',
+    campaign:document.getElementById('annualPanelCampaign')?.value.trim()||'',
+    mailing:document.getElementById('annualPanelMailing')?.value.trim()||'',
+    code:document.getElementById('annualPanelCode')?.value.trim()||'',
+    notes:document.getElementById('annualPanelNotes')?.value.trim()||''
+  };
+}
+function updateAnnualPanelEditState(){
+  const panel=document.getElementById('annualWeekPanel'),button=document.getElementById('btnAnnualPanelSave'),totalElement=document.getElementById('annualCategoryPercentTotal'),warning=document.getElementById('annualCategoryPercentWarning');
+  if(!button||!panel.dataset.annualOriginal) return;
+  const locked=panel.dataset.annualLocked==='true',form=readAnnualPanelForm(),total=ANNUAL_CATEGORIES.reduce((sum,cat)=>sum+form.percentages[cat],0),valid=locked||Math.abs(total-100)<0.05,original=JSON.parse(panel.dataset.annualOriginal),changed=JSON.stringify(form)!==JSON.stringify(original);
+  if(!locked&&totalElement&&warning){
+    const units=largestRemainder(form.forecast,form.percentages);
+    ANNUAL_CATEGORIES.forEach(cat=>{ const element=document.querySelector(`[data-annual-cat-units="${cat}"]`); if(element) element.textContent=annualNumber(units[cat]); });
+    const unitsTotal=document.getElementById('annualCategoryUnitsTotal'); if(unitsTotal) unitsTotal.textContent=annualNumber(Object.values(units).reduce((sum,value)=>sum+value,0));
+    totalElement.textContent=`${total.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})}%`;
+    totalElement.closest('.annual-category-total')?.classList.toggle('valid',valid);
+    totalElement.closest('.annual-category-total')?.classList.toggle('invalid',!valid);
+    warning.textContent=valid?'':total>100?`El total supera el 100% en ${(total-100).toLocaleString('es-ES',{maximumFractionDigits:1})} puntos.`:`Faltan ${(100-total).toLocaleString('es-ES',{maximumFractionDigits:1})} puntos para llegar al 100%.`;
+  }
+  button.disabled=!changed||!valid;
+}
+function annualPanelProductRowsHtml(row,category=annualPanelProductCategory){
+  const imported=annualTableImportedWeek(row),products=Object.values(imported?.products||{}).filter(item=>!category||item.category===category).sort(annualHistoryProductSort),weekTotal=Number(imported?.total)||0;
+  if(!products.length) return `<tr><td colspan="4" class="annual-history-empty">${Object.keys(imported?.products||{}).length?'No hay productos en esta categoría.':'No hay detalle de productos importado para esta semana.'}</td></tr>`;
+  return products.map(item=>`<tr class="${isAnnualMailingProduct(row,item)?'annual-mailing-product':''}"><td class="annual-history-product-name"><strong>${escapeHtml(item.product_reference||'Sin referencia')}</strong><small>${escapeHtml(item.product_code||item.product_type||'')}</small></td><td class="annual-history-product-category" title="${escapeHtml(item.category)}">${annualHistoryCategoryShort(item.category)}</td><td>${annualNumber(item.quantity)}</td><td><span class="annual-history-product-percent">${formatAnnualCategoryPercentage(item.quantity,weekTotal)}<small>semana</small></span><span class="annual-history-product-percent">${formatAnnualCategoryPercentage(item.quantity,imported?.categories?.[item.category])}<small>categoría</small></span></td></tr>`).join('');
+}
+function annualPanelProductDetailHtml(row){
+  const imported=annualTableImportedWeek(row),products=Object.values(imported?.products||{}),campaign=annualHistoryCampaignText(row),productCount=products.length;
+  return `<details class="annual-panel-section annual-panel-product-detail" open><summary>Detalle por producto${productCount?` (${productCount})`:''}</summary><div class="annual-panel-product-content"><div class="annual-panel-product-meta">${campaign?`<span>Campaña · ${escapeHtml(campaign)}</span>`:''}<span>Mailing · ${escapeHtml(row.mailing||'—')}</span><span>Código · ${escapeHtml(row.mailingProductCode||'—')}</span>${row.notes?`<span>Observaciones · ${escapeHtml(row.notes)}</span>`:''}</div><div class="annual-panel-product-filter"><label>Filtrar por categoría<select id="annualPanelProductCategory" ${productCount?'':'disabled'}><option value="">Todas las categorías</option>${ANNUAL_CATEGORIES.map(cat=>`<option value="${cat}" ${annualPanelProductCategory===cat?'selected':''}>${cat} · ${formatAnnualCategoryPercentage(imported?.categories?.[cat],imported?.total)}</option>`).join('')}</select></label></div><div class="annual-panel-products-wrap"><table class="annual-history-products"><thead><tr><th>Producto</th><th>CAT.</th><th>Uds.</th><th>Porcentajes</th></tr></thead><tbody id="annualPanelProductTbody">${annualPanelProductRowsHtml(row)}</tbody></table></div></div></details>`;
+}
+function renderAnnualWeekPanel(){
+  const plan=ensureAnnualPlanning(),year=plan.selectedYear,row=annualSelectedWeekKey?annualYearData(year)?.weeks?.[annualSelectedWeekKey]:null,panel=document.getElementById('annualWeekPanel');
+  if(!row){ panel.innerHTML='<div class="annual-panel-section"><h4>Detalle semanal</h4><p class="annual-muted">Selecciona una semana de la tabla para consultar y editar su planificación.</p></div>'; return; }
+  const locked=annualRowUsesImportedReal(row),imported=annualTableImportedWeek(row),mailingCategories=annualMailingCategories(row,imported?.products),d=row.categoryDistributionProjected||emptyAnnualCategories(),history=annualHistoryFor(year,row.week),settings=annualYearSettings(year),statusLabel=row.status==='closed'?'Cerrada':row.status==='current'?'Actual':row.status==='partial'?'Parcial':'Futura',forecast=row.currentForecast??row.initialForecast??0;
+  const units=locked?Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,Number(imported?.categories?.[cat])||0])):Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,Number(d[cat]?.projected)||0]));
+  const percentages=locked?(Number(imported?.total)>0?annualCategoryPercentages(units):Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,0]))):annualCategoryPercentages(Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,Number(d[cat]?.percent)??25])));
+  const categoryTotal=Object.values(units).reduce((sum,value)=>sum+value,0),percentageTotal=Object.values(percentages).reduce((sum,value)=>sum+value,0),distributionMode=row.manualCategoryAdjustment?'manual':'automatic',dateOptions={day:'numeric',month:'short',timeZone:'UTC'},shortStart=new Date(`${row.startDate}T00:00:00Z`).toLocaleDateString('es-ES',dateOptions),shortEnd=new Date(`${row.endDate}T00:00:00Z`).toLocaleDateString('es-ES',dateOptions),mailingLabel=row.mailing||'—';
+  panel.innerHTML=`<div class="annual-panel-header"><h3>Semana ${row.week}</h3><span class="annual-status ${row.status}">${statusLabel}</span><span class="annual-panel-mailing ${row.mailingProductCode?'annual-mailing-badge':''}" title="Mailing: ${escapeHtml(mailingLabel)}">Mailing · ${escapeHtml(mailingLabel)}</span></div>
+    <section class="annual-panel-section"><div class="annual-week-info"><div><span>Año</span><strong>${year}</strong></div><div><span>Semana</span><strong>S${String(row.week).padStart(2,'0')}</strong></div><div><span>Fechas</span><strong>${shortStart} – ${shortEnd}</strong></div></div></section>
+    <section class="annual-panel-section"><h4>Previsión y resultados</h4><div class="annual-result-grid"><div class="annual-result"><span>Real ${settings.comparableYear}</span><strong>${annualNumber(row.comparableRealTotal)}</strong></div><div class="annual-result"><span>Real ${settings.previousYear}</span><strong>${annualNumber(row.previousYearRealTotal)}</strong></div><div class="annual-result"><span>${locked?'Real':'Previsión'} ${year}</span>${locked?`<strong>${annualNumber(imported?.total??row.currentRealTotal)}</strong>`:`<input aria-label="Previsión ${year}" type="number" min="0" id="annualPanelForecast" value="${forecast}">`}</div></div></section>
+    <section class="annual-panel-section"><h4>Distribución por categorías</h4><p class="annual-muted annual-category-note"><strong>${locked?'Distribución real importada':row.manualCategoryAdjustment?'Distribución ajustada manualmente':'Previsión automática'}</strong><br>${locked?'Cifras del informe BO de esta semana.':escapeHtml(row.distributionMethod||'')}</p><div class="annual-category-grid"><strong>Categoría</strong><strong>Porcentaje</strong><strong>Unidades</strong>${ANNUAL_CATEGORIES.map(cat=>{ const mailingClass=mailingCategories.has(cat)?'annual-mailing-highlight':''; return `<div class="${mailingClass}"><strong>${cat}</strong><div class="annual-category-bar"><i style="width:${Math.min(100,Math.max(0,percentages[cat]))}%"></i></div></div>${locked?`<span class="annual-category-value ${mailingClass}">${percentages[cat].toFixed(1)}%</span>`:`<input class="${mailingClass}" aria-label="Porcentaje ${cat}" type="number" min="0" max="100" step=".1" data-annual-cat-percent="${cat}" value="${percentages[cat].toFixed(1)}">`}<span class="annual-category-value ${mailingClass}" data-annual-cat-units="${cat}">${annualNumber(units[cat])}</span>`; }).join('')}<div class="annual-category-total ${Math.abs(percentageTotal-100)<.05||locked?'valid':'invalid'}"><strong>Total</strong><span><span id="annualCategoryPercentTotal">${percentageTotal.toFixed(1)}%</span> · <span id="annualCategoryUnitsTotal">${annualNumber(categoryTotal)}</span> uds.</span></div></div>${locked?'':`<p class="annual-category-warning" id="annualCategoryPercentWarning"></p><button class="btn btn-ghost annual-category-reset" id="btnAnnualResetDistribution">Restablecer previsión automática</button>`}</section>
+    ${annualPanelProductDetailHtml(row)}
+    <section class="annual-panel-section"><h4>Campaña y mailing</h4><div class="annual-fields-grid"><label class="wide">Campaña anual<input id="annualPanelCampaign" value="${escapeHtml(row.campaign||'')}" disabled></label><label>Mailing<input id="annualPanelMailing" value="${escapeHtml(row.mailing||'')}"></label><label>Código<input id="annualPanelCode" value="${escapeHtml(row.mailingProductCode||'')}"></label><label class="wide">Observaciones<textarea id="annualPanelNotes">${escapeHtml(row.notes||'')}</textarea></label></div></section>
+    <section class="annual-panel-section annual-hours"><h4>Horas necesarias</h4><p class="annual-muted">${row.hoursNeeded??'Pendiente'}</p></section>
+    ${locked?'<p class="annual-panel-locked">Las cifras y porcentajes históricos están protegidos. Puedes completar el mailing, su código y las observaciones.</p>':''}
+    <div class="annual-panel-actions"><button class="btn btn-primary" id="btnAnnualPanelSave" disabled>${locked?'Guardar datos':'Guardar'}</button>${locked?'':'<button class="btn btn-ghost" id="btnAnnualOpenWeekly">Planificación semanal</button>'}<button class="btn btn-ghost" id="btnAnnualPanelCancel">Cerrar</button></div>
+    <details class="annual-panel-section annual-history"><summary>Historial de cambios${history.length?` (${history.length})`:''}</summary>${history.length?history.map(item=>`<div class="annual-history-item"><strong>${new Date(item.timestamp).toLocaleString('es-ES')}</strong> · ${escapeHtml(item.user||'')}<br><strong>${escapeHtml(item.type)}</strong> · ${escapeHtml(String(item.oldValue??'—'))} → ${escapeHtml(String(item.newValue??'—'))}<br>${escapeHtml(item.reason||'Sin motivo')}</div>`).join(''):'<p class="annual-muted">Todavía no hay cambios registrados para esta semana.</p>'}</details>`;
+  panel.dataset.pendingDistributionMode=distributionMode;
+  panel.dataset.annualLocked=String(locked);
+  panel.dataset.annualOriginal=JSON.stringify(readAnnualPanelForm());
+  updateAnnualPanelEditState();
+}
+function saveAnnualPanel(){
+  const row=annualYearData()?.weeks?.[annualSelectedWeekKey];
+  if(!row) return;
+  const locked=annualRowUsesImportedReal(row),panel=document.getElementById('annualWeekPanel'),form=readAnnualPanelForm(),original=JSON.parse(panel.dataset.annualOriginal||'{}'),percentageTotal=Object.values(form.percentages).reduce((sum,value)=>sum+value,0);
+  if(JSON.stringify(form)===JSON.stringify(original)) return;
+  const oldMetadata={mailing:row.mailing||'',code:row.mailingProductCode||'',notes:row.notes||''},newMetadata={mailing:form.mailing,code:form.code,notes:form.notes},metadataChanged=JSON.stringify(oldMetadata)!==JSON.stringify(newMetadata);
+  if(locked){
+    row.mailing=form.mailing;
+    row.mailingProductCode=form.code;
+    row.notes=form.notes;
+    if(metadataChanged) addAnnualHistory({year:row.year,week:row.week,type:'mailing-observaciones',origin:'annual-planning',oldValue:`Mailing: ${oldMetadata.mailing||'—'} · Código: ${oldMetadata.code||'—'} · Observaciones: ${oldMetadata.notes||'—'}`,newValue:`Mailing: ${newMetadata.mailing||'—'} · Código: ${newMetadata.code||'—'} · Observaciones: ${newMetadata.notes||'—'}`,reason:'Datos complementarios de una semana histórica'});
+    saveState();
+    renderAnnualPlanning();
+    return;
+  }
+  if(Math.abs(percentageTotal-100)>=.05) throw new Error(`La distribución debe sumar exactamente 100%. Ahora suma ${percentageTotal.toFixed(1)}%.`);
+  const next=form.forecast,old=row.currentForecast??row.initialForecast??0,forecastChanged=next!==old,categoryChanged=ANNUAL_CATEGORIES.some(cat=>Math.abs(form.percentages[cat]-(original.percentages?.[cat]??0))>=.05)||form.distributionMode!==original.distributionMode;
+  if(forecastChanged){
+    const reason=prompt('Motivo obligatorio del cambio de objetivo:','');
+    if(!reason?.trim()) throw new Error('No se guardó: el motivo es obligatorio.');
+    row.currentForecast=next;
+    if(row.initialForecast===null) row.initialForecast=next;
+    row.manualForecast=true;
+    syncObjectiveToWeekly(row.year,row.week,next);
+    addAnnualHistory({year:row.year,week:row.week,type:'forecast-manual',origin:'annual-planning',oldValue:old,newValue:next,reason:reason.trim(),oldDistribution:row.categoryDistributionProjected});
+  }
+  row.campaign=form.campaign;
+  row.mailing=form.mailing;
+  row.mailingProductCode=form.code;
+  row.notes=form.notes;
+  if(metadataChanged) addAnnualHistory({year:row.year,week:row.week,type:'mailing-observaciones',origin:'annual-planning',oldValue:`Mailing: ${oldMetadata.mailing||'—'} · Código: ${oldMetadata.code||'—'} · Observaciones: ${oldMetadata.notes||'—'}`,newValue:`Mailing: ${newMetadata.mailing||'—'} · Código: ${newMetadata.code||'—'} · Observaciones: ${newMetadata.notes||'—'}`,reason:'Datos complementarios de la semana'});
+  if(forecastChanged||categoryChanged){
+    const oldDistribution=cloneData(row.categoryDistributionProjected);
+    recalculateAnnualCategories(row,form.distributionMode==='manual'?form.percentages:null);
+    if(categoryChanged) addAnnualHistory({year:row.year,week:row.week,type:'category-adjustment',origin:'category-adjustment',oldValue:null,newValue:null,reason:form.distributionMode==='manual'?'Ajuste porcentual desde panel semanal':'Restablecer cálculo automático de 8 semanas sin campaña',oldDistribution,newDistribution:row.categoryDistributionProjected});
+  }
+  saveState();
+  renderAnnualPlanning();
+}
+
 function setNomenclatureMode(enabled){
   nomenclatureMode = !!enabled;
   document.body.classList.toggle('nomenclature-mode', nomenclatureMode);
@@ -3358,6 +4310,16 @@ function applyActiveModule(){
     btn.classList.toggle('active', btn.dataset.module === activeModule);
   });
   if(activeModule==='stock' || activeModule==='planning') populateFilter();
+  if(activeModule==='annual'){
+    setAnnualSubView('planning',{load:false});
+    setAnnualChartVisible(false);
+    focusAnnualCurrentWeek();
+    renderAnnualPlanning();
+    if(supabaseUser){
+      const selectedYear=Number(ensureAnnualPlanning().selectedYear);
+      refreshAnnualShipmentYear(selectedYear).then(()=>loadAnnualPlanningShipmentData()).then(()=>renderAnnualPlanning()).catch(error=>console.error('No se pudo actualizar Planificación anual desde el histórico de Supabase',error));
+    }
+  }
 }
 
 function setSideSectionOpen(mod, open){
@@ -3386,7 +4348,9 @@ function goToModule(mod){
     if(mod !== 'nomenclaturas' && nomenclatureMode) setNomenclatureMode(false);
     if(mod !== 'preasignDia' && preasignDiaMode) setPreasignDiaMode(false);
 
-    if(mod === 'nomenclaturas'){
+    if(mod === 'annual'){
+      renderAnnualPlanning();
+    } else if(mod === 'nomenclaturas'){
       setNomenclatureMode(true);
     } else if(mod === 'preasignDia'){
       setPreasignDiaMode(true);
@@ -3417,6 +4381,287 @@ document.getElementById('btnNavStock').addEventListener('click', ()=> goToModule
 document.getElementById('btnNavPlanning').addEventListener('click', ()=> goToModule('planning'));
 document.getElementById('btnNavCompras').addEventListener('click', ()=> goToModule('compras'));
 document.getElementById('btnNavNomenclaturas').addEventListener('click', ()=> goToModule('nomenclaturas'));
+document.getElementById('btnNavAnual').addEventListener('click', ()=> goToModule('annual'));
+function openAnnualModal(id){ document.getElementById(id).classList.add('open'); }
+function resetAnnualImportCandidate(){ annualImportCandidate=null; document.getElementById('annualImportPreview').innerHTML=''; document.getElementById('annualImportStatus').textContent=''; const button=document.getElementById('btnAnnualImportConfirm'); button.disabled=false; button.textContent='Confirmar importación'; delete button.dataset.saving; }
+document.querySelectorAll('[data-close-annual]').forEach(button=>button.addEventListener('click',()=>{ if(button.dataset.closeAnnual==='annualImportModal') resetAnnualImportCandidate(); document.getElementById(button.dataset.closeAnnual).classList.remove('open'); }));
+function openAnnualCreate(){
+  const plan=ensureAnnualPlanning();
+  const nextYear=Math.max(new Date().getFullYear(),...(Object.keys(plan.years).map(Number).filter(Number.isFinite)),Number(plan.selectedYear)||0)+1,settings=annualYearSettings(plan.selectedYear);
+  document.getElementById('annualCreateYear').value=nextYear;
+  document.getElementById('annualCreatePrevious').value=nextYear-1;
+  document.getElementById('annualCreateComparable').value=settings.comparableYear||'';
+  document.getElementById('annualCreateGrowth').value=settings.projectionSettings.defaultGrowthPercent||0;
+  refreshAnnualCreatePreview(); openAnnualModal('annualCreateModal');
+}
+['btnAnnualCreate','btnAnnualCreateTop'].forEach(id=>document.getElementById(id).addEventListener('click',openAnnualCreate));
+document.getElementById('btnAnnualCreateConfirm').addEventListener('click',()=>{
+  const year=Math.round(Number(document.getElementById('annualCreateYear').value)),previous=Math.round(Number(document.getElementById('annualCreatePrevious').value)),comparable=Math.round(Number(document.getElementById('annualCreateComparable').value)),growth=Number(document.getElementById('annualCreateGrowth').value)||0,status=document.getElementById('annualCreateStatus');
+  if(year<2000||year>2200||previous<1900||comparable<1900){ status.textContent='Revisa los años indicados.'; return; }
+  if(ensureAnnualPlanning().years[String(year)]){ status.textContent=`El ejercicio ${year} ya existe. No se ha modificado.`; return; }
+  if(createAnnualYear(year,previous,comparable,growth,document.getElementById('annualCreateImportObjectives').checked,document.getElementById('annualCreateCopyCampaigns').checked)) document.getElementById('annualCreateModal').classList.remove('open');
+});
+function refreshAnnualCreatePreview(){ const year=Math.round(Number(document.getElementById('annualCreateYear').value)),status=document.getElementById('annualCreateStatus'); if(!Number.isFinite(year)||year<2000||year>2200){ status.textContent='Introduce un año de planificación válido.'; return; } status.textContent=ensureAnnualPlanning().years[String(year)]?`El ejercicio ${year} ya existe y no se puede sobrescribir.`:`Se crearán ${isoWeeksInYear(year)} semanas ISO para ${year}.`; }
+['annualCreateYear','annualCreatePrevious','annualCreateComparable'].forEach(id=>document.getElementById(id).addEventListener('input',refreshAnnualCreatePreview));
+function setAnnualImportMethod(method){
+  resetAnnualImportCandidate();
+  document.querySelectorAll('[data-annual-import-method]').forEach(button=>button.classList.toggle('active',button.dataset.annualImportMethod===method));
+  document.getElementById('annualImportPastePanel').hidden=method!=='paste'; document.getElementById('annualImportFilePanel').hidden=method!=='file';
+}
+function openAnnualImport(){ document.getElementById('annualImportYear').value=ensureAnnualPlanning().selectedYear||new Date().getFullYear(); document.getElementById('annualImportPasteArea').value=''; setAnnualImportMethod('paste'); openAnnualModal('annualImportModal'); }
+['btnAnnualImport','btnAnnualImportTop'].forEach(id=>document.getElementById(id).addEventListener('click',openAnnualImport));
+document.querySelectorAll('[data-annual-import-method]').forEach(button=>button.addEventListener('click',()=>setAnnualImportMethod(button.dataset.annualImportMethod)));
+async function analyzeAnnualImportRows(rows,year,fileName,sourceMethod){
+  const status=document.getElementById('annualImportStatus'),confirmButton=document.getElementById('btnAnnualImportConfirm');
+  const candidate=parseAnnualBoRows(rows,year,fileName);
+  candidate.sourceMethod=sourceMethod;
+  annualImportCandidate=candidate;
+  document.getElementById('annualImportPreview').innerHTML=annualImportPreviewHtml(candidate);
+    confirmButton.disabled=false;
+  status.textContent='Datos válidos. Consultando cuántos registros son nuevos o actualizaciones…';
+  await estimateAnnualBoUpserts(candidate);
+  if(annualImportCandidate!==candidate) return;
+  document.getElementById('annualImportPreview').innerHTML=annualImportPreviewHtml(candidate);
+  status.textContent=candidate.estimateWarning?'Datos válidos. La estimación de Supabase no está disponible; revisa el aviso antes de confirmar.':'Tabla válida. Revisa el resumen antes de confirmar.';
+}
+function bindAnnualAnalyzePaste(){
+  try{
+    const button=document.getElementById('btnAnnualAnalyzePaste');
+    if(!button) throw new Error('No existe btnAnnualAnalyzePaste.');
+    button.addEventListener('click',async event=>{
+      event.preventDefault();
+      const status=document.getElementById('annualImportStatus');
+      try{
+        resetAnnualImportCandidate();
+        status.textContent='Analizando…';
+        await new Promise(resolve=>setTimeout(resolve,0));
+        const year=Math.round(Number(document.getElementById('annualImportYear').value)),rows=parseAnnualBoPastedText(document.getElementById('annualImportPasteArea').value);
+        await analyzeAnnualImportRows(rows,year,`Tabla pegada BO ${year}`,'Tabla pegada');
+      }catch(error){
+        console.error('Falló el análisis de la tabla BO pegada',error);
+        annualImportCandidate=null;
+        document.getElementById('btnAnnualImportConfirm').disabled=false;
+        status.textContent=`Análisis bloqueado: ${error.message||error}`;
+      }
+    });
+  }catch(error){
+    console.error('No se pudo registrar el botón Analizar datos pegados',error);
+    const status=document.getElementById('annualImportStatus');
+    if(status) status.textContent=`No se pudo activar el analizador: ${error.message||error}`;
+  }
+}
+bindAnnualAnalyzePaste();
+document.getElementById('btnAnnualChooseFile').addEventListener('click',()=>document.getElementById('annualImportFile').click());
+document.getElementById('annualImportFile').addEventListener('change',async event=>{
+  const file=event.target.files?.[0],status=document.getElementById('annualImportStatus'); event.target.value=''; if(!file) return;
+  try{ resetAnnualImportCandidate(); status.textContent='Analizando informe…'; const rows=await readAnnualBoFile(file),year=Math.round(Number(document.getElementById('annualImportYear').value)); await analyzeAnnualImportRows(rows,year,file.name,'Archivo'); }catch(error){ console.error('Falló el análisis del archivo BO',error); annualImportCandidate=null; document.getElementById('btnAnnualImportConfirm').disabled=false; status.textContent=`Importación bloqueada: ${error.message||error}`; }
+});
+async function confirmAnnualImport(event){
+  event?.preventDefault();
+  event?.stopPropagation();
+  const button=document.getElementById('btnAnnualImportConfirm'),status=document.getElementById('annualImportStatus');
+  if(!button||!status){
+    alert('No se ha podido localizar el botón o el estado de la importación.');
+    return;
+  }
+  const originalText=button.textContent;
+  if(button.dataset.saving==='true') return;
+  if(!annualImportCandidate){
+    status.textContent='Vuelve a validar los datos antes de confirmar.';
+    alert(status.textContent);
+    return;
+  }
+  button.dataset.saving='true';
+  button.disabled=true;
+  button.textContent='Guardando…';
+  status.style.color='var(--ink)';
+  status.textContent='Iniciando guardado en Supabase…';
+  console.info('Confirmando importación BO', {records:annualImportCandidate.records.length,periodStart:annualImportCandidate.periodStart,periodEnd:annualImportCandidate.periodEnd});
+  await new Promise(resolve=>setTimeout(resolve,0));
+  try{
+    const result=await applyAnnualImport(annualImportCandidate,progress=>{
+      status.textContent=`Guardando importación… ${progress.savedBatches} de ${progress.totalBatches} lotes completados.`;
+      button.textContent=`Guardando ${progress.savedBatches}/${progress.totalBatches}…`;
+    });
+    try{ renderAnnualPlanning(); }catch(renderError){ console.error('La importación se guardó, pero no se pudo actualizar la vista anual',renderError); }
+    annualImportCandidate=null;
+    syncAnnualHistoryFilters(result.year,true);
+    await loadAnnualHistoryView();
+    document.getElementById('annualImportModal').classList.remove('open');
+    setSaveStatus(`BO ${result.year}: ${annualNumber(result.records)} registros diarios procesados`);
+    alert(`Importación confirmada.\n\nAño: ${result.year}\nRegistros procesados: ${annualNumber(result.records)}\nNuevos: ${annualEstimateLabel(result.inserted)}\nActualizados: ${annualEstimateLabel(result.updated)}\nTotal anual: ${annualNumber(result.total)}`);
+  }catch(error){
+    console.error('No se pudo confirmar la importación anual',error);
+    status.style.color='var(--neg)';
+    status.textContent=`No se pudo confirmar la importación: ${error.message||error}`;
+    alert(status.textContent);
+  }finally{
+    delete button.dataset.saving;
+    button.textContent=originalText;
+    button.disabled=false;
+  }
+}
+document.getElementById('btnAnnualOpenHistory').addEventListener('click',()=>setAnnualSubView('history',{load:true,resetDates:true}));
+document.getElementById('btnAnnualBackToPlanning').addEventListener('click',()=>setAnnualSubView('planning',{load:false}));
+document.getElementById('btnAnnualHistoryLoad').addEventListener('click',loadAnnualHistoryView);
+document.getElementById('annualHistoryYear').addEventListener('change',event=>{ syncAnnualHistoryFilters(Number(event.target.value),true); loadAnnualHistoryView(); });
+['annualHistoryFrom','annualHistoryTo','annualHistoryGroup'].forEach(id=>document.getElementById(id).addEventListener('change',loadAnnualHistoryView));
+document.getElementById('annualHistoryTbody').addEventListener('click',event=>{
+  const row=event.target.closest('[data-history-period]');
+  if(!row) return;
+  annualHistorySelectedKey=row.dataset.historyPeriod;
+  annualHistoryProductCategory='';
+  renderAnnualHistoryRows();
+  renderAnnualHistoryProductDetail();
+});
+document.getElementById('annualHistoryProductDetail').addEventListener('change',event=>{
+  if(event.target.id!=='annualHistoryProductCategory') return;
+  annualHistoryProductCategory=event.target.value;
+  renderAnnualHistoryProductDetail();
+});
+function refreshProjectionPreview(){ const p=projectionPreview(),box=document.getElementById('annualProjectionPreview'); box.textContent=p?`${p.applicable.length} semanas · Total anterior ${annualNumber(p.oldTotal)} · Total nuevo ${annualNumber(p.newTotal)} · ${p.growth}% sobre ${p.baseYear} · ${p.manual} ajustes manuales`:'Crea primero una planificación anual.'; }
+function openAnnualProjection(){ const settings=annualYearSettings(); document.getElementById('annualProjectionGrowth').value=settings.projectionSettings.defaultGrowthPercent||0; document.getElementById('annualProjectionBase').value=settings.projectionSettings.projectionBase||'comparable'; document.getElementById('annualProjectionTo').value=annualYearData()?Object.keys(annualYearData().weeks).length:53; document.getElementById('annualProjectionStatus').textContent=''; refreshProjectionPreview(); openAnnualModal('annualProjectionModal'); }
+['btnAnnualProject','btnAnnualProjectTop'].forEach(id=>document.getElementById(id).addEventListener('click',openAnnualProjection));
+['annualProjectionGrowth','annualProjectionBase','annualProjectionFrom','annualProjectionTo'].forEach(id=>document.getElementById(id).addEventListener('input',refreshProjectionPreview));
+document.getElementById('btnAnnualProjectionConfirm').addEventListener('click',()=>{ try{ applyAnnualProjection(); document.getElementById('annualProjectionModal').classList.remove('open'); }catch(error){ document.getElementById('annualProjectionStatus').textContent=error.message||error; } });
+document.getElementById('annualSelectedYear').addEventListener('change',event=>{ const year=Number(event.target.value); ensureAnnualPlanning().selectedYear=year; annualSelectedWeekKey=null; saveState(); renderAnnualPlanning(); syncAnnualHistoryFilters(year,true); loadAnnualPlanningShipmentData().catch(error=>console.error('No se pudo cargar el año seleccionado',error)); });
+document.getElementById('annualPreviousYear').addEventListener('change',event=>{ const data=annualYearData(); if(data) data.previousYear=Math.round(Number(event.target.value)); saveState(); renderAnnualPlanning(); loadAnnualPlanningShipmentData(true).catch(error=>console.error('No se pudo cargar el año anterior',error)); });
+document.getElementById('annualComparableYear').addEventListener('change',event=>{ const data=annualYearData(); if(data) data.comparableYear=Math.round(Number(event.target.value)); saveState(); renderAnnualPlanning(); loadAnnualPlanningShipmentData(true).catch(error=>console.error('No se pudo cargar el año comparable',error)); });
+document.getElementById('btnAnnualChartToggle').addEventListener('click',()=>setAnnualChartVisible(document.getElementById('annualChartPanel').hidden));
+document.getElementById('annualChartSeries').addEventListener('change',()=>renderAnnualPlanning());
+document.getElementById('annualStatusFilter').addEventListener('change',()=>renderAnnualPlanning());
+function renderAnnualCampaignEditor(){
+  const year=Number(ensureAnnualPlanning().selectedYear),data=annualYearData(year),previousYear=year-1,source=annualYearData(previousYear),editor=document.getElementById('annualCampaignListEditor'),duplicate=document.getElementById('btnAnnualCampaignDuplicate');
+  document.getElementById('annualCampaignYearLabel').textContent=String(year);
+  const newDate=document.getElementById('annualCampaignNewDate'); newDate.min=`${year}-01-01`; newDate.max=`${year}-12-31`;
+  duplicate.textContent=`Duplicar calendario de ${previousYear}`;
+  duplicate.disabled=!source?.campaigns?.length||!data;
+  if(!data){ editor.innerHTML='<div class="annual-campaign-empty">Crea primero la planificación de este ejercicio.</div>'; return; }
+  applyAnnualCampaignCalendar(year);
+  const campaigns=annualCampaignsForYear(year).slice().sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))||a.name.localeCompare(b.name));
+  editor.innerHTML=campaigns.length?campaigns.map(item=>{
+    const week=annualCampaignWeekNumber(item);
+    return `<div class="annual-campaign-row" data-campaign-id="${escapeHtml(item.id)}"><input type="text" value="${escapeHtml(item.name)}" data-campaign-name aria-label="Nombre de campaña"><div class="annual-campaign-date-field"><input type="date" min="${year}-01-01" max="${year}-12-31" value="${escapeHtml(item.date||'')}" data-campaign-date aria-label="Fecha de ${escapeHtml(item.name)}"><small class="annual-campaign-weekday">${escapeHtml(annualCampaignWeekday(item.date))}</small></div><label class="annual-campaign-active"><input type="checkbox" data-campaign-active ${item.active!==false?'checked':''}> Activa</label><span class="annual-campaign-week">${week?`S${String(week).padStart(2,'0')}`:'—'}</span><button class="btn btn-coral" data-campaign-delete>Eliminar</button></div>`;
+  }).join(''):'<div class="annual-campaign-empty">Todavía no hay campañas en este ejercicio.</div>';
+}
+function setAnnualCampaignStatus(message,error=false){ const status=document.getElementById('annualCampaignStatus'); status.textContent=message||''; status.style.color=error?'var(--neg)':'var(--ink-soft)'; }
+function refreshAnnualCampaignCalendar(message=''){
+  const year=Number(ensureAnnualPlanning().selectedYear);
+  applyAnnualCampaignCalendar(year);
+  saveState();
+  renderAnnualPlanning();
+  renderAnnualCampaignEditor();
+  setAnnualCampaignStatus(message);
+}
+document.getElementById('btnAnnualCampaigns').addEventListener('click',()=>{ setAnnualCampaignStatus(''); renderAnnualCampaignEditor(); openAnnualModal('annualCampaignModal'); });
+document.getElementById('annualCampaignNewDate').addEventListener('change',event=>{ document.getElementById('annualCampaignNewWeekday').textContent=annualCampaignWeekday(event.target.value); });
+document.getElementById('btnAnnualCampaignDuplicate').addEventListener('click',()=>{
+  const year=Number(ensureAnnualPlanning().selectedYear),previousYear=year-1,target=annualYearData(year);
+  if(target?.campaigns?.length&&!confirm(`El calendario de ${year} ya contiene ${target.campaigns.length} campañas. ¿Sustituirlo por una copia de ${previousYear}?`)) return;
+  try{ duplicateAnnualCampaignCalendar(year,previousYear); refreshAnnualCampaignCalendar(`Calendario de ${previousYear} duplicado. Revisa y ajusta las fechas de ${year}.`); }catch(error){ setAnnualCampaignStatus(error.message||error,true); }
+});
+document.getElementById('btnAnnualCampaignAdd').addEventListener('click',()=>{
+  const year=Number(ensureAnnualPlanning().selectedYear),nameInput=document.getElementById('annualCampaignNewName'),dateInput=document.getElementById('annualCampaignNewDate'),name=nameInput.value.trim(),date=dateInput.value;
+  if(!name||!date){ setAnnualCampaignStatus('Indica el nombre y la fecha concreta de la campaña.',true); return; }
+  if(!date.startsWith(`${year}-`)){ setAnnualCampaignStatus(`La fecha debe pertenecer al ejercicio ${year}.`,true); return; }
+  annualCampaignsForYear(year).push({id:`campaign-${year}-${Date.now()}`,name,date,active:true,notes:''});
+  addAnnualHistory({year,week:getISOWeek(parseAnnualDate(date)),type:'campaign-add',origin:'annual-campaigns',oldValue:null,newValue:{name,date},reason:'Campaña añadida al calendario anual'});
+  nameInput.value=''; dateInput.value=''; document.getElementById('annualCampaignNewWeekday').textContent='';
+  refreshAnnualCampaignCalendar(`${name} añadida a la semana ${getISOWeek(parseAnnualDate(date))}.`);
+});
+document.getElementById('annualCampaignListEditor').addEventListener('change',event=>{
+  const year=Number(ensureAnnualPlanning().selectedYear),id=event.target.closest('[data-campaign-id]')?.dataset.campaignId,item=annualCampaignsForYear(year).find(entry=>entry.id===id);
+  if(!item) return;
+  const old=cloneData(item);
+  if(event.target.matches('[data-campaign-name]')) item.name=event.target.value.trim()||item.name;
+  if(event.target.matches('[data-campaign-date]')){
+    if(!event.target.value.startsWith(`${year}-`)){ event.target.value=item.date; setAnnualCampaignStatus(`La fecha debe pertenecer al ejercicio ${year}.`,true); return; }
+    item.date=event.target.value;
+  }
+  if(event.target.matches('[data-campaign-active]')) item.active=event.target.checked;
+  addAnnualHistory({year,week:annualCampaignWeekNumber(item),type:'campaign-update',origin:'annual-campaigns',oldValue:old,newValue:cloneData(item),reason:'Calendario anual modificado'});
+  refreshAnnualCampaignCalendar(`${item.name} aplicada a la semana ${annualCampaignWeekNumber(item)??'—'}.`);
+});
+document.getElementById('annualCampaignListEditor').addEventListener('click',event=>{
+  if(!event.target.matches('[data-campaign-delete]')) return;
+  const year=Number(ensureAnnualPlanning().selectedYear),id=event.target.closest('[data-campaign-id]').dataset.campaignId,campaigns=annualCampaignsForYear(year),item=campaigns.find(entry=>entry.id===id);
+  if(!item||!confirm(`¿Eliminar "${item.name}" del calendario de ${year}?`)) return;
+  annualYearData(year).campaigns=campaigns.filter(entry=>entry.id!==id);
+  addAnnualHistory({year,week:annualCampaignWeekNumber(item),type:'campaign-delete',origin:'annual-campaigns',oldValue:cloneData(item),newValue:null,reason:'Campaña eliminada del calendario anual'});
+  refreshAnnualCampaignCalendar(`${item.name} eliminada del calendario de ${year}.`);
+});
+function showAnnualWeekFloatingTooltip(cell){
+  const source=cell?.querySelector('.annual-week-tooltip'),tooltip=document.getElementById('annualWeekFloatingTooltip');
+  if(!source||!tooltip||!source.innerHTML.trim()) return;
+  tooltip.innerHTML=source.innerHTML;
+  tooltip.hidden=false;
+  const cellRect=cell.getBoundingClientRect(),tipRect=tooltip.getBoundingClientRect(),margin=8;
+  let left=cellRect.right+margin;
+  if(left+tipRect.width>window.innerWidth-margin) left=cellRect.left-tipRect.width-margin;
+  left=Math.max(margin,Math.min(left,window.innerWidth-tipRect.width-margin));
+  let top=cellRect.top+(cellRect.height-tipRect.height)/2;
+  top=Math.max(margin,Math.min(top,window.innerHeight-tipRect.height-margin));
+  tooltip.style.left=`${Math.round(left)}px`;
+  tooltip.style.top=`${Math.round(top)}px`;
+}
+function hideAnnualWeekFloatingTooltip(){
+  const tooltip=document.getElementById('annualWeekFloatingTooltip');
+  if(tooltip) tooltip.hidden=true;
+}
+document.addEventListener('pointerover',event=>{
+  const cell=event.target.closest?.('.annual-week-cell');
+  if(cell) showAnnualWeekFloatingTooltip(cell);
+});
+document.addEventListener('pointerout',event=>{
+  const cell=event.target.closest?.('.annual-week-cell');
+  if(cell&&!cell.contains(event.relatedTarget)) hideAnnualWeekFloatingTooltip();
+});
+document.addEventListener('focusin',event=>{
+  const cell=event.target.closest?.('.annual-week-cell');
+  if(cell) showAnnualWeekFloatingTooltip(cell);
+});
+document.addEventListener('focusout',event=>{
+  const cell=event.target.closest?.('.annual-week-cell');
+  if(cell&&!cell.contains(event.relatedTarget)) hideAnnualWeekFloatingTooltip();
+});
+document.addEventListener('scroll',hideAnnualWeekFloatingTooltip,true);
+window.addEventListener('resize',hideAnnualWeekFloatingTooltip);
+document.querySelectorAll('[data-annual-group]').forEach(input=>input.addEventListener('change',()=>document.getElementById('annualLayout').classList.toggle(`annual-hidden-${input.dataset.annualGroup}`,!input.checked)));
+document.getElementById('annualTbody').addEventListener('click',event=>{ if(event.target.matches('input,button,select,textarea')) return; const row=event.target.closest('[data-annual-week]'); if(!row) return; const nextKey=annualKey(ensureAnnualPlanning().selectedYear,Number(row.dataset.annualWeek)); if(nextKey!==annualSelectedWeekKey) annualPanelProductCategory=''; annualSelectedWeekKey=nextKey; renderAnnualPlanning(); });
+document.getElementById('annualTbody').addEventListener('change',event=>{
+  if(!event.target.matches('[data-annual-forecast]')) return;
+  event.stopPropagation();
+  const week=Number(event.target.dataset.annualForecast),row=annualWeek(ensureAnnualPlanning().selectedYear,week);
+  try{ saveAnnualTableForecast(row,event.target.value); }catch(error){ alert(error.message||error); }
+  renderAnnualPlanning();
+});
+document.getElementById('annualWeekPanel').addEventListener('click',event=>{
+  const row=annualYearData()?.weeks?.[annualSelectedWeekKey]; if(!row) return;
+  if(event.target.id==='btnAnnualPanelSave'){ try{ saveAnnualPanel(); }catch(error){ alert(error.message||error); } }
+  if(event.target.id==='btnAnnualResetDistribution'){
+    const percentages=annualCategoryPercentages(annualDistributionWeights(row).weights);
+    ANNUAL_CATEGORIES.forEach(cat=>{ const input=document.querySelector(`[data-annual-cat-percent="${cat}"]`); if(input) input.value=percentages[cat].toFixed(1); });
+    document.getElementById('annualWeekPanel').dataset.pendingDistributionMode='automatic';
+    updateAnnualPanelEditState();
+  }
+  if(event.target.id==='btnAnnualOpenWeekly'){ switchToWeek(row.year,row.week); goToModule('planning'); }
+  if(event.target.id==='btnAnnualPanelCancel'){ annualSelectedWeekKey=null; annualPanelProductCategory=''; renderAnnualPlanning(); }
+});
+document.getElementById('annualWeekPanel').addEventListener('change',event=>{
+  if(event.target.id!=='annualPanelProductCategory') return;
+  annualPanelProductCategory=event.target.value;
+  const row=annualYearData()?.weeks?.[annualSelectedWeekKey],body=document.getElementById('annualPanelProductTbody');
+  if(row&&body) body.innerHTML=annualPanelProductRowsHtml(row,annualPanelProductCategory);
+});
+document.getElementById('annualWeekPanel').addEventListener('input',event=>{
+  const panel=document.getElementById('annualWeekPanel');
+  if(!document.getElementById('btnAnnualPanelSave')) return;
+  if(event.target.matches('[data-annual-cat-percent]')){
+    const original=JSON.parse(panel.dataset.annualOriginal||'{}'),current=Object.fromEntries(ANNUAL_CATEGORIES.map(cat=>[cat,Math.max(0,Number(document.querySelector(`[data-annual-cat-percent="${cat}"]`)?.value)||0)])),same=ANNUAL_CATEGORIES.every(cat=>Math.abs(current[cat]-(original.percentages?.[cat]??0))<.05);
+    panel.dataset.pendingDistributionMode=same?(original.distributionMode||'automatic'):'manual';
+  }
+  updateAnnualPanelEditState();
+});
 document.getElementById('btnImportNomenclatures').addEventListener('click', ()=> document.getElementById('nomenclatureFileInput').click());
 document.getElementById('nomenclatureFileInput').addEventListener('change', e=>{
   const file = e.target.files?.[0];
@@ -4796,6 +6041,9 @@ function restoreSummaryHtml(state,file){
   const saved=state.savedAt?new Date(state.savedAt):new Date(file.lastModified);
   const weeks=state.weekSnapshots&&typeof state.weekSnapshots==='object'?Object.keys(state.weekSnapshots).length:0;
   const active=state.activeWeekKey||`${state.weekState?.year||'—'}-W${String(state.weekState?.week||'—').padStart(2,'0')}`;
+  const annual=normalizeAnnualPlanning(state.annualPlanning);
+  const annualYears=Object.keys(annual.years||{});
+  const annualWeeks=Object.values(annual.years||{}).reduce((sum,item)=>sum+Object.keys(item.weeks||{}).length,0);
   const items=[
     ['Fecha de la copia',Number.isNaN(saved.getTime())?'No disponible':saved.toLocaleString('es-ES')],
     ['Versión',state.version??'No indicada'],
@@ -4803,7 +6051,11 @@ function restoreSummaryHtml(state,file){
     ['Nomenclaturas',state.nomenclatures.length],
     ['Semanas guardadas',weeks],
     ['Semana activa',active],
-    ['Objetivo semanal',state.weekState?.objetivo??0]
+    ['Objetivo semanal',state.weekState?.objetivo??0],
+    ['Años de planificación anual',annualYears.length?annualYears.join(', '):'Ninguno'],
+    ['Semanas anuales',annualWeeks],
+    ['Importaciones BO',Object.keys(annual.imports||{}).length],
+    ['Registros de historial',annual.changeHistory.length]
   ];
   return items.map(([label,value])=>`<div><strong>${escapeHtml(String(label))}</strong>${escapeHtml(String(value))}</div>`).join('');
 }

@@ -66,7 +66,7 @@ create table if not exists public.nomenclature_flowers (
   id uuid primary key default gen_random_uuid(),
   article_code text unique,
   article_name text not null,
-  migration_match_key text not null unique,
+  migration_match_key text unique,
   family text,
   color text,
   format text,
@@ -78,8 +78,11 @@ create table if not exists public.nomenclature_flowers (
   updated_by uuid references auth.users(id) on delete set null,
   check (btrim(article_name) <> ''),
   check (article_code is null or btrim(article_code) <> ''),
-  check (btrim(migration_match_key) <> '')
+  check (migration_match_key is null or btrim(migration_match_key) <> '')
 );
+
+alter table public.nomenclature_flowers
+  alter column migration_match_key drop not null;
 
 create unique index if not exists nomenclature_flowers_code_normalized_key
   on public.nomenclature_flowers (upper(btrim(article_code)))
@@ -381,7 +384,7 @@ comment on table public.nomenclature_components is
 comment on column public.nomenclature_flowers.article_code is
   'Código de negocio opcional. El UUID es la identidad técnica de la flor.';
 comment on column public.nomenclature_flowers.migration_match_key is
-  'Clave interna no visible para hacer repetible la migración inicial; no sustituye a article_code.';
+  'Clave nullable para deduplicar la migración inicial. Las flores futuras no dependen de ella; el UUID sigue siendo su identidad técnica.';
 comment on table public.flower_cost_history is
   'Histórico append-only del coste por flor/proveedor.';
 comment on table public.product_cost_snapshots is
@@ -440,7 +443,8 @@ create or replace function public.record_nomenclature_flower_cost(
 )
 returns uuid
 language plpgsql
-set search_path = public
+security definer
+set search_path = pg_catalog
 as $$
 declare
   relation_row public.nomenclature_flower_suppliers%rowtype;
@@ -448,6 +452,12 @@ declare
   history_id uuid;
   line_invoice_id uuid;
 begin
+  if auth.uid() is null
+     or coalesce(auth.jwt() ->> 'role', '') <> 'authenticated' then
+    raise exception 'Operación permitida únicamente a usuarios autenticados'
+      using errcode = '42501';
+  end if;
+
   if p_unit_cost is null or p_unit_cost < 0 then
     raise exception 'El coste debe ser un número igual o superior a cero';
   end if;
@@ -541,12 +551,19 @@ create or replace function public.record_nomenclature_sale_price(
 )
 returns uuid
 language plpgsql
-set search_path = public
+security definer
+set search_path = pg_catalog
 as $$
 declare
   existing_id uuid;
   history_id uuid;
 begin
+  if auth.uid() is null
+     or coalesce(auth.jwt() ->> 'role', '') <> 'authenticated' then
+    raise exception 'Operación permitida únicamente a usuarios autenticados'
+      using errcode = '42501';
+  end if;
+
   if p_sale_price is null or p_sale_price < 0 then
     raise exception 'El PVP debe ser un número igual o superior a cero';
   end if;
@@ -593,6 +610,14 @@ begin
 end;
 $$;
 
+-- Si se hubiera preparado una versión anterior del script, retirar sus
+-- políticas de UPDATE directo. Los cierres de vigencia se realizan solo
+-- mediante las funciones transaccionales anteriores.
+drop policy if exists "Authenticated close validity flower_cost_history"
+  on public.flower_cost_history;
+drop policy if exists "Authenticated close validity product_sale_price_history"
+  on public.product_sale_price_history;
+
 -- RLS: usuarios autenticados pueden leer todo. No se crean políticas DELETE.
 do $rls$
 declare
@@ -607,11 +632,6 @@ declare
     'nomenclature_components',
     'supplier_invoices',
     'supplier_invoice_lines'
-  ];
-  append_tables text[] := array[
-    'flower_cost_history',
-    'product_sale_price_history',
-    'product_cost_snapshots'
   ];
 begin
   foreach table_name in array array[
@@ -680,21 +700,6 @@ begin
     end if;
   end loop;
 
-  foreach table_name in array array['flower_cost_history', 'product_sale_price_history']
-  loop
-    if not exists (
-      select 1 from pg_policies
-       where schemaname = 'public'
-         and tablename = table_name
-         and policyname = 'Authenticated close validity ' || table_name
-    ) then
-      execute format(
-        'create policy %I on public.%I for update to authenticated using (true) with check (true)',
-        'Authenticated close validity ' || table_name,
-        table_name
-      );
-    end if;
-  end loop;
 end
 $rls$;
 
@@ -716,8 +721,21 @@ grant select, insert on
   public.product_cost_snapshots
 to authenticated;
 
-grant update (valid_to, notes) on public.flower_cost_history to authenticated;
-grant update (valid_to, notes) on public.product_sale_price_history to authenticated;
+revoke update on
+  public.flower_cost_history,
+  public.product_sale_price_history
+from public, anon, authenticated;
+revoke update (valid_to, notes) on public.flower_cost_history
+  from public, anon, authenticated;
+revoke update (valid_to, notes) on public.product_sale_price_history
+  from public, anon, authenticated;
+
+revoke execute on function public.record_nomenclature_flower_cost(
+  uuid, numeric, date, text, text, text, text, uuid, uuid, text, date
+) from public, anon;
+revoke execute on function public.record_nomenclature_sale_price(
+  uuid, numeric, numeric, date, text, text, text, text
+) from public, anon;
 grant execute on function public.record_nomenclature_flower_cost(
   uuid, numeric, date, text, text, text, text, uuid, uuid, text, date
 ) to authenticated;

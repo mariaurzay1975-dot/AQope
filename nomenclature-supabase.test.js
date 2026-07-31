@@ -262,6 +262,65 @@ test('deduplica flores sin código solo cuando la coincidencia es segura', () =>
   assert.ok(payload.flowerSuppliers.some(row => row.supplier_article_code === null));
 });
 
+test('fusiona las dos denominaciones confirmadas de Red Naomi sin perder relaciones ni duplicar componentes', () => {
+  const state = {
+    nomenclatures: [
+      line({ articleCode: '', articleName: 'ROSE RED NAOMI 4050 CM', priceNumber: 1, stemsPerBouquet: 5, supplier: 'Coflores', unitCost: 0.4 }),
+      line({ articleCode: '', articleName: 'ROSE RED NAOMI 40/50 CM', priceNumber: 1, stemsPerBouquet: 7, supplier: 'Coflores', unitCost: 0.4 }),
+      line({ articleCode: '', articleName: 'ROSE RED NAOMI 4050 CM', priceNumber: 2, stemsPerBouquet: 9, supplier: 'Coflores', unitCost: 0.4 })
+    ],
+    productPriceCatalog: {
+      'A-TEST-5': { priceCount: 2, prices: [33, 40] }
+    },
+    flowers: [
+      {
+        articleCode: '',
+        articleName: 'ROSE RED NAOMI 4050 CM',
+        family: 'Rosa GR',
+        color: 'Rojo',
+        format: '',
+        primarySupplier: 'Coflores',
+        active: true,
+        notes: '',
+        providers: [{ supplier: 'Coflores', price: 0.4, unit: 'tallo', active: true, source: 'manual' }]
+      },
+      {
+        articleCode: '',
+        articleName: 'ROSE RED NAOMI 40/50 CM',
+        family: '',
+        color: '',
+        format: '',
+        primarySupplier: 'Coflores',
+        active: true,
+        notes: '',
+        providers: [{ supplier: 'Coflores', price: 0.4, unit: 'tallo', active: true, source: 'nomenclatura importada' }]
+      }
+    ]
+  };
+
+  const duplicates = classifyFlowerDuplicates(state.flowers);
+  assert.equal(duplicates.safe.length, 1);
+  assert.equal(duplicates.safe[0].reason, 'confirmed_manual_equivalence');
+  assert.equal(duplicates.possible.length, 0);
+
+  const payload = buildNomenclatureMigrationPayload(state, { effectiveDate: '2026-07-31' });
+  assert.equal(payload.preview.canMigrate, true);
+  assert.equal(payload.flowers.length, 1);
+  assert.equal(payload.flowers[0].article_name, 'ROSE RED NAOMI 40/50 CM');
+  assert.equal(payload.flowers[0].article_code, null);
+  assert.equal(payload.flowers[0].family, 'Rosa GR');
+  assert.equal(payload.flowers[0].color, 'Rojo');
+  assert.equal(payload.flowerSuppliers.length, 1);
+  assert.equal(payload.flowerSuppliers[0].current_unit_cost, '0.4000');
+  assert.equal(payload.components.length, 2);
+  assert.equal(new Set(payload.components.map(row => row.flower_key)).size, 1);
+  assert.equal(new Set(payload.components.map(row => row._key)).size, payload.components.length);
+  assert.equal(payload.components.find(row => row.variant_key === 'A-TEST-5|1').stems, '12.0000');
+  assert.ok(payload.issues.warnings.some(issue => issue.code === 'CONFIRMED_FLOWER_COMPONENT_MERGED'));
+  assert.equal(payload.quality.possibleFlowerDuplicates.length, 0);
+  assert.equal(payload.flowers.some(row => /^FL-\d+$/i.test(row.article_code || '')), false);
+});
+
 test('calcula coste, PVP neto y margen con precisión decimal', () => {
   const result = calculateTheoreticalEconomics({
     salePrice: 33,
@@ -417,11 +476,11 @@ test('previsualiza los datos operativos actuales sin exigir códigos de flor', {
   assert.equal(payload.preview.variants, 57);
   assert.equal(current.flowers.length, 51);
   assert.equal(current.flowers.every(flower => !String(flower.articleCode || '').trim()), true);
-  assert.equal(payload.preview.flowers, 51);
+  assert.equal(payload.preview.flowers, 50);
   assert.equal(payload.preview.components, 247);
   assert.equal(payload.preview.errors, 0);
   assert.equal(payload.preview.canMigrate, true);
-  assert.equal(payload.preview.information.flowersWithoutArticleCode, 51);
+  assert.equal(payload.preview.information.flowersWithoutArticleCode, 50);
   assert.equal(payload.preview.information.componentsLinkedWithoutArticleCode, 247);
   assert.equal(payload.preview.information.componentsOrphaned, 0);
   assert.equal(payload.preview.information.emptyRowsIgnored, 3);
@@ -429,6 +488,7 @@ test('previsualiza los datos operativos actuales sin exigir códigos de flor', {
   assert.equal(payload.preview.information.productRowsWithDataWithoutCode, 0);
   assert.equal(payload.preview.information.orphanPriceCatalogs, 3);
   assert.equal(payload.preview.information.variantsWithoutSalePrice, 2);
+  assert.equal(payload.preview.information.possibleFlowerDuplicates, 0);
 });
 
 test('el SQL es no destructivo y contiene el contrato relacional completo', () => {
@@ -457,7 +517,9 @@ test('el SQL es no destructivo y contiene el contrato relacional completo', () =
   assert.match(sql, /record_nomenclature_flower_cost/i);
   assert.match(sql, /record_nomenclature_sale_price/i);
   assert.match(sql, /source_key text unique/i);
-  assert.match(sql, /migration_match_key text not null unique/i);
+  assert.match(sql, /migration_match_key text unique/i);
+  assert.match(sql, /alter column migration_match_key drop not null/i);
+  assert.doesNotMatch(sql, /migration_match_key text not null unique/i);
   assert.doesNotMatch(sql, /article_code text not null/i);
   assert.match(sql, /article_code text unique/i);
   assert.equal((sql.match(/\$\$/g) || []).length % 2, 0);

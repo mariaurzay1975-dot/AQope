@@ -7,6 +7,11 @@
 
   const NOMENCLATURE_CATEGORIES = ['ROSAS', 'COMPUESTOS', 'SIMPLES', 'PLANTAS'];
   const MONEY_SCALE = 4;
+  const RED_NAOMI_CANONICAL_NAME = 'ROSE RED NAOMI 40/50 CM';
+  const CONFIRMED_FLOWER_NAME_ALIASES = new Map([
+    ['ROSE RED NAOMI 4050 CM', RED_NAOMI_CANONICAL_NAME],
+    ['ROSE RED NAOMI 40 50 CM', RED_NAOMI_CANONICAL_NAME]
+  ]);
 
   function cleanText(value) {
     return String(value ?? '').trim().replace(/\s+/g, ' ');
@@ -36,9 +41,17 @@
       .toLocaleUpperCase('es-ES');
   }
 
+  function confirmedFlowerCanonicalName(value) {
+    return CONFIRMED_FLOWER_NAME_ALIASES.get(normalizeFlowerIdentityText(value)) || '';
+  }
+
+  function canonicalFlowerName(value) {
+    return confirmedFlowerCanonicalName(value) || cleanText(value);
+  }
+
   function flowerContentSignature(flower) {
     return [
-      normalizeFlowerIdentityText(flower?.articleName),
+      normalizeFlowerIdentityText(canonicalFlowerName(flower?.articleName)),
       normalizeFlowerIdentityText(flower?.family),
       normalizeFlowerIdentityText(flower?.color),
       normalizeFlowerIdentityText(flower?.format)
@@ -46,6 +59,8 @@
   }
 
   function flowerMigrationMatchKey(flower) {
+    const confirmedCanonicalName = confirmedFlowerCanonicalName(flower?.articleName);
+    if (confirmedCanonicalName) return `NAME:${normalizeFlowerIdentityText(confirmedCanonicalName)}`;
     const articleCode = cleanText(flower?.articleCode);
     if (articleCode) return `CODE:${businessKey(articleCode)}`;
     const signature = flowerContentSignature(flower);
@@ -91,10 +106,16 @@
         const rightCode = businessKey(right.articleCode);
         const sameCode = leftCode && rightCode && leftCode === rightCode;
         const sameContent = flowerContentSignature(left) === flowerContentSignature(right);
+        const leftConfirmedCanonicalName = confirmedFlowerCanonicalName(left.articleName);
+        const rightConfirmedCanonicalName = confirmedFlowerCanonicalName(right.articleName);
         const context = {
           left: { articleCode: cleanText(left.articleCode) || null, articleName: cleanText(left.articleName), format: cleanText(left.format) || null },
           right: { articleCode: cleanText(right.articleCode) || null, articleName: cleanText(right.articleName), format: cleanText(right.format) || null }
         };
+        if (leftConfirmedCanonicalName && leftConfirmedCanonicalName === rightConfirmedCanonicalName) {
+          safe.push({ ...context, reason: 'confirmed_manual_equivalence', canonicalName: leftConfirmedCanonicalName });
+          continue;
+        }
         if (sameCode && !sameContent) {
           incompatible.push({ ...context, reason: 'same_code_conflicting_description' });
           continue;
@@ -485,7 +506,9 @@
 
     function addFlower(raw, derived = false) {
       const articleCode = cleanText(raw?.articleCode);
-      const articleName = cleanText(raw?.articleName);
+      const originalArticleName = cleanText(raw?.articleName);
+      const confirmedCanonicalName = confirmedFlowerCanonicalName(originalArticleName);
+      const articleName = confirmedCanonicalName || originalArticleName;
       if (!articleName) {
         issues.error('FLOWER_NAME_MISSING', 'Hay una flor sin nombre; no se puede crear una correspondencia segura.', { articleCode: articleCode || null });
         return null;
@@ -539,6 +562,13 @@
         if (!existing.family && raw?.family) existing.family = cleanText(raw.family);
         if (!existing.color && raw?.color) existing.color = cleanText(raw.color);
         if (!existing.format && raw?.format) existing.format = cleanText(raw.format);
+        if (confirmedCanonicalName) {
+          existing.article_name = confirmedCanonicalName;
+          existing.active = existing.active || toBoolean(raw?.active, true);
+          const incomingNotes = cleanText(raw?.notes);
+          if (incomingNotes && !existing.notes) existing.notes = incomingNotes;
+          else if (incomingNotes && existing.notes !== incomingNotes) existing.notes = `${existing.notes}\n${incomingNotes}`;
+        }
       }
       const flowerKey = key;
       if (normalizedCode) flowerKeyByCode.set(normalizedCode, flowerKey);
@@ -606,7 +636,7 @@
       const articleName = cleanText(line.articleName);
       const normalizedCode = businessKey(articleCode);
       if (normalizedCode && flowerKeyByCode.has(normalizedCode)) return flowerKeyByCode.get(normalizedCode);
-      const normalizedName = normalizeFlowerIdentityText(articleName);
+      const normalizedName = normalizeFlowerIdentityText(canonicalFlowerName(articleName));
       const candidates = normalizedName ? [...(flowerKeysByName.get(normalizedName) || [])] : [];
       if (candidates.length === 1) {
         if (articleCode && !flowersByKey.get(candidates[0]).article_code) {
@@ -732,6 +762,7 @@
         });
 
         const componentMap = new Map();
+        const componentSourceNames = new Map();
         for (const line of variantLines) {
           const stemsRaw = line.stemsPerBouquet ?? 0;
           const stems = decimalString(stemsRaw);
@@ -757,14 +788,6 @@
           quality.componentsLinked += 1;
           if (!flowersByKey.get(flowerKey).article_code) quality.componentsLinkedWithoutArticleCode += 1;
           const componentKey = `${variantKey}|${flowerKey}`;
-          if (componentMap.has(componentKey)) {
-            issues.warn('DUPLICATE_COMPONENT', 'La misma flor aparece repetida en una variante; se conserva la última línea como hace la aplicación actual.', {
-              productCode: product.code,
-              priceIndex: index,
-              articleCode: cleanText(line.articleCode) || null,
-              articleName: cleanText(line.articleName) || null
-            });
-          }
           const preferredSupplierKey = supplierKey(line.supplier);
           if (preferredSupplierKey && !suppliersByKey.has(preferredSupplierKey)) {
             addSupplier({ supplier: line.supplier, active: true }, {
@@ -804,7 +827,7 @@
               });
             }
           }
-          componentMap.set(componentKey, {
+          const component = {
             _key: componentKey,
             recipe_version_key: `${variantKey}|1`,
             product_key: product.key,
@@ -816,7 +839,42 @@
             notes: cleanText(line.notes),
             created_by: userId,
             updated_by: userId
-          });
+          };
+          if (componentMap.has(componentKey)) {
+            const existingComponent = componentMap.get(componentKey);
+            const previousSourceName = componentSourceNames.get(componentKey) || '';
+            const previousAlias = normalizeFlowerIdentityText(previousSourceName);
+            const currentAlias = normalizeFlowerIdentityText(line.articleName);
+            const previousCanonicalName = confirmedFlowerCanonicalName(previousSourceName);
+            const currentCanonicalName = confirmedFlowerCanonicalName(line.articleName);
+            const mergeConfirmedAliases = previousCanonicalName
+              && previousCanonicalName === currentCanonicalName
+              && previousAlias !== currentAlias;
+            if (mergeConfirmedAliases) {
+              component.stems = scaledToDecimal(decimalToScaled(existingComponent.stems) + decimalToScaled(component.stems));
+              component.active = existingComponent.active || component.active;
+              component.preferred_supplier_key = component.preferred_supplier_key || existingComponent.preferred_supplier_key;
+              if (!component.notes) component.notes = existingComponent.notes;
+              else if (existingComponent.notes && existingComponent.notes !== component.notes) {
+                component.notes = `${existingComponent.notes}\n${component.notes}`;
+              }
+              issues.warn('CONFIRMED_FLOWER_COMPONENT_MERGED', 'Dos representaciones confirmadas de la misma flor aparecen en una variante; se han sumado sus tallos.', {
+                productCode: product.code,
+                priceIndex: index,
+                flowerNames: [previousSourceName, cleanText(line.articleName)],
+                stems: component.stems
+              });
+            } else {
+              issues.warn('DUPLICATE_COMPONENT', 'La misma flor aparece repetida en una variante; se conserva la última línea como hace la aplicación actual.', {
+                productCode: product.code,
+                priceIndex: index,
+                articleCode: cleanText(line.articleCode) || null,
+                articleName: cleanText(line.articleName) || null
+              });
+            }
+          }
+          componentMap.set(componentKey, component);
+          componentSourceNames.set(componentKey, cleanText(line.articleName));
         }
         components.push(...componentMap.values());
       }

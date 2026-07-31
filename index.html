@@ -416,6 +416,14 @@
   .flower-readonly.muted{color:var(--ink-soft);}
   .flower-status{display:inline-block;padding:3px 6px;border-radius:999px;background:#dce9d9;color:#31563c;font:600 9px var(--mono);}
   .flower-status.inactive{background:#e9e7e0;color:#66706a;}
+  .flower-usage-link{border:0;background:transparent;padding:3px 0;color:var(--moss-deep);font:600 10.5px var(--mono);text-decoration:underline;text-underline-offset:2px;cursor:pointer;}
+  .flower-usage-link:hover,.flower-usage-link:focus{color:var(--gold-deep);outline:none;}
+  .flower-usage-empty{color:var(--ink-soft);font-size:11px;}
+  .flower-usage-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;max-height:56vh;overflow:auto;}
+  .flower-usage-product{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 12px;border:1px solid var(--line);border-radius:3px;background:#faf9f5;}
+  .flower-usage-product-main{min-width:0;}
+  .flower-usage-product-title{font-weight:650;color:var(--moss-deep);overflow-wrap:anywhere;}
+  .flower-usage-product-meta{margin-top:3px;color:var(--ink-soft);font:10.5px var(--mono);text-transform:uppercase;}
   .nomenclature-edit-hint{color:var(--ink-soft);font-size:11px;}
   .flower-editor-modal{max-height:calc(100vh - 28px);overflow-y:auto;padding:16px 18px;}
   .flower-editor-modal>h3{margin-bottom:2px;}
@@ -944,16 +952,17 @@
         <table class="nomenclature-table">
           <thead>
             <tr>
-              <th style="width:8%;">Codigo</th>
-              <th style="width:22%;" aria-sort="ascending"><button type="button" class="nomenclature-sort-button" data-flower-sort="articleName">Flor / articulo <span class="nomenclature-sort-indicator">▲</span></button></th>
-              <th style="width:9%;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-flower-sort="family">Familia <span class="nomenclature-sort-indicator">↕</span></button></th>
-              <th style="width:8%;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-flower-sort="color">Color <span class="nomenclature-sort-indicator">↕</span></button></th>
-              <th style="width:13%;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-flower-sort="primarySupplier">Proveedor principal <span class="nomenclature-sort-indicator">↕</span></button></th>
-              <th style="width:8%;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-flower-sort="primaryPrice">Precio tallo <span class="nomenclature-sort-indicator">↕</span></button></th>
+              <th style="width:7%;">Codigo</th>
+              <th style="width:18%;" aria-sort="ascending"><button type="button" class="nomenclature-sort-button" data-flower-sort="articleName">Flor / articulo <span class="nomenclature-sort-indicator">▲</span></button></th>
+              <th style="width:8%;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-flower-sort="family">Familia <span class="nomenclature-sort-indicator">↕</span></button></th>
+              <th style="width:7%;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-flower-sort="color">Color <span class="nomenclature-sort-indicator">↕</span></button></th>
+              <th style="width:11%;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-flower-sort="primarySupplier">Proveedor principal <span class="nomenclature-sort-indicator">↕</span></button></th>
+              <th style="width:7%;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-flower-sort="primaryPrice">Precio tallo <span class="nomenclature-sort-indicator">↕</span></button></th>
               <th style="width:6%;">Unidad</th>
-              <th style="width:7%;">Estado</th>
+              <th style="width:9%;">Ramos</th>
+              <th style="width:6%;">Estado</th>
               <th style="width:8%;" aria-sort="none"><button type="button" class="nomenclature-sort-button" data-flower-sort="updatedAt">Actualizado <span class="nomenclature-sort-indicator">↕</span></button></th>
-              <th style="width:11%;">Acciones</th>
+              <th style="width:13%;">Acciones</th>
             </tr>
           </thead>
           <tbody id="flowersTbody"></tbody>
@@ -1450,6 +1459,17 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="flowerUsageModal">
+  <div class="modal" style="max-width:640px;">
+    <h3 id="flowerUsageTitle">Ramos que utilizan esta flor</h3>
+    <p id="flowerUsageSummary"></p>
+    <div class="flower-usage-list" id="flowerUsageProducts"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="btnFlowerUsageClose">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="calcFlowersModal">
   <div class="modal" style="max-width:620px;">
     <h3>Calcular compra de flores</h3>
@@ -1569,6 +1589,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="nomenclature-flower-usage.js"></script>
 <script>
 // ---------- Supabase: usuarios y datos compartidos ----------
 const SUPABASE_URL = 'https://divmnzsviqlhfcxpsugr.supabase.co';
@@ -1971,6 +1992,7 @@ const DEFAULT_FLOWER_COLORS = [
 let flowerFamilyCatalog = [...DEFAULT_FLOWER_FAMILIES];
 let flowerColorCatalog = [...DEFAULT_FLOWER_COLORS];
 let pendingFlowerImport = [];
+let flowerUsageEntries = [];
 let nomenclatureTab = 'products';
 let productTableSort = {key:'productCode', direction:1};
 let flowerTableSort = {key:'articleName', direction:1};
@@ -5074,26 +5096,34 @@ function renderFlowers(){
   if(!tbody) return;
   const q = (document.getElementById('flowerSearch')?.value || '').trim().toLowerCase();
   const activeFilter = document.getElementById('flowerActiveFilter')?.value || '';
-  const rows = flowers.filter(f=>{
+  flowerUsageEntries = buildFlowerUsageEntries(flowers,nomenclatures);
+  const rows = flowerUsageEntries.filter(entry=>{
+    const f = entry.flower;
     if(activeFilter === 'active' && !f.active) return false;
     if(activeFilter === 'inactive' && f.active) return false;
     const providers = (f.providers||[]).map(p=>p.supplier).join(' ');
-    if(q && ![f.articleCode,f.articleName,f.family,f.color,f.format,f.primarySupplier,providers,f.notes].join(' ').toLowerCase().includes(q)) return false;
+    const products = entry.products.map(product=>[product.code,product.name,product.category].join(' ')).join(' ');
+    if(q && ![f.articleCode,f.articleName,f.family,f.color,f.format,f.primarySupplier,providers,f.notes,products].join(' ').toLowerCase().includes(q)) return false;
     return true;
   });
   rows.sort((a,b)=>{
     const key = flowerTableSort.key;
-    const value = flower=>{
-      if(key === 'primaryPrice') return primaryProvider(flower).price;
-      return flower[key];
+    const value = entry=>{
+      if(key === 'primaryPrice') return primaryProvider(entry.flower).price;
+      return entry.flower[key];
     };
     const type = key === 'primaryPrice' ? 'number' : (key === 'updatedAt' ? 'date' : 'text');
     const main = compareNomenclatureSortValues(value(a),value(b),type);
-    return (main || alphabeticalCompareEs(a.articleName,b.articleName)) * flowerTableSort.direction;
+    return (main || alphabeticalCompareEs(a.flower.articleName,b.flower.articleName)) * flowerTableSort.direction;
   });
-  tbody.innerHTML = rows.length ? rows.map(f=>{
+  tbody.innerHTML = rows.length ? rows.map(entry=>{
+    const f = entry.flower;
     const pp = primaryProvider(f);
-    return `<tr data-flower-id="${escapeHtml(f.id)}">
+    const usageLabel = flowerUsageCountLabel(entry.products.length);
+    const usageCell = entry.products.length
+      ? `<button type="button" class="flower-usage-link" data-flower-action="usage">${escapeHtml(usageLabel)}</button>`
+      : `<span class="flower-usage-empty">${escapeHtml(usageLabel)}</span>`;
+    return `<tr data-flower-id="${escapeHtml(f.id)}" data-flower-usage-key="${escapeHtml(entry.key)}">
       <td><span class="flower-readonly ${f.articleCode?'':'muted'}" title="${escapeHtml(f.articleCode || 'Sin codigo')}">${escapeHtml(f.articleCode || '—')}</span></td>
       <td><span class="flower-readonly" title="${escapeHtml(f.articleName)}">${escapeHtml(f.articleName)}</span></td>
       <td><span class="flower-readonly ${f.family?'':'muted'}" title="${escapeHtml(f.family || '')}">${escapeHtml(f.family || '—')}</span></td>
@@ -5101,13 +5131,47 @@ function renderFlowers(){
       <td><span class="flower-readonly ${f.primarySupplier?'':'muted'}" title="${escapeHtml(f.primarySupplier || '')}">${escapeHtml(f.primarySupplier || '—')}</span></td>
       <td class="num"><span class="flower-readonly">${flowerPrice(pp.price)}</span></td>
       <td><span class="flower-readonly">${escapeHtml(f.unit || 'tallo')}</span></td>
+      <td>${usageCell}</td>
       <td><span class="flower-status ${f.active?'':'inactive'}">${f.active?'Activo':'Inactivo'}</span></td>
       <td><span class="flower-readonly muted" title="${escapeHtml(formatDateTime(f.updatedAt))}">${escapeHtml(formatDateTime(f.updatedAt))}</span></td>
       <td><div class="nomenclature-actions"><button class="btn-mini" data-flower-action="edit">Editar</button></div></td>
     </tr>`;
-  }).join('') : `<tr><td colspan="10"><div class="empty-state">No hay flores que coincidan con los filtros.</div></td></tr>`;
+  }).join('') : `<tr><td colspan="11"><div class="empty-state">No hay flores que coincidan con los filtros.</div></td></tr>`;
   updateNomenclatureSortIndicators('flower');
   renderFlowerSuggestions();
+}
+function flowerUsageStatusLabel(status){
+  if(status === 'deleted') return 'Papelera';
+  return status === 'active' ? 'Activo' : 'Inactivo';
+}
+function openFlowerUsageDetail(entry){
+  if(!entry?.products?.length) return;
+  document.getElementById('flowerUsageTitle').textContent = entry.flower.articleName || 'Ramos que utilizan esta flor';
+  document.getElementById('flowerUsageSummary').textContent = `${flowerUsageCountLabel(entry.products.length)} · productos distintos`;
+  document.getElementById('flowerUsageProducts').innerHTML = entry.products.map(product=>`
+    <div class="flower-usage-product">
+      <div class="flower-usage-product-main">
+        <div class="flower-usage-product-title">${escapeHtml(product.code)} · ${escapeHtml(product.name)}</div>
+        <div class="flower-usage-product-meta">${escapeHtml(product.category || 'Sin categoria')} · ${escapeHtml(flowerUsageStatusLabel(product.status))}</div>
+      </div>
+      <button type="button" class="btn-mini" data-flower-usage-product="${escapeHtml(product.code)}">Editar nomenclatura</button>
+    </div>
+  `).join('');
+  document.getElementById('flowerUsageModal').classList.add('open');
+}
+async function editFlowerUsageProduct(productCode){
+  return navigateToFlowerUsageProduct(productCode, {
+    closeUsage: ()=> document.getElementById('flowerUsageModal').classList.remove('open'),
+    selectProducts: code=>{
+      nomenclatureTab = 'products';
+      document.getElementById('nomenclatureSearch').value = code;
+      document.getElementById('nomenclatureActiveFilter').value = '';
+      document.getElementById('nomenclatureSizeFilter').value = '';
+    },
+    renderProducts: renderNomenclatures,
+    findProduct: code=> productSummaries().find(product=>product.key === code),
+    openEditor: summary=> openProductEditor(summary)
+  });
 }
 function renderFlowerSuggestions(){
   const dl = document.getElementById('flowerSuggestions');
@@ -5702,8 +5766,15 @@ document.getElementById('nomenclatureTbody').addEventListener('click', e=>{
 });
 document.getElementById('flowersTbody').addEventListener('click', e=>{
   const btn=e.target.closest('[data-flower-action]'); if(!btn) return;
-  const id=btn.closest('[data-flower-id]').dataset.flowerId; const item=flowers.find(f=>f.id===id); if(!item) return;
-  if(btn.dataset.flowerAction==='edit') openFlowerEditor(item);
+  const row=btn.closest('[data-flower-usage-key]');
+  const entry=flowerUsageEntries.find(item=>item.key===row?.dataset.flowerUsageKey); if(!entry) return;
+  if(btn.dataset.flowerAction==='edit') openFlowerEditor(entry.flower);
+  if(btn.dataset.flowerAction==='usage') openFlowerUsageDetail(entry);
+});
+document.getElementById('btnFlowerUsageClose').addEventListener('click', ()=> document.getElementById('flowerUsageModal').classList.remove('open'));
+document.getElementById('flowerUsageProducts').addEventListener('click', e=>{
+  const btn=e.target.closest('[data-flower-usage-product]'); if(!btn) return;
+  editFlowerUsageProduct(btn.dataset.flowerUsageProduct);
 });
 document.getElementById('btnFlowerEditorCancel').addEventListener('click', ()=> document.getElementById('flowerEditorModal').classList.remove('open'));
 document.getElementById('btnFlowerEditorSave').addEventListener('click', saveFlowerEditor);

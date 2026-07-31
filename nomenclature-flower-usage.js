@@ -148,6 +148,129 @@
     return count === 1 ? '1 ramo' : `${count} ramos`;
   }
 
+  function flowerUsagePresentation(entry) {
+    const products = Array.isArray(entry?.products) ? entry.products : [];
+    return { products, count: products.length, label: flowerUsageCountLabel(products.length) };
+  }
+
+  function findFlowerUsageEntry(flowers = [], nomenclatures = [], identity = {}) {
+    const entries = buildFlowerUsageEntries(flowers, nomenclatures);
+    if (typeof identity === 'string') return entries.find(entry => entry.key === identity) || null;
+    return findMasterFlowerEntry(entries, identity);
+  }
+
+  function planFlowerDeletion(flowers = [], nomenclatures = [], identity = {}) {
+    const entry = findFlowerUsageEntry(flowers, nomenclatures, identity);
+    if (!entry) return { canDelete: false, reason: 'not-found', entry: null, usage: { products: [], count: 0, label: 'No utilizada' } };
+    const usage = flowerUsagePresentation(entry);
+    return {
+      canDelete: usage.count === 0,
+      reason: usage.count ? 'in-use' : 'unused',
+      entry,
+      flower: entry.flower,
+      usage
+    };
+  }
+
+  function deleteUnusedFlower(flowers = [], nomenclatures = [], identity = {}, options = {}) {
+    const plan = planFlowerDeletion(flowers, nomenclatures, identity);
+    if (!plan.entry) return { ...plan, deleted: false, flowers: flowers.slice() };
+    if (!plan.canDelete) return { ...plan, deleted: false, flowers: flowers.slice() };
+    if (options.confirmed !== true) return { ...plan, deleted: false, reason: 'confirmation-required', flowers: flowers.slice() };
+    return {
+      ...plan,
+      deleted: true,
+      reason: 'deleted',
+      flowers: flowers.filter(flower => logicalFlowerKey(flower) !== plan.entry.key)
+    };
+  }
+
+  function setFlowerActiveByIdentity(flowers = [], identity = {}, active = false) {
+    const entry = findFlowerUsageEntry(flowers, [], identity);
+    if (!entry) return flowers.slice();
+    return flowers.map(flower => logicalFlowerKey(flower) === entry.key ? { ...flower, active: !!active } : flower);
+  }
+
+  function buildMasterFlowerCatalog(flowers = [], options = {}) {
+    const includeInactive = options.includeInactive === true;
+    return buildFlowerUsageEntries(flowers, [])
+      .filter(entry => includeInactive || entry.flower.active !== false)
+      .sort((left, right) => cleanText(left.flower.articleName).localeCompare(cleanText(right.flower.articleName), 'es'));
+  }
+
+  function findMasterFlowerEntry(catalog = [], value = {}) {
+    const articleName = typeof value === 'string' ? value : value?.articleName;
+    const articleCode = typeof value === 'string' ? value : value?.articleCode;
+    const normalizedName = normalizeIdentity(canonicalFlowerName(articleName));
+    const normalizedCode = normalizeIdentity(articleCode);
+    return catalog.find(entry => {
+      const flowerName = normalizeIdentity(canonicalFlowerName(entry.flower?.articleName));
+      const flowerCode = normalizeIdentity(entry.flower?.articleCode);
+      return (normalizedCode && flowerCode === normalizedCode) || (normalizedName && flowerName === normalizedName);
+    }) || null;
+  }
+
+  function searchMasterFlowerCatalog(catalog = [], query = '') {
+    const normalizedQuery = normalizeIdentity(query);
+    if (!normalizedQuery) return catalog.slice();
+    return catalog.filter(entry => normalizeIdentity(entry.flower?.articleName).includes(normalizedQuery));
+  }
+
+  function canonicalizeExistingFlowerLine(line = {}, flowers = []) {
+    const catalog = buildMasterFlowerCatalog(flowers, { includeInactive: true });
+    const entry = findMasterFlowerEntry(catalog, line);
+    if (!entry) return { ...line, _masterFlowerKey: '' };
+    return {
+      ...line,
+      articleCode: entry.flower.articleCode || line.articleCode || '',
+      articleName: entry.flower.articleName,
+      _masterFlowerKey: entry.key,
+      _masterFlowerActive: entry.flower.active !== false
+    };
+  }
+
+  function primaryFlowerProvider(flower) {
+    const providers = Array.isArray(flower?.providers) ? flower.providers : [];
+    return providers.find(provider => cleanText(provider?.supplier) === cleanText(flower?.primarySupplier)) || providers[0] || {};
+  }
+
+  function applyMasterFlowerToLine(line = {}, entry) {
+    if (!entry?.flower) return { ...line };
+    const provider = primaryFlowerProvider(entry.flower);
+    return {
+      ...line,
+      articleCode: entry.flower.articleCode || '',
+      articleName: entry.flower.articleName,
+      supplier: cleanText(provider.supplier) || cleanText(entry.flower.primarySupplier),
+      unitCost: provider.price === undefined || provider.price === null ? '' : provider.price,
+      _masterFlowerKey: entry.key,
+      _masterFlowerActive: entry.flower.active !== false
+    };
+  }
+
+  function resolveSelectableFlowerForLine(line = {}, flowers = []) {
+    const activeCatalog = buildMasterFlowerCatalog(flowers);
+    const activeEntry = findMasterFlowerEntry(activeCatalog, line);
+    if (activeEntry) return activeEntry;
+    if (!line._masterFlowerKey) return null;
+    const existingEntry = buildMasterFlowerCatalog(flowers, { includeInactive: true })
+      .find(entry => entry.key === line._masterFlowerKey);
+    return existingEntry || null;
+  }
+
+  function cloneProductEditorDraft(draft = {}) {
+    return JSON.parse(JSON.stringify(draft));
+  }
+
+  function restoreProductEditorDraft(draft = {}, newFlowerEntry = null) {
+    const restored = cloneProductEditorDraft(draft);
+    const targetLineIndex = Number.isInteger(restored.targetLineIndex) ? restored.targetLineIndex : -1;
+    if (newFlowerEntry && targetLineIndex >= 0 && restored.lines?.[targetLineIndex]) {
+      restored.lines[targetLineIndex] = applyMasterFlowerToLine(restored.lines[targetLineIndex], newFlowerEntry);
+    }
+    return restored;
+  }
+
   async function navigateToFlowerUsageProduct(productCode, actions = {}) {
     const code = cleanText(productCode);
     if (!code) return false;
@@ -162,9 +285,22 @@
 
   return {
     RED_NAOMI_CANONICAL_NAME,
+    applyMasterFlowerToLine,
+    buildMasterFlowerCatalog,
     buildFlowerUsageEntries,
     canonicalFlowerName,
+    canonicalizeExistingFlowerLine,
+    cloneProductEditorDraft,
+    deleteUnusedFlower,
+    findMasterFlowerEntry,
+    findFlowerUsageEntry,
     flowerUsageCountLabel,
-    navigateToFlowerUsageProduct
+    flowerUsagePresentation,
+    navigateToFlowerUsageProduct,
+    planFlowerDeletion,
+    resolveSelectableFlowerForLine,
+    restoreProductEditorDraft,
+    searchMasterFlowerCatalog,
+    setFlowerActiveByIdentity
   };
 });

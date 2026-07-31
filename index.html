@@ -111,7 +111,7 @@
     padding:12px 14px;cursor:pointer;transition:all .15s ease;
   }
   .side-nav-btn:hover{border-color:var(--moss-deep);}
-  .side-nav-btn.active{background:var(--moss-deep);color:#f3efe6;border-color:var(--moss-deep);}
+  .side-nav-btn.active{background:#e7efe8;color:var(--moss-deep);border-color:#9eb7a4;box-shadow:inset 4px 0 0 var(--moss);}
   .side-nav-btn:disabled{color:var(--ink-soft);cursor:not-allowed;opacity:.55;}
   .side-nav-btn:disabled:hover{border-color:var(--line);}
   .side-nav-btn .side-nav-sub{display:block;font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.06em;margin-top:3px;opacity:.75;font-weight:500;}
@@ -402,6 +402,10 @@
     width:100%;border:1px solid transparent;background:transparent;padding:5px 4px;font-size:12px;
   }
   .nomenclature-table input:focus,.nomenclature-table select:focus{outline:none;border-color:var(--gold);background:#fffaf0;}
+  .product-flower-selector{display:flex;align-items:center;gap:5px;min-width:250px;}
+  .product-flower-selector input{min-width:0;flex:1;}
+  .product-flower-selector input:invalid{border-color:var(--neg);background:#fff5f2;}
+  .product-flower-selector .btn-mini{flex:0 0 auto;}
   .nomenclature-table .num input{text-align:right;font-family:var(--mono);}
   .nomenclature-actions{display:flex;gap:4px;flex-wrap:wrap;}
   .btn-mini{font-size:10.5px;padding:4px 6px;border:1px solid var(--line);background:#fff;border-radius:2px;cursor:pointer;color:var(--ink);white-space:nowrap;}
@@ -425,41 +429,96 @@
   .flower-usage-product-title{font-weight:650;color:var(--moss-deep);overflow-wrap:anywhere;}
   .flower-usage-product-meta{margin-top:3px;color:var(--ink-soft);font:10.5px var(--mono);text-transform:uppercase;}
   .nomenclature-edit-hint{color:var(--ink-soft);font-size:11px;}
-  .flower-editor-modal{max-height:calc(100vh - 28px);overflow-y:auto;padding:16px 18px;}
+  .quality-badge,.economy-badge{border:0;border-radius:999px;padding:4px 7px;font:700 9px var(--mono);text-transform:uppercase;white-space:nowrap;cursor:pointer;}
+  .quality-badge.complete,.economy-badge.ok,.economy-badge.high{background:#dce9d9;color:#31563c;}
+  .quality-badge.incomplete{background:#fff0c7;color:#76570b;}
+  .economy-badge.unknown,.economy-badge.no-data{background:#e9e7e0;color:#66706a;}
+  .economy-badge.normal{background:#fff0c7;color:#73570d;}
+  .quality-badge.error,.economy-badge.low{background:#f3dfdc;color:#8a2a2a;}
+  .nomenclature-margin-alerts{display:none;align-items:center;justify-content:space-between;gap:10px;margin:8px 0;padding:8px 10px;border:1px solid #e1be68;border-radius:4px;background:#fff8df;color:#6c5010;font-size:12px;}
+  .nomenclature-margin-alerts.visible{display:flex;}
+  .margin-dashboard{padding:4px 0 24px;}
+  .margin-dashboard-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:16px;}
+  .margin-dashboard-head h3{margin:0 0 4px;font-size:22px;}
+  .margin-dashboard-head p{margin:0;color:var(--ink-soft);font-size:13px;}
+  .margin-kpis{display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:10px;margin-bottom:12px;}
+  .margin-kpi{border:1px solid var(--line);border-left:5px solid var(--ink-soft);border-radius:5px;background:#fff;padding:12px;text-align:left;cursor:pointer;}
+  .margin-kpi strong{display:block;font:700 24px var(--mono);margin-top:5px;}
+  .margin-kpi.active{box-shadow:0 0 0 2px var(--moss-deep);}
+  .margin-kpi.high{border-left-color:#4d8b59;background:#f2f8f1;}.margin-kpi.normal{border-left-color:#d9a514;background:#fffaf0;}.margin-kpi.low{border-left-color:#b84638;background:#fff3f1;}.margin-kpi.no-data{border-left-color:#818681;background:#f5f5f2;}
+  .margin-distribution{display:flex;min-height:14px;overflow:hidden;border-radius:999px;background:#e9e7e0;margin-bottom:14px;}
+  .margin-distribution span{min-width:0;transition:width .2s;}.margin-distribution .high{background:#4d8b59}.margin-distribution .normal{background:#e2b634}.margin-distribution .low{background:#c75b4b}.margin-distribution .no-data{background:#9da09c}
+  .margin-dashboard-list{display:grid;gap:10px;margin-top:14px;}
+  .margin-product-card{display:grid;grid-template-columns:minmax(220px,1.25fr) minmax(190px,1fr) auto;gap:14px;align-items:center;border:1px solid var(--line);border-left:6px solid #818681;border-radius:5px;padding:13px;background:#fff;}
+  .margin-product-card.high{border-left-color:#4d8b59;background:#f7fbf6}.margin-product-card.normal{border-left-color:#d9a514;background:#fffdf6}.margin-product-card.low{border-left-color:#b84638;background:#fff7f5}.margin-product-card.no-data{border-left-color:#818681;background:#f7f7f5}
+  .margin-product-title{font-weight:700}.margin-product-code{font:11px var(--mono);color:var(--ink-soft);margin-top:3px}.margin-product-meta{font-size:11px;color:var(--ink-soft);margin-top:5px}
+  .margin-variant-chips{display:flex;flex-wrap:wrap;gap:5px}.margin-variant-chip{border-radius:999px;padding:4px 7px;font:700 10px var(--mono);background:#e9e7e0}.margin-variant-chip.high{background:#dce9d9;color:#31563c}.margin-variant-chip.normal{background:#fff0c7;color:#73570d}.margin-variant-chip.low{background:#f3dfdc;color:#8a2a2a}
+  .margin-product-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.margin-warning{color:#8a2a2a;font-size:11px;font-weight:700;margin-top:5px}.margin-incomplete{color:#73570d;font-size:11px;margin-top:4px}
+  .margin-detail-summary{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}.margin-detail-variant{border:1px solid var(--line);border-left:5px solid #818681;border-radius:4px;padding:10px;margin:8px 0;background:#fff}.margin-detail-variant.high{border-left-color:#4d8b59}.margin-detail-variant.normal{border-left-color:#d9a514}.margin-detail-variant.low{border-left-color:#b84638}
+  @media(max-width:900px){.margin-kpis{grid-template-columns:repeat(2,minmax(120px,1fr))}.margin-product-card{grid-template-columns:1fr}.margin-product-actions{justify-content:flex-start}}
+  .diagnostic-list{margin:8px 0 0;padding-left:18px;font-size:12px;}
+  .diagnostic-list li{margin:4px 0;}
+  .economics-wrap{margin:10px 0;border:1px solid var(--line);border-radius:4px;overflow:auto;}
+  .economics-table{width:100%;border-collapse:collapse;font:11px var(--mono);}
+  .economics-table th,.economics-table td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;}
+  .economics-table th:first-child,.economics-table td:first-child{text-align:left;background:#faf8f2;position:sticky;left:0;}
+  .economics-table .low{color:var(--neg);font-weight:700;background:#fff5f2;}
+  .product-editor-tools{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0;}
+  .ux-compact-panel{padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:#faf8f2;margin-top:8px;}
+  .ux-compact-panel h4{margin:0 0 5px;color:var(--moss-deep);font:600 13px var(--serif);}
+  .ux-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+  .ux-check-list{display:flex;flex-direction:column;gap:5px;max-height:220px;overflow:auto;margin:8px 0;}
+  .ux-check-list label{display:flex;gap:7px;align-items:flex-start;padding:6px;border:1px solid var(--line);background:#fff;border-radius:3px;font-size:12px;}
+  .impact-row{padding:7px 8px;border-bottom:1px solid var(--line);font-size:11px;}
+  .impact-row:last-child{border-bottom:0;}
+  .impact-warning{color:var(--neg);font-weight:700;}
+  .flower-editor-modal{max-height:calc(100vh - 20px);overflow-y:auto;padding:12px 16px;}
   .flower-editor-modal>h3{margin-bottom:2px;}
-  .flower-editor-modal>p{margin-bottom:7px;font-size:11.5px;}
-  .flower-editor-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 9px;margin-top:7px;}
-  .flower-editor-grid label,.flower-provider-row label{font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--ink-soft);display:flex;flex-direction:column;gap:5px;}
+  .flower-editor-modal>p{margin:0 0 4px;font-size:10.5px;}
+  .flower-editor-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px 8px;margin-top:4px;}
+  .flower-editor-grid label,.flower-provider-row label{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;color:var(--ink-soft);display:flex;flex-direction:column;gap:3px;}
   .flower-editor-grid input,.flower-editor-grid select,.flower-editor-grid textarea,
-  .flower-provider-row input{width:100%;border:1px solid var(--line);background:#fff;padding:6px 7px;border-radius:2px;font:12px var(--sans);}
+  .flower-provider-row input{width:100%;border:1px solid var(--line);background:#fff;padding:5px 6px;border-radius:2px;font:11.5px var(--sans);}
   .flower-editor-grid input:focus,.flower-editor-grid select:focus,.flower-editor-grid textarea:focus,
   .flower-provider-row input:focus{outline:none;border-color:var(--gold);background:#fffaf0;}
   .flower-editor-grid .wide{grid-column:1/-1;}
-  .flower-editor-grid textarea{min-height:54px;max-height:90px;resize:vertical;}
-  .flower-editor-section{margin-top:9px;padding-top:8px;border-top:1px solid var(--line);}
-  .flower-editor-section h4{margin:0 0 2px;font:600 14px var(--serif);color:var(--moss-deep);}
-  .flower-editor-section>p{margin:0 0 6px;font-size:10.5px;color:var(--ink-soft);}
-  .flower-provider-row{display:grid;grid-template-columns:minmax(140px,2fr) minmax(110px,1.3fr) minmax(90px,1fr) auto;gap:6px;align-items:end;margin-bottom:5px;}
-  .flower-history-placeholder{padding:8px;border:1px dashed #c9c4b6;border-radius:4px;background:#faf8f2;color:var(--ink-soft);font-size:10.5px;}
-  .flower-photo-editor{display:grid;grid-template-columns:92px 1fr;gap:10px;align-items:center;margin:7px 0;padding:7px 9px;border:1px solid var(--line);border-radius:4px;background:#faf8f2;}
-  .flower-photo-preview{width:92px;height:72px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px dashed #bbb5a7;border-radius:4px;background:#fff;color:var(--ink-soft);font-size:10px;text-align:center;}
+  .flower-editor-grid .flower-name-field{grid-column:span 3;}
+  .flower-editor-grid textarea{height:64px;min-height:64px;max-height:160px;resize:vertical;}
+  .flower-editor-section{margin-top:6px;padding-top:5px;border-top:1px solid var(--line);}
+  .flower-editor-section h4{margin:0 0 2px;font:600 13px var(--serif);color:var(--moss-deep);}
+  .flower-editor-section>p{margin:0 0 4px;font-size:9.5px;color:var(--ink-soft);}
+  .flower-provider-row{display:grid;grid-template-columns:minmax(140px,2fr) minmax(110px,1.3fr) minmax(90px,1fr) auto;gap:5px;align-items:end;margin-bottom:4px;}
+  .flower-history-placeholder{padding:5px 7px;border:1px dashed #c9c4b6;border-radius:4px;background:#faf8f2;color:var(--ink-soft);font-size:9.5px;}
+  .flower-photo-editor{display:grid;grid-template-columns:68px 1fr;gap:8px;align-items:center;margin:4px 0;padding:5px 7px;border:1px solid var(--line);border-radius:4px;background:#faf8f2;}
+  .flower-photo-preview{width:68px;height:52px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px dashed #bbb5a7;border-radius:4px;background:#fff;color:var(--ink-soft);font-size:9px;text-align:center;}
   .flower-photo-preview img{width:100%;height:100%;object-fit:contain;}
-  .flower-photo-actions{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px;}
-  .flower-photo-actions .btn{padding:6px 9px;font-size:11px;}
-  .flower-photo-editor small{display:block;color:var(--ink-soft);font-size:9.5px;line-height:1.3;}
-  .flower-catalog-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-  .flower-catalog-panel{min-width:0;padding:7px;border:1px solid var(--line);border-radius:4px;background:#faf8f2;}
-  .flower-catalog-panel h4{margin:0 0 5px;font:600 13px var(--serif);color:var(--moss-deep);}
-  .flower-catalog-add{display:flex;gap:5px;margin-bottom:5px;}
-  .flower-catalog-add input{min-width:0;flex:1;border:1px solid var(--line);background:#fff;padding:5px 6px;border-radius:2px;font-size:11px;}
-  .flower-catalog-table-wrap{max-height:105px;overflow-y:auto;border:1px solid var(--line);background:#fff;}
-  .flower-catalog-table{width:100%;border-collapse:collapse;font-size:11px;}
-  .flower-catalog-table td{padding:3px 6px;border-bottom:1px solid #ece8dc;}
+  .flower-photo-actions{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:2px;}
+  .flower-photo-actions .btn{padding:4px 7px;font-size:10px;}
+  .flower-photo-editor small{display:block;color:var(--ink-soft);font-size:8.5px;line-height:1.2;}
+  .flower-catalog-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+  .flower-catalog-panel{min-width:0;padding:5px;border:1px solid var(--line);border-radius:4px;background:#faf8f2;}
+  .flower-catalog-panel h4{margin:0 0 3px;font:600 12px var(--serif);color:var(--moss-deep);}
+  .flower-catalog-add{display:flex;gap:4px;margin-bottom:3px;}
+  .flower-catalog-add input{min-width:0;flex:1;border:1px solid var(--line);background:#fff;padding:4px 5px;border-radius:2px;font-size:10.5px;}
+  .flower-catalog-table-wrap{max-height:72px;overflow-y:auto;border:1px solid var(--line);background:#fff;}
+  .flower-catalog-table{width:100%;border-collapse:collapse;font-size:10px;}
+  .flower-catalog-table td{padding:2px 5px;border-bottom:1px solid #ece8dc;}
   .flower-catalog-table td:last-child{width:50px;text-align:right;}
   .flower-catalog-table tr.selected{background:#fff1bf;color:#5f4a16;font-weight:700;}
-  .flower-editor-modal>.modal-actions{position:sticky;bottom:0;z-index:5;margin:10px -18px -16px;padding:9px 18px 12px;border-top:1px solid var(--line);background:var(--panel);box-shadow:0 -8px 14px rgba(35,61,44,.08);}
+  .flower-editor-usage-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:3px;}
+  .flower-editor-usage-head h4{margin:0;}
+  .flower-editor-usage-count{color:var(--ink-soft);font:600 10px var(--mono);}
+  .flower-editor-usage-list{display:flex;flex-direction:column;gap:3px;max-height:112px;overflow-y:auto;}
+  .flower-editor-usage-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px 5px;border:1px solid var(--line);border-radius:3px;background:#faf9f5;}
+  .flower-editor-usage-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10.5px;}
+  .flower-editor-usage-status{margin-left:5px;padding:2px 5px;border-radius:999px;background:#dce9d9;color:#31563c;font:600 8.5px var(--mono);text-transform:uppercase;}
+  .flower-editor-usage-status.inactive{background:#e9e7e0;color:#66706a;}
+  .flower-editor-usage-status.deleted{background:#f3dfdc;color:#8a2a2a;}
+  .flower-editor-usage-empty{padding:4px 0;color:var(--ink-soft);font-size:10.5px;}
+  .flower-editor-modal>.modal-actions{position:sticky;bottom:0;z-index:5;margin:7px -16px -12px;padding:6px 16px 8px;border-top:1px solid var(--line);background:var(--panel);box-shadow:0 -6px 12px rgba(35,61,44,.08);}
   @media(max-width:760px){
     .flower-editor-grid{grid-template-columns:1fr 1fr;}
+    .flower-editor-grid .flower-name-field{grid-column:1/-1;}
     .flower-provider-row{grid-template-columns:1fr 1fr;}
     .flower-catalog-grid{grid-template-columns:1fr;}
     .flower-photo-editor{grid-template-columns:1fr;}
@@ -791,11 +850,12 @@
         <button type="button" class="side-nav-toggle" data-toggle-for="nomenclaturas" aria-label="Desplegar/plegar Nomenclaturas">▾</button>
       </div>
       <div class="side-nav-actions" data-actions-for="nomenclaturas">
-        <button class="btn btn-ghost" id="btnAddNomenclature">Anadir nuevo producto</button>
+        <button type="button" class="btn btn-ghost" id="btnViewNomenclatureProducts">Productos / ramos</button>
+        <button type="button" class="btn btn-ghost" id="btnViewMargins">Ver margenes</button>
         <button class="btn btn-ghost" id="btnExportNomenclatures">Exportar nomenclaturas</button>
-        <button class="btn btn-primary" id="btnImportNomenclatures">Importar nomenclaturas</button>
+        <button class="btn btn-ghost" id="btnImportNomenclatures">Importar nomenclaturas</button>
         <button class="btn btn-ghost" id="btnPrintNomenclatures">Imprimir nomenclaturas</button>
-        <button class="btn btn-coral" id="btnDedupNomenclatures">Depurar duplicados</button>
+        <button class="btn btn-ghost" id="btnDedupNomenclatures">Depurar duplicados</button>
         <input type="file" id="nomenclatureFileInput" accept=".xlsx,.xls,.csv" style="display:none;">
       </div>
     </div>
@@ -900,6 +960,7 @@
 
     <div id="nomenclatureProductsPanel">
     <div class="nomenclature-toolbar">
+      <button type="button" class="btn btn-ghost" id="btnAddNomenclature">Anadir nuevo producto</button>
       <input type="text" id="nomenclatureSearch" placeholder="Buscar producto, ramo, codigo...">
       <select id="nomenclatureActiveFilter">
         <option value="active">Ver activos</option>
@@ -914,7 +975,14 @@
         <option value="PLANTAS">Categoria P - PLANTAS</option>
         <option value="SIMPLES">Categoria S - SIMPLES</option>
       </select>
+      <select id="nomenclatureQualityFilter">
+        <option value="">Todas las calidades</option>
+        <option value="complete">Completas</option>
+        <option value="incomplete">Incompletas</option>
+        <option value="error">Con errores</option>
+      </select>
     </div>
+    <div class="nomenclature-margin-alerts" id="nomenclatureMarginAlerts"><span id="nomenclatureMarginAlertsText"></span><button type="button" class="btn-mini" id="btnViewMarginAlerts">Ver alertas</button></div>
     <div class="nomenclature-table-wrap">
       <table class="nomenclature-table">
         <thead>
@@ -925,6 +993,8 @@
             <th style="width:46px;">Precios</th>
             <th style="width:70px;">Precio inicial</th>
             <th style="width:66px;">Estado</th>
+            <th style="width:82px;">Calidad</th>
+            <th style="width:82px;">Economia</th>
             <th style="width:118px;">Modificado</th>
             <th style="width:160px;">Acciones</th>
           </tr>
@@ -932,6 +1002,28 @@
         <tbody id="nomenclatureTbody"></tbody>
       </table>
     </div>
+    </div>
+
+    <div id="nomenclatureMarginsView" class="margin-dashboard" hidden>
+      <div class="margin-dashboard-head">
+        <div><h3>Margenes por producto</h3><p>Vista economica calculada con los datos operativos actuales. Alto: 79% o mas; Bajo: inferior al minimo individual.</p></div>
+        <button type="button" class="btn btn-ghost" id="btnMarginsBack">Volver a productos</button>
+      </div>
+      <div class="margin-kpis" id="marginDashboardKpis">
+        <button type="button" class="margin-kpi" data-margin-kpi=""><span>Total</span><strong id="marginKpiTotal">0</strong></button>
+        <button type="button" class="margin-kpi high" data-margin-kpi="high"><span>Alto</span><strong id="marginKpiHigh">0</strong></button>
+        <button type="button" class="margin-kpi normal" data-margin-kpi="normal"><span>Normal</span><strong id="marginKpiNormal">0</strong></button>
+        <button type="button" class="margin-kpi low" data-margin-kpi="low"><span>Bajo</span><strong id="marginKpiLow">0</strong></button>
+        <button type="button" class="margin-kpi no-data" data-margin-kpi="no-data"><span>Sin datos</span><strong id="marginKpiNoData">0</strong></button>
+      </div>
+      <div class="margin-distribution" id="marginDistributionBar" aria-label="Distribucion de margenes"></div>
+      <div class="nomenclature-toolbar">
+        <select id="marginDashboardStatusFilter"><option value="">Todos los estados</option><option value="high">Alto</option><option value="normal">Normal</option><option value="low">Bajo</option><option value="no-data">Sin datos</option></select>
+        <select id="marginDashboardCategoryFilter"><option value="">Todas las categorias</option></select>
+        <input type="text" id="marginDashboardSearch" placeholder="Buscar producto, codigo o categoria...">
+        <select id="marginDashboardSort"><option value="margin-asc">Margen menor primero</option><option value="margin-desc">Margen mayor primero</option><option value="name">Nombre</option><option value="code">Codigo</option></select>
+      </div>
+      <div class="margin-dashboard-list" id="marginDashboardList"></div>
     </div>
 
     <div id="nomenclatureFlowersPanel">
@@ -1349,7 +1441,14 @@
       <input id="productEditSalePrice" type="hidden">
       <input id="productEditVat" type="hidden" value="0">
       <label>Activo<select id="productEditActive"><option value="true">Activo</option><option value="false">Inactivo</option></select></label>
+      <label>Margen minimo %<input id="productEditMinimumMargin" type="number" min="0" max="100" step="0.1" value="70"></label>
       <label>Observaciones<input id="productEditNotes"></label>
+    </div>
+    <div class="economics-wrap"><table class="economics-table" id="productEconomicsTable"></table></div>
+    <div class="product-editor-tools">
+      <button type="button" class="btn-mini" id="btnCopyComposition">Copiar composicion</button>
+      <button type="button" class="btn-mini" id="btnProductUndo" disabled>Deshacer ultimo cambio</button>
+      <span id="productEditorDirtyStatus" class="nomenclature-edit-hint"></span>
     </div>
     <h3 style="font-size:17px;margin-top:10px;">Flores / articulos del ramo</h3>
     <datalist id="flowerSuggestions"></datalist>
@@ -1385,8 +1484,72 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="unsavedProductModal">
+  <div class="modal" style="max-width:460px;">
+    <h3>Hay cambios sin guardar.</h3>
+    <p>Si descartas los cambios, se perderan las modificaciones realizadas en este producto.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="btnUnsavedKeepEditing">Seguir editando</button>
+      <button type="button" class="btn btn-coral" id="btnUnsavedDiscard">Descartar cambios</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="productQualityModal">
+  <div class="modal" style="max-width:560px;">
+    <h3 id="productQualityTitle">Diagnostico de nomenclatura</h3>
+    <div id="productQualityDetails"></div>
+    <div class="modal-actions"><button type="button" class="btn btn-ghost" id="btnProductQualityClose">Cerrar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="marginAlertsModal">
+  <div class="modal" style="max-width:700px;">
+    <h3>Alertas de margen minimo</h3>
+    <div id="marginAlertsList" class="flower-usage-list"></div>
+    <div class="modal-actions"><button type="button" class="btn btn-ghost" id="btnMarginAlertsClose">Cerrar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="marginDetailModal">
+  <div class="modal" style="max-width:760px;">
+    <h3 id="marginDetailTitle">Detalle economico</h3>
+    <div id="marginDetailBody"></div>
+    <div class="modal-actions" style="justify-content:space-between;">
+      <button type="button" class="btn btn-ghost" id="btnMarginDetailClose">Cerrar</button>
+      <button type="button" class="btn btn-primary" id="btnMarginDetailEdit">Editar producto</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="copyCompositionModal">
+  <div class="modal" style="max-width:520px;">
+    <h3>Copiar composicion entre precios</h3>
+    <div class="ux-grid"><label>Origen<select id="copyCompositionSource"></select></label><div><strong>Destinos</strong><div id="copyCompositionTargets" class="ux-check-list"></div></div></div>
+    <p id="copyCompositionWarning" class="impact-warning"></p>
+    <div class="modal-actions"><button type="button" class="btn btn-ghost" id="btnCopyCompositionCancel">Cancelar</button><button type="button" class="btn btn-primary" id="btnCopyCompositionApply">Copiar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="duplicateProductModal">
+  <div class="modal" style="max-width:540px;">
+    <h3>Duplicar producto</h3>
+    <div class="product-editor-grid" style="grid-template-columns:1fr 1fr;">
+      <label>Nuevo codigo *<input id="duplicateProductCode"></label>
+      <label>Nuevo nombre *<input id="duplicateProductName"></label>
+    </div>
+    <div class="ux-check-list">
+      <label><input type="checkbox" id="duplicateCopyComposition" checked> Copiar composicion</label>
+      <label><input type="checkbox" id="duplicateCopyPrices" checked> Copiar PVP</label>
+      <label><input type="checkbox" id="duplicateCopyNotes" checked> Copiar observaciones</label>
+    </div>
+    <p>El margen minimo se copia automaticamente. El nuevo producto quedara activo y no heredara identidad, papelera ni timestamps.</p>
+    <div class="modal-actions"><button type="button" class="btn btn-ghost" id="btnDuplicateProductCancel">Cancelar</button><button type="button" class="btn btn-primary" id="btnDuplicateProductConfirm">Crear copia</button></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="flowerEditorModal">
-  <div class="modal flower-editor-modal" style="max-width:880px;">
+  <div class="modal flower-editor-modal" style="max-width:960px;">
     <h3 id="flowerEditorTitle">Editar flor / articulo</h3>
     <p>Completa la ficha de la flor. El codigo es opcional y los cambios solo se aplican al pulsar Guardar.</p>
     <div class="flower-photo-editor">
@@ -1402,7 +1565,7 @@
     </div>
     <div class="flower-editor-grid">
       <label>Codigo flor / articulo<input id="flowerEditCode"></label>
-      <label style="grid-column:span 2;">Flor / articulo<input id="flowerEditName"></label>
+      <label class="flower-name-field">Flor / articulo<input id="flowerEditName"></label>
       <label>Familia<select id="flowerEditFamily"></select></label>
       <label>Color<select id="flowerEditColor"></select></label>
       <label>Longitud / formato<input id="flowerEditFormat"></label>
@@ -1413,7 +1576,18 @@
       <label>Estado<select id="flowerEditActive"><option value="true">Activo</option><option value="false">Inactivo</option></select></label>
       <label class="wide">Observaciones<textarea id="flowerEditNotes" placeholder="Informacion util sobre la flor, calidad, presentacion, condiciones de compra..."></textarea></label>
     </div>
+    <div class="ux-compact-panel"><h4>Historico economico</h4><div id="productEconomicHistory">Sin historico registrado. Situacion actual mostrada arriba.</div></div>
     <datalist id="supplierSuggestions"></datalist>
+    <div class="ux-compact-panel" id="flowerCostImpactNotice" hidden><span id="flowerCostImpactNoticeText"></span> <button type="button" class="btn-mini" id="btnFlowerViewCostImpact">Ver impacto</button></div>
+
+    <div class="flower-editor-section" id="flowerEditorUsageSection">
+      <div class="flower-editor-usage-head">
+        <h4>Ramos</h4>
+        <span class="flower-editor-usage-count" id="flowerEditorUsageCount">No utilizada</span>
+      </div>
+      <div class="flower-editor-usage-list" id="flowerEditorUsageList"></div>
+      <button type="button" class="btn-mini" id="btnFlowerSubstitute" hidden>Sustituir en ramos</button>
+    </div>
 
     <div class="flower-editor-section">
       <h4>Catalogos de clasificacion</h4>
@@ -1448,13 +1622,32 @@
     <div class="flower-editor-section">
       <h4>Historico de precios</h4>
       <div class="flower-history-placeholder" id="flowerPriceHistoryPlaceholder">
-        Esta ficha queda preparada para mostrar aqui las variaciones de precio, proveedor y fecha cuando se active el historico.
+        Sin historico registrado. Historico disponible cuando se active el registro de costes.
       </div>
     </div>
 
-    <div class="modal-actions">
-      <button type="button" class="btn btn-ghost" id="btnFlowerEditorCancel">Cancelar</button>
-      <button type="button" class="btn btn-primary" id="btnFlowerEditorSave">Guardar flor</button>
+    <div class="modal-actions" style="justify-content:space-between;">
+      <button type="button" class="btn btn-coral" id="btnFlowerEditorDelete" hidden>Eliminar flor</button>
+      <div style="display:flex;gap:10px;">
+        <button type="button" class="btn btn-ghost" id="btnFlowerEditorCancel">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btnFlowerEditorSave">Guardar flor</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="flowerDeleteModal">
+  <div class="modal" style="max-width:620px;">
+    <h3 id="flowerDeleteTitle">Eliminar flor</h3>
+    <p id="flowerDeleteSummary"></p>
+    <div class="flower-usage-list" id="flowerDeleteProducts"></div>
+    <div class="modal-actions" style="justify-content:space-between;">
+      <button type="button" class="btn btn-ghost" id="btnFlowerDeleteCancel">Cancelar</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+        <button type="button" class="btn btn-ghost" id="btnFlowerDeleteViewUsage" hidden>Ver ramos</button>
+        <button type="button" class="btn btn-ghost" id="btnFlowerDeleteDeactivate" hidden>Marcar inactiva</button>
+        <button type="button" class="btn btn-coral" id="btnFlowerDeleteConfirm" hidden>Eliminar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1467,6 +1660,26 @@
     <div class="modal-actions">
       <button type="button" class="btn btn-ghost" id="btnFlowerUsageClose">Cerrar</button>
     </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="flowerCostImpactModal">
+  <div class="modal" style="max-width:760px;">
+    <h3>Impacto del cambio de coste</h3>
+    <p id="flowerCostImpactSummary"></p>
+    <div id="flowerCostImpactList" class="flower-usage-list"></div>
+    <div class="modal-actions"><button type="button" class="btn btn-ghost" id="btnFlowerCostImpactCancel">Cancelar</button><button type="button" class="btn btn-primary" id="btnFlowerCostImpactConfirm">Guardar de todos modos</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="flowerSubstitutionModal">
+  <div class="modal" style="max-width:780px;">
+    <h3>Sustituir flor en ramos</h3>
+    <p id="flowerSubstitutionOrigin"></p>
+    <label>Sustituir por<select id="flowerSubstitutionTarget"></select></label>
+    <div id="flowerSubstitutionProducts" class="ux-check-list"></div>
+    <div class="ux-compact-panel"><h4>Previsualizacion</h4><div id="flowerSubstitutionPreview"></div></div>
+    <div class="modal-actions"><button type="button" class="btn btn-ghost" id="btnFlowerSubstitutionCancel">Cancelar</button><button type="button" class="btn btn-ghost" id="btnFlowerSubstitutionUndo" hidden>Deshacer ultimo cambio</button><button type="button" class="btn btn-primary" id="btnFlowerSubstitutionApply">Aplicar sustitucion</button></div>
   </div>
 </div>
 
@@ -1590,6 +1803,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="nomenclature-flower-usage.js"></script>
+<script src="nomenclature-ux.js"></script>
 <script>
 // ---------- Supabase: usuarios y datos compartidos ----------
 const SUPABASE_URL = 'https://divmnzsviqlhfcxpsugr.supabase.co';
@@ -2000,7 +2214,26 @@ let productEditorLines = [];
 let productEditorOriginalKey = null;
 let productEditorPrices = [];
 let productEditorPhotoData = '';
+let masterFlowerCatalog = [];
+let productEditorFlowerCreationState = null;
+let productEditorInitialSnapshot = '';
+let productEditorUndoSnapshot = null;
+let pendingProductLeaveAction = null;
+let productEditorDiscarding = false;
+let nomenclatureProductAnalyses = new Map();
+let nomenclatureMarginAlertGroups = [];
+let nomenclatureMarginsVisible = false;
+let marginDashboardItems = [];
+let marginDashboardDetailCode = '';
+let pendingDuplicateProduct = null;
+let pendingFlowerCostImpact = null;
+let flowerCostImpactApproved = false;
+let pendingFlowerSubstitution = null;
+let lastFlowerSubstitutionUndo = null;
 let flowerEditorOriginalId = null;
+let flowerEditorUsageKey = '';
+let flowerEditorOriginalPrimaryPrice = '';
+let pendingFlowerDeletion = null;
 let flowerEditorProviders = [];
 let flowerEditorPhotoData = '';
 let productPriceCatalog = {};
@@ -4523,6 +4756,15 @@ function isSideSectionOpen(mod){
 }
 
 function goToModule(mod){
+  if(!productEditorDiscarding && mod !== 'nomenclaturas' && document.getElementById('productEditorModal')?.classList.contains('open')){
+    requestProductEditorLeave(()=>{
+      productEditorDiscarding = true;
+      closeProductEditor();
+      goToModule(mod);
+      productEditorDiscarding = false;
+    });
+    return;
+  }
   const wasActive = (activeModule === mod);
   if(!wasActive){
     if(mod !== 'nomenclaturas' && nomenclatureMode) setNomenclatureMode(false);
@@ -4857,7 +5099,7 @@ document.getElementById('btnImportNomenclatureCancel').addEventListener('click',
 document.getElementById('btnImportNomenclatureAdd').addEventListener('click', ()=> applyNomenclatureImport('add'));
 document.getElementById('btnImportNomenclatureUpdate').addEventListener('click', ()=> applyNomenclatureImport('update'));
 document.getElementById('btnImportNomenclatureReplace').addEventListener('click', ()=> applyNomenclatureImport('replace'));
-['nomenclatureSearch','nomenclatureActiveFilter','nomenclatureSizeFilter'].forEach(id=>{
+['nomenclatureSearch','nomenclatureActiveFilter','nomenclatureSizeFilter','nomenclatureQualityFilter'].forEach(id=>{
   document.getElementById(id).addEventListener('input', renderNomenclatures);
   document.getElementById(id).addEventListener('change', renderNomenclatures);
 });
@@ -5062,6 +5304,114 @@ function renderNomenclatureFilters(){
   sizeSelect.innerHTML = '<option value="">Todas las tallas</option>' + sizes.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
   sizeSelect.value = sizes.includes(currentSize) ? currentSize : '';
 }
+function analyzeProductNomenclatureQualityForSummary(summary){
+  const model = collectProductModel(summary.key);
+  model.flowers = model.flowers.map(line=>canonicalizeExistingFlowerLine(line,flowers));
+  const allFlowers = buildMasterFlowerCatalog(flowers,{includeInactive:true});
+  return analyzeProduct(model,{
+    isKnownFlower:line=>!!resolveSelectableFlowerForLine(line,flowers) || !!findMasterFlowerEntry(allFlowers,line)
+  });
+}
+function refreshNomenclatureProductAnalyses(summaries=productSummaries()){
+  nomenclatureProductAnalyses = new Map(summaries.map(summary=>[summary.key,analyzeProductNomenclatureQualityForSummary(summary)]));
+  nomenclatureMarginAlertGroups = groupMarginAlerts([...nomenclatureProductAnalyses.values()]);
+  return nomenclatureProductAnalyses;
+}
+function qualityLabel(status){
+  if(status === 'complete') return 'Completa';
+  if(status === 'error') return 'Con errores';
+  return 'Incompleta';
+}
+function economyStatus(analysis){
+  const status = classifyProductMargin(analysis.economy).status;
+  return {key:status,label:{high:'Alto',normal:'Normal',low:'Bajo','no-data':'Sin datos'}[status]};
+}
+function renderNomenclatureMarginAlerts(){
+  const panel = document.getElementById('nomenclatureMarginAlerts');
+  const count = nomenclatureMarginAlertGroups.length;
+  panel.classList.toggle('visible',count > 0);
+  document.getElementById('nomenclatureMarginAlertsText').textContent = count ? `⚠ ${count} nomenclaturas por debajo del margen minimo` : '';
+}
+function openProductQualityDetails(productKey){
+  const summary = productSummaries().find(product=>product.key === productKey);
+  const analysis = nomenclatureProductAnalyses.get(productKey);
+  if(!summary || !analysis) return;
+  document.getElementById('productQualityTitle').textContent = `${summary.productCode} · ${summary.productName}`;
+  const quality = analysis.quality;
+  const items = [
+    ...quality.errors.map(message=>`<li><strong>Error:</strong> ${escapeHtml(message)}</li>`),
+    ...quality.warnings.map(message=>`<li>${escapeHtml(message)}</li>`)
+  ];
+  document.getElementById('productQualityDetails').innerHTML = `<p><span class="quality-badge ${quality.status}">${qualityLabel(quality.status)}</span></p>${items.length?`<ul class="diagnostic-list">${items.join('')}</ul>`:'<p>La estructura no presenta incidencias.</p>'}`;
+  document.getElementById('productQualityModal').classList.add('open');
+}
+function openMarginAlerts(){
+  document.getElementById('marginAlertsList').innerHTML = nomenclatureMarginAlertGroups.map(group=>`
+    <div class="flower-usage-product"><div class="flower-usage-product-main"><div class="flower-usage-product-title">${escapeHtml(group.productCode)} · ${escapeHtml(group.productName)}</div>${group.variants.map(variant=>`<div class="flower-usage-product-meta">P${variant.priceNumber}: ${variant.marginPercent.toFixed(1)}% / minimo ${variant.minimumMarginPercent.toFixed(1)}% · ${variant.differencePoints.toFixed(1)} pp</div>`).join('')}</div><button type="button" class="btn-mini" data-margin-alert-product="${escapeHtml(group.productCode)}">Editar nomenclatura</button></div>
+  `).join('') || '<div class="empty-state">No hay alertas de margen.</div>';
+  document.getElementById('marginAlertsModal').classList.add('open');
+}
+function marginStatusLabel(status){
+  return {high:'Alto',normal:'Normal',low:'Bajo','no-data':'Sin datos'}[status] || 'Sin datos';
+}
+function marginPercentLabel(value){
+  return value === '' || value === null || value === undefined || !Number.isFinite(Number(value)) ? 'Sin datos' : `${Number(value).toFixed(1)}%`;
+}
+function renderMarginDashboard(){
+  const summaries = productSummaries().filter(summary=>summary.status !== 'deleted');
+  refreshNomenclatureProductAnalyses(summaries);
+  marginDashboardItems = buildMarginDashboardItems([...nomenclatureProductAnalyses.values()]);
+  const totals = summarizeMarginDashboard(marginDashboardItems);
+  document.getElementById('marginKpiTotal').textContent = totals.total;
+  document.getElementById('marginKpiHigh').textContent = totals.high;
+  document.getElementById('marginKpiNormal').textContent = totals.normal;
+  document.getElementById('marginKpiLow').textContent = totals.low;
+  document.getElementById('marginKpiNoData').textContent = totals.noData;
+  const total = totals.total || 1;
+  document.getElementById('marginDistributionBar').innerHTML = ['high','normal','low','no-data'].map(status=>{
+    const count = status === 'no-data' ? totals.noData : totals[status];
+    return `<span class="${status}" style="width:${(count/total)*100}%" title="${marginStatusLabel(status)}: ${count}"></span>`;
+  }).join('');
+
+  const categorySelect = document.getElementById('marginDashboardCategoryFilter');
+  const currentCategory = categorySelect.value;
+  const categories = [...new Set(marginDashboardItems.map(item=>item.category).filter(Boolean))].sort(alphabeticalCompareEs);
+  categorySelect.innerHTML = '<option value="">Todas las categorias</option>' + categories.map(category=>`<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join('');
+  categorySelect.value = categories.includes(currentCategory) ? currentCategory : '';
+  const filters = {
+    status:document.getElementById('marginDashboardStatusFilter').value,
+    category:categorySelect.value,
+    query:document.getElementById('marginDashboardSearch').value
+  };
+  document.querySelectorAll('[data-margin-kpi]').forEach(button=>button.classList.toggle('active',button.dataset.marginKpi === filters.status));
+  const items = sortMarginDashboardItems(filterMarginDashboardItems(marginDashboardItems,filters),document.getElementById('marginDashboardSort').value);
+  document.getElementById('marginDashboardList').innerHTML = items.length ? items.map(item=>{
+    const status = item.margin.status;
+    const minimum = item.margin.minimumMarginPercent;
+    const difference = item.margin.lowestMarginPercent === '' ? '' : item.margin.lowestMarginPercent - minimum;
+    const message = status === 'low'
+      ? `<div class="margin-warning">Revisar PVP o composicion · ${difference.toFixed(1)} pp respecto al minimo</div>`
+      : (status === 'high' ? '<div class="margin-product-meta">Buen margen</div>' : '');
+    const incomplete = item.margin.incompleteData ? '<div class="margin-incomplete">Datos incompletos en alguna variante</div>' : '';
+    return `<article class="margin-product-card ${status}" data-margin-product="${escapeHtml(item.productCode)}">
+      <div><div class="margin-product-title">${escapeHtml(item.productName || 'Sin nombre')}</div><div class="margin-product-code">${escapeHtml(item.productCode)} · ${escapeHtml(item.category || 'Sin categoria')}</div><div class="margin-product-meta"><span class="economy-badge ${status}">${marginStatusLabel(status)}</span> · Menor margen: ${marginPercentLabel(item.margin.lowestMarginPercent)} · Minimo: ${minimum.toFixed(1)}%</div>${message}${incomplete}</div>
+      <div class="margin-variant-chips">${item.margin.variants.map(variant=>`<span class="margin-variant-chip ${variant.marginStatus}">P${variant.priceNumber}: ${marginPercentLabel(variant.marginPercent)}</span>`).join('')}</div>
+      <div class="margin-product-actions"><button type="button" class="btn-mini" data-margin-action="detail">Ver detalle</button><button type="button" class="btn-mini" data-margin-action="edit">Editar</button></div>
+    </article>`;
+  }).join('') : '<div class="empty-state">No hay productos que coincidan con los filtros economicos.</div>';
+}
+function setNomenclatureMarginsVisible(visible){
+  nomenclatureMarginsVisible = !!visible;
+  renderNomenclatures();
+}
+function openMarginDetail(productCode){
+  const item = marginDashboardItems.find(entry=>entry.productCode === productCode);
+  if(!item) return;
+  marginDashboardDetailCode = productCode;
+  document.getElementById('marginDetailTitle').textContent = `${item.productCode} · ${item.productName}`;
+  document.getElementById('marginDetailBody').innerHTML = `<div class="margin-detail-summary"><span class="economy-badge ${item.margin.status}">${marginStatusLabel(item.margin.status)}</span><span>Margen minimo: ${item.margin.minimumMarginPercent.toFixed(1)}%</span>${item.margin.incompleteData?'<span class="margin-incomplete">Datos incompletos</span>':''}</div>${item.margin.variants.map(variant=>`<div class="margin-detail-variant ${variant.marginStatus}"><strong>Precio ${variant.priceNumber} · ${marginStatusLabel(variant.marginStatus)}</strong><div class="margin-product-meta">PVP: ${variant.pvp === ''?'Sin PVP':money(variant.pvp)} · PVP neto: ${variant.pvpNet === ''?'—':money(variant.pvpNet)} · Coste: ${money(variant.cost)} · Margen: ${variant.marginAmount === ''?'—':money(variant.marginAmount)} · ${marginPercentLabel(variant.marginPercent)} · Diferencia: ${variant.differencePoints === ''?'—':`${variant.differencePoints.toFixed(1)} pp`}</div></div>`).join('')}`;
+  document.getElementById('marginDetailModal').classList.add('open');
+}
 function renderProductSummaries(){
   const tbody = document.getElementById('nomenclatureTbody');
   if(!tbody) return;
@@ -5119,10 +5469,10 @@ function renderFlowers(){
   tbody.innerHTML = rows.length ? rows.map(entry=>{
     const f = entry.flower;
     const pp = primaryProvider(f);
-    const usageLabel = flowerUsageCountLabel(entry.products.length);
-    const usageCell = entry.products.length
-      ? `<button type="button" class="flower-usage-link" data-flower-action="usage">${escapeHtml(usageLabel)}</button>`
-      : `<span class="flower-usage-empty">${escapeHtml(usageLabel)}</span>`;
+    const usage = flowerUsagePresentation(entry);
+    const usageCell = usage.count
+      ? `<button type="button" class="flower-usage-link" data-flower-action="usage">${escapeHtml(usage.label)}</button>`
+      : `<span class="flower-usage-empty">${escapeHtml(usage.label)}</span>`;
     return `<tr data-flower-id="${escapeHtml(f.id)}" data-flower-usage-key="${escapeHtml(entry.key)}">
       <td><span class="flower-readonly ${f.articleCode?'':'muted'}" title="${escapeHtml(f.articleCode || 'Sin codigo')}">${escapeHtml(f.articleCode || '—')}</span></td>
       <td><span class="flower-readonly" title="${escapeHtml(f.articleName)}">${escapeHtml(f.articleName)}</span></td>
@@ -5134,7 +5484,7 @@ function renderFlowers(){
       <td>${usageCell}</td>
       <td><span class="flower-status ${f.active?'':'inactive'}">${f.active?'Activo':'Inactivo'}</span></td>
       <td><span class="flower-readonly muted" title="${escapeHtml(formatDateTime(f.updatedAt))}">${escapeHtml(formatDateTime(f.updatedAt))}</span></td>
-      <td><div class="nomenclature-actions"><button class="btn-mini" data-flower-action="edit">Editar</button></div></td>
+      <td><div class="nomenclature-actions"><button class="btn-mini" data-flower-action="edit">Editar</button><button class="btn-mini warn" data-flower-action="delete">Eliminar</button></div></td>
     </tr>`;
   }).join('') : `<tr><td colspan="11"><div class="empty-state">No hay flores que coincidan con los filtros.</div></td></tr>`;
   updateNomenclatureSortIndicators('flower');
@@ -5145,10 +5495,11 @@ function flowerUsageStatusLabel(status){
   return status === 'active' ? 'Activo' : 'Inactivo';
 }
 function openFlowerUsageDetail(entry){
-  if(!entry?.products?.length) return;
+  const usage = flowerUsagePresentation(entry);
+  if(!usage.count) return;
   document.getElementById('flowerUsageTitle').textContent = entry.flower.articleName || 'Ramos que utilizan esta flor';
-  document.getElementById('flowerUsageSummary').textContent = `${flowerUsageCountLabel(entry.products.length)} · productos distintos`;
-  document.getElementById('flowerUsageProducts').innerHTML = entry.products.map(product=>`
+  document.getElementById('flowerUsageSummary').textContent = `${usage.label} · productos distintos`;
+  document.getElementById('flowerUsageProducts').innerHTML = usage.products.map(product=>`
     <div class="flower-usage-product">
       <div class="flower-usage-product-main">
         <div class="flower-usage-product-title">${escapeHtml(product.code)} · ${escapeHtml(product.name)}</div>
@@ -5170,14 +5521,15 @@ async function editFlowerUsageProduct(productCode){
     },
     renderProducts: renderNomenclatures,
     findProduct: code=> productSummaries().find(product=>product.key === code),
-    openEditor: summary=> openProductEditor(summary)
+    openEditor: summary=> openProductEditorSafely(summary)
   });
 }
-function renderFlowerSuggestions(){
+function renderFlowerSuggestions(query=''){
   const dl = document.getElementById('flowerSuggestions');
   if(!dl) return;
-  dl.innerHTML = flowers.slice().sort((a,b)=>alphabeticalCompareEs(a.articleName || a.articleCode,b.articleName || b.articleCode))
-    .map(f=>`<option value="${escapeHtml(f.articleCode || f.articleName)}">${escapeHtml(f.articleName)}</option>`).join('');
+  masterFlowerCatalog = buildMasterFlowerCatalog(flowers);
+  dl.innerHTML = searchMasterFlowerCatalog(masterFlowerCatalog,query)
+    .map(entry=>`<option value="${escapeHtml(entry.flower.articleName)}"></option>`).join('');
   renderSupplierSuggestions();
 }
 function renderSupplierSuggestions(extraSuppliers=[]){
@@ -5322,9 +5674,76 @@ function addFlowerCatalogValue(kind){
   if(kind === 'family') renderFlowerCatalogs(selected,document.getElementById('flowerEditColor').value);
   else renderFlowerCatalogs(document.getElementById('flowerEditFamily').value,selected);
 }
-function openFlowerEditor(flower=null){
+function renderFlowerEditorUsage(usageEntry){
+  const usage = flowerUsagePresentation(usageEntry);
+  document.getElementById('flowerEditorUsageCount').textContent = usage.label;
+  document.getElementById('flowerEditorUsageList').innerHTML = usage.count ? usage.products.map(product=>`
+    <div class="flower-editor-usage-row">
+      <div class="flower-editor-usage-name" title="${escapeHtml(product.code)} · ${escapeHtml(product.name)}">
+        ${escapeHtml(product.code)} · ${escapeHtml(product.name)}
+        <span class="flower-editor-usage-status ${escapeHtml(product.status)}">${escapeHtml(flowerUsageStatusLabel(product.status))}</span>
+      </div>
+      <button type="button" class="btn-mini" data-flower-editor-product="${escapeHtml(product.code)}">Editar</button>
+    </div>
+  `).join('') : '<div class="flower-editor-usage-empty">No utilizada</div>';
+}
+function closeFlowerDeleteDialog(){
+  document.getElementById('flowerDeleteModal').classList.remove('open');
+  pendingFlowerDeletion = null;
+}
+function requestDeleteFlower(identity,source='list'){
+  const plan = planFlowerDeletion(flowers,nomenclatures,identity);
+  if(!plan.entry){ alert('No se ha encontrado la flor en el catalogo maestro.'); return; }
+  pendingFlowerDeletion = {key:plan.entry.key,source,plan};
+  const flower = plan.flower;
+  const status = flower.active === false ? 'Inactiva' : 'Activa';
+  document.getElementById('flowerDeleteTitle').textContent = `Eliminar ${flower.articleName}`;
+  document.getElementById('flowerDeleteSummary').textContent = plan.canDelete
+    ? `Estado: ${status}\nRamos asociados: 0\n\nEsta accion eliminara la flor del catalogo local. ¿Continuar?`
+    : `No se puede eliminar esta flor porque esta utilizada en ${plan.usage.label}.\n\nEstado: ${status}\nRamos asociados: ${plan.usage.count}`;
+  document.getElementById('flowerDeleteSummary').style.whiteSpace = 'pre-line';
+  document.getElementById('flowerDeleteProducts').innerHTML = plan.usage.count
+    ? plan.usage.products.map(product=>`<div class="flower-usage-product"><div class="flower-usage-product-main"><strong>${escapeHtml(product.code)} · ${escapeHtml(product.name)}</strong><span>${escapeHtml(flowerUsageStatusLabel(product.status))}</span></div></div>`).join('')
+    : '<div class="flower-usage-empty">No esta utilizada en ningun ramo.</div>';
+  document.getElementById('btnFlowerDeleteConfirm').hidden = !plan.canDelete;
+  document.getElementById('btnFlowerDeleteViewUsage').hidden = plan.canDelete;
+  document.getElementById('btnFlowerDeleteDeactivate').hidden = plan.canDelete || flower.active === false;
+  document.getElementById('flowerDeleteModal').classList.add('open');
+}
+function confirmDeleteFlower(){
+  if(!pendingFlowerDeletion) return;
+  const {key,source} = pendingFlowerDeletion;
+  const result = deleteUnusedFlower(flowers,nomenclatures,key,{confirmed:true});
+  if(!result.deleted){
+    requestDeleteFlower(key,source);
+    return;
+  }
+  flowers = result.flowers;
+  flowerMeta.updatedAt = nowIso();
+  markNomenclatureDirty();
+  saveState();
+  closeFlowerDeleteDialog();
+  if(source === 'modal') document.getElementById('flowerEditorModal').classList.remove('open');
+  renderNomenclatures();
+}
+function deactivatePendingFlower(){
+  if(!pendingFlowerDeletion) return;
+  const {key} = pendingFlowerDeletion;
+  const previous = flowers;
+  const updatedAt = nowIso();
+  flowers = setFlowerActiveByIdentity(flowers,key,false).map((flower,index)=>flower !== previous[index] ? {...flower,updatedAt} : flower);
+  flowerMeta.updatedAt = updatedAt;
+  markNomenclatureDirty();
+  saveState();
+  document.getElementById('flowerEditActive').value = 'false';
+  closeFlowerDeleteDialog();
+  renderNomenclatures();
+}
+function openFlowerEditor(flower=null,usageEntry=null){
   const item = flower ? normalizeFlower(flower) : normalizeFlower({articleCode:'',articleName:'',active:true,unit:'tallo',updatedAt:nowIso()});
   flowerEditorOriginalId = flower?.id || null;
+  flowerEditorUsageKey = usageEntry?.key || findFlowerUsageEntry(flowers,nomenclatures,item)?.key || '';
+  document.getElementById('btnFlowerEditorDelete').hidden = !flower;
   document.getElementById('flowerEditorTitle').textContent = flower ? 'Editar flor / articulo' : 'Anadir nueva flor';
   document.getElementById('flowerEditCode').value = item.articleCode;
   document.getElementById('flowerEditName').value = item.articleName;
@@ -5342,18 +5761,189 @@ function openFlowerEditor(flower=null){
   document.getElementById('flowerEditPrimarySupplier').value = primary.supplier || item.primarySupplier;
   document.getElementById('flowerEditPrimarySupplierCode').value = primary.supplierCode;
   document.getElementById('flowerEditPrimaryPrice').value = primary.price;
+  flowerEditorOriginalPrimaryPrice = primary.price === undefined ? '' : primary.price;
   flowerEditorProviders = providers.filter((provider,index)=>index !== primaryIndex);
   flowerEditorProviders.sort((a,b)=>alphabeticalCompareEs(a.supplier,b.supplier));
   renderFlowerAlternativeProviders();
+  renderFlowerEditorUsage(usageEntry);
+  document.getElementById('btnFlowerSubstitute').hidden = !usageEntry?.products?.length;
+  document.getElementById('flowerCostImpactNotice').hidden = true;
+  pendingFlowerCostImpact = null;
+  flowerCostImpactApproved = false;
   renderSupplierSuggestions([primary.supplier,...flowerEditorProviders.map(provider=>provider.supplier)]);
   document.getElementById('flowerPriceHistoryPlaceholder').textContent = flower
-    ? `Precio principal actual: ${flowerPrice(primary.price)}. Ultima actualizacion: ${formatDateTime(item.updatedAt)}. El historico completo se mostrara aqui cuando se active.`
-    : 'El historico de precios aparecera aqui despues de crear la flor y registrar sus cambios.';
+    ? `Sin historico registrado. Precio actual: ${flowerPrice(primary.price)}. Historico disponible cuando se active el registro de costes.`
+    : 'Sin historico registrado. Historico disponible cuando se active el registro de costes.';
   const flowerModal = document.getElementById('flowerEditorModal');
   const flowerModalPanel = flowerModal.querySelector('.flower-editor-modal');
   flowerModalPanel.scrollTop = 0;
   flowerModal.classList.add('open');
   requestAnimationFrame(()=>{ flowerModalPanel.scrollTop = 0; });
+}
+function captureProductEditorDraft(targetLineIndex){
+  const base = editorBaseFinal();
+  return cloneProductEditorDraft({
+    originalKey:productEditorOriginalKey,
+    targetLineIndex,
+    lines:productEditorLines,
+    prices:productEditorPrices,
+    photoDataUrl:productEditorPhotoData,
+    fields:{
+      title:document.getElementById('productEditorTitle').textContent,
+      productCode:base.productCode,
+      productName:base.productName,
+      category:document.getElementById('productEditCategory').value,
+      priceCount:base.priceCount,
+      active:base.active,
+      notes:base.productNotes,
+      minimumMarginPercent:base.minimumMarginPercent
+    },
+    initialSnapshot:productEditorInitialSnapshot,
+    undoSnapshot:productEditorUndoSnapshot
+  });
+}
+function restoreProductEditorAfterFlower(newFlowerEntry=null){
+  if(!productEditorFlowerCreationState) return;
+  const restored = restoreProductEditorDraft(productEditorFlowerCreationState,newFlowerEntry);
+  productEditorFlowerCreationState = null;
+  productEditorOriginalKey = restored.originalKey || null;
+  productEditorLines = restored.lines || [];
+  productEditorPrices = restored.prices || [];
+  productEditorPhotoData = restored.photoDataUrl || '';
+  document.getElementById('productEditorTitle').textContent = restored.fields.title;
+  document.getElementById('productEditCode').value = restored.fields.productCode;
+  document.getElementById('productEditName').value = restored.fields.productName;
+  document.getElementById('productEditCategory').value = restored.fields.category;
+  document.getElementById('productEditPriceCount').value = restored.fields.priceCount;
+  document.getElementById('productEditPriceCount').dataset.previous = String(restored.fields.priceCount);
+  document.getElementById('productEditActive').value = restored.fields.active ? 'true' : 'false';
+  document.getElementById('productEditNotes').value = restored.fields.notes;
+  document.getElementById('productEditMinimumMargin').value = normalizeMinimumMarginPercent(restored.fields.minimumMarginPercent);
+  productEditorInitialSnapshot = restored.initialSnapshot || '';
+  productEditorUndoSnapshot = restored.undoSnapshot || null;
+  document.getElementById('btnProductUndo').disabled = !productEditorUndoSnapshot;
+  updateProductPhotoPreview();
+  renderProductPriceFields(restored.prices || []);
+  renderProductEditorLines();
+  document.getElementById('productEditorModal').classList.add('open');
+}
+function startProductEditorNewFlower(targetLineIndex){
+  productEditorFlowerCreationState = captureProductEditorDraft(targetLineIndex);
+  document.getElementById('productEditorModal').classList.remove('open');
+  openFlowerEditor(null);
+}
+function cancelFlowerEditor(){
+  document.getElementById('flowerEditorModal').classList.remove('open');
+  restoreProductEditorAfterFlower();
+}
+function currentFlowerCostImpact(){
+  if(!flowerEditorOriginalId || !flowerEditorUsageKey) return null;
+  const nextRaw = document.getElementById('flowerEditPrimaryPrice').value;
+  const previous = flowerEditorOriginalPrimaryPrice === '' ? '' : parseAppNumber(flowerEditorOriginalPrimaryPrice);
+  const next = nextRaw === '' ? '' : parseAppNumber(nextRaw);
+  if(String(previous) === String(next)) return null;
+  const entry = findFlowerUsageEntry(flowers,nomenclatures,flowerEditorUsageKey);
+  if(!entry?.products?.length) return null;
+  const models = entry.products.map(product=>{
+    const model = collectProductModel(product.code);
+    model.flowers = model.flowers.map(line=>canonicalizeExistingFlowerLine(line,flowers));
+    return model;
+  });
+  return {entry,previous,next,...previewFlowerCostImpact(models,entry.key,next)};
+}
+function updateFlowerCostImpactNotice(){
+  const impact = currentFlowerCostImpact();
+  pendingFlowerCostImpact = impact;
+  const notice = document.getElementById('flowerCostImpactNotice');
+  notice.hidden = !impact;
+  if(impact) document.getElementById('flowerCostImpactNoticeText').textContent = `Este cambio afecta a ${impact.affectedProducts} ramos.`;
+}
+function showFlowerCostImpact(){
+  const impact = currentFlowerCostImpact();
+  if(!impact) return false;
+  pendingFlowerCostImpact = impact;
+  document.getElementById('flowerCostImpactSummary').textContent = `Este cambio modificara el coste teorico de ${impact.affectedProducts} ramos.${impact.newlyLowProducts?` ${impact.newlyLowProducts} quedarian por debajo de su margen minimo.`:''}`;
+  document.getElementById('flowerCostImpactList').innerHTML = impact.products.map(product=>{
+    const variants = product.after.variants.map((variant,index)=>{
+      const before = product.before.variants[index];
+      return `<div class="flower-usage-product-meta">P${variant.priceNumber}: coste ${money(before.cost)} → ${money(variant.cost)} · margen ${before.marginPercent===''?'—':before.marginPercent.toFixed(1)+'%'} → ${variant.marginPercent===''?'—':variant.marginPercent.toFixed(1)+'%'}${product.newlyLow.includes(variant.priceNumber)?` <span class="impact-warning">Quedaria por debajo del minimo ${variant.minimumMarginPercent.toFixed(1)}%</span>`:''}</div>`;
+    }).join('');
+    return `<div class="impact-row"><strong>${escapeHtml(product.productCode)} · ${escapeHtml(product.productName)}</strong>${variants}</div>`;
+  }).join('');
+  document.getElementById('flowerCostImpactModal').classList.add('open');
+  return true;
+}
+function openFlowerSubstitutionDialog(){
+  const source = findFlowerUsageEntry(flowers,nomenclatures,flowerEditorUsageKey);
+  if(!source?.products?.length) return;
+  const catalog = buildMasterFlowerCatalog(flowers).filter(entry=>entry.key !== source.key);
+  pendingFlowerSubstitution = {source,catalog,preview:null};
+  lastFlowerSubstitutionUndo = null;
+  document.getElementById('btnFlowerSubstitutionUndo').hidden = true;
+  document.getElementById('btnFlowerSubstitutionApply').disabled = false;
+  document.getElementById('flowerSubstitutionOrigin').textContent = `Flor origen: ${source.flower.articleName}`;
+  document.getElementById('flowerSubstitutionTarget').innerHTML = '<option value="">Selecciona una flor activa</option>' + catalog.map(entry=>`<option value="${escapeHtml(entry.key)}">${escapeHtml(entry.flower.articleName)}</option>`).join('');
+  document.getElementById('flowerSubstitutionProducts').innerHTML = source.products.map(product=>`<label><input type="checkbox" value="${escapeHtml(product.code)}" checked> ${escapeHtml(product.code)} · ${escapeHtml(product.name)}</label>`).join('');
+  document.getElementById('flowerSubstitutionPreview').textContent = 'Selecciona la flor destino para calcular el impacto.';
+  document.getElementById('flowerSubstitutionModal').classList.add('open');
+}
+function refreshFlowerSubstitutionPreview(){
+  if(!pendingFlowerSubstitution) return;
+  const targetKey = document.getElementById('flowerSubstitutionTarget').value;
+  const targetEntry = pendingFlowerSubstitution.catalog.find(entry=>entry.key === targetKey);
+  const selectedCodes = [...document.querySelectorAll('#flowerSubstitutionProducts input:checked')].map(input=>input.value);
+  if(!targetEntry || !selectedCodes.length){
+    pendingFlowerSubstitution.preview = null;
+    document.getElementById('flowerSubstitutionPreview').textContent = 'Selecciona destino y al menos un producto.';
+    return;
+  }
+  const provider = primaryProvider(targetEntry.flower);
+  const destination = {
+    key:targetEntry.key,
+    articleCode:targetEntry.flower.articleCode || '',
+    articleName:targetEntry.flower.articleName,
+    supplier:provider.supplier || targetEntry.flower.primarySupplier || '',
+    unitCost:provider.price === undefined ? '' : provider.price
+  };
+  const models = pendingFlowerSubstitution.source.products.map(product=>{
+    const model = collectProductModel(product.code);
+    model.flowers = model.flowers.map(line=>canonicalizeExistingFlowerLine(line,flowers));
+    return model;
+  });
+  const preview = previewFlowerSubstitution(models,pendingFlowerSubstitution.source.key,destination,selectedCodes);
+  pendingFlowerSubstitution.preview = preview;
+  document.getElementById('flowerSubstitutionPreview').innerHTML = preview.products.map(product=>{
+    const variants = product.after.variants.map((variant,index)=>`<div class="flower-usage-product-meta">P${variant.priceNumber}: coste ${money(product.before.variants[index].cost)} → ${money(variant.cost)} · margen ${product.before.variants[index].marginPercent===''?'—':product.before.variants[index].marginPercent.toFixed(1)+'%'} → ${variant.marginPercent===''?'—':variant.marginPercent.toFixed(1)+'%'}${product.newlyLow.includes(variant.priceNumber)?' <span class="impact-warning">Margen bajo</span>':''}</div>`).join('');
+    return `<div class="impact-row"><strong>${escapeHtml(product.productCode)} · ${escapeHtml(product.productName)}</strong>${variants}</div>`;
+  }).join('');
+}
+function applyPendingFlowerSubstitution(){
+  const preview = pendingFlowerSubstitution?.preview;
+  if(!preview?.products?.length){ alert('Previsualiza al menos un producto antes de aplicar.'); return; }
+  const warning = preview.hasNewLowMargin ? '\nAlguna variante quedara por debajo de su margen minimo.' : '';
+  if(!confirm(`Sustituir la flor en ${preview.products.length} productos seleccionados.${warning}\n\n¿Aplicar la sustitucion previsualizada?`)) return;
+  const applied = applyFlowerSubstitution(preview,{confirmed:true});
+  lastFlowerSubstitutionUndo = preview.products.map(product=>collectProductModel(product.productCode));
+  applied.models.forEach(writeProductModelToLocal);
+  nomenclatureMeta.updatedAt = nowIso();
+  markNomenclatureDirty();
+  saveState();
+  document.getElementById('btnFlowerSubstitutionUndo').hidden = false;
+  document.getElementById('btnFlowerSubstitutionApply').disabled = true;
+  document.getElementById('flowerSubstitutionPreview').insertAdjacentHTML('afterbegin','<p><strong>Sustitucion aplicada.</strong> Puedes deshacerla mientras este cuadro siga abierto.</p>');
+  renderNomenclatures();
+}
+function undoFlowerSubstitution(){
+  if(!lastFlowerSubstitutionUndo) return;
+  lastFlowerSubstitutionUndo.forEach(writeProductModelToLocal);
+  nomenclatureMeta.updatedAt = nowIso();
+  markNomenclatureDirty();
+  saveState();
+  lastFlowerSubstitutionUndo = null;
+  document.getElementById('btnFlowerSubstitutionUndo').hidden = true;
+  document.getElementById('btnFlowerSubstitutionApply').disabled = false;
+  refreshFlowerSubstitutionPreview();
+  renderNomenclatures();
 }
 function saveFlowerEditor(){
   syncFlowerAlternativeProviders();
@@ -5362,7 +5952,22 @@ function saveFlowerEditor(){
   const primarySupplier = document.getElementById('flowerEditPrimarySupplier').value.trim();
   const primaryPriceValue = document.getElementById('flowerEditPrimaryPrice').value;
   if(!primarySupplier && primaryPriceValue !== ''){ alert('Indica el proveedor principal para guardar su precio.'); return; }
+  const costImpact = currentFlowerCostImpact();
+  if(costImpact && !flowerCostImpactApproved){
+    showFlowerCostImpact();
+    return;
+  }
   const existing = flowerEditorOriginalId ? flowers.find(f=>f.id === flowerEditorOriginalId) : null;
+  if(!existing){
+    const duplicate = findMasterFlowerEntry(buildMasterFlowerCatalog(flowers,{includeInactive:true}),{
+      articleCode:document.getElementById('flowerEditCode').value.trim(),
+      articleName
+    });
+    if(duplicate){
+      alert(`Ya existe la flor "${duplicate.flower.articleName}". Seleccionala en el catalogo maestro en lugar de crear un duplicado.`);
+      return;
+    }
+  }
   const updatedAt = nowIso();
   const unit = document.getElementById('flowerEditUnit').value.trim() || 'tallo';
   const providers = [];
@@ -5405,11 +6010,13 @@ function saveFlowerEditor(){
   });
   if(existing) Object.assign(existing,saved,{id:existing.id});
   else flowers.unshift(saved);
+  const costChanged = costImpact && String(costImpact.previous) !== String(costImpact.next);
   nomenclatures.forEach(line=>{
-    const sameFlower = (previousCode && line.articleCode === previousCode) || (!previousCode && previousName && line.articleName === previousName);
+    const sameFlower = (previousCode && line.articleCode === previousCode) || (previousName && canonicalFlowerName(line.articleName) === canonicalFlowerName(previousName));
     if(!sameFlower) return;
     line.articleCode = saved.articleCode;
     line.articleName = saved.articleName;
+    if(costChanged) line.unitCost = costImpact.next;
     line.updatedAt = updatedAt;
   });
   flowerMeta.updatedAt = updatedAt;
@@ -5418,6 +6025,12 @@ function saveFlowerEditor(){
   saveState();
   document.getElementById('flowerEditorModal').classList.remove('open');
   renderNomenclatures();
+  flowerCostImpactApproved = false;
+  pendingFlowerCostImpact = null;
+  if(productEditorFlowerCreationState){
+    const savedEntry = findMasterFlowerEntry(buildMasterFlowerCatalog(flowers),saved);
+    restoreProductEditorAfterFlower(savedEntry);
+  }
 }
 function openProductEditor(summary=null){
   const modal = document.getElementById('productEditorModal');
@@ -5441,11 +6054,13 @@ function editorProductBase(){
     size:document.getElementById('productEditSize').value.trim(),
     salePrice:document.getElementById('productEditSalePrice').value === '' ? '' : parseAppNumber(document.getElementById('productEditSalePrice').value),
     active:document.getElementById('productEditActive').value === 'true',
-    productNotes:document.getElementById('productEditNotes').value.trim()
+    productNotes:document.getElementById('productEditNotes').value.trim(),
+    minimumMarginPercent:normalizeMinimumMarginPercent(document.getElementById('productEditMinimumMargin').value)
   };
 }
 function renderProductEditorLines(){
   const tbody = document.getElementById('productFlowersTbody');
+  renderFlowerSuggestions();
   const base = editorProductBase();
   const total = productEditorLines.filter(l=>l.active !== false).reduce((s,l)=>s + parseAppNumber(l.stemsPerBouquet) * parseAppNumber(l.unitCost),0);
   const sale = parseAppNumber(base.salePrice);
@@ -5482,7 +6097,19 @@ function syncProductEditorLinesFromDom(){
     if(!line) return;
     tr.querySelectorAll('[data-editor-field]').forEach(input=>{
       const field = input.dataset.editorField;
-      if(field === 'active') line.active = input.value === 'true';
+      if(field === 'flowerSelection'){
+        const entry = findMasterFlowerEntry(masterFlowerCatalog,input.value);
+        const existing = resolveSelectableFlowerForLine(line,flowers);
+        if(entry){
+          Object.assign(line,applyMasterFlowerToLine(line,entry));
+          delete line._invalidFlowerSelection;
+        }else if(existing && input.value.trim() === existing.flower.articleName){
+          delete line._invalidFlowerSelection;
+        }else{
+          line._invalidFlowerSelection = input.value.trim();
+        }
+      }
+      else if(field === 'active') line.active = input.value === 'true';
       else if(field === 'unitCost') line.unitCost = input.value === '' ? '' : parseAppNumber(input.value);
       else if(field.startsWith('stem-')){
         const p = field.split('-')[1];
@@ -5521,8 +6148,13 @@ function saveProductEditor(){
   });
 }
 function setNomenclatureTab(tab){
-  nomenclatureTab = tab;
-  renderNomenclatures();
+  const switchTab = ()=>{
+    if(tab !== 'products' && document.getElementById('productEditorModal').classList.contains('open')) closeProductEditor();
+    nomenclatureTab = tab;
+    renderNomenclatures();
+  };
+  if(tab !== 'products' && document.getElementById('productEditorModal').classList.contains('open')) requestProductEditorLeave(switchTab);
+  else switchTab();
 }
 
 function normalizeNomenclatureLine(line){
@@ -5756,6 +6388,12 @@ document.getElementById('nomenclatureTbody').addEventListener('click', e=>{
   if(btn.dataset.productAction === 'duplicate'){
     duplicateProductFromSummary(summary);
   }
+  if(btn.dataset.productAction === 'quality') openProductQualityDetails(summary.key);
+  if(btn.dataset.productAction === 'economy'){
+    refreshNomenclatureProductAnalyses(productSummaries());
+    marginDashboardItems = buildMarginDashboardItems([...nomenclatureProductAnalyses.values()]);
+    openMarginDetail(summary.productCode);
+  }
   if(btn.dataset.productAction === 'toggle'){
     nomenclatures.filter(n=>productMasterCode(n.productCode) === summary.key).forEach(n=>{ n.active = summary.status !== 'active'; n.updatedAt = nowIso(); });
     nomenclatureMeta.updatedAt = nowIso(); markNomenclatureDirty(); saveState(); renderNomenclatures();
@@ -5768,16 +6406,49 @@ document.getElementById('flowersTbody').addEventListener('click', e=>{
   const btn=e.target.closest('[data-flower-action]'); if(!btn) return;
   const row=btn.closest('[data-flower-usage-key]');
   const entry=flowerUsageEntries.find(item=>item.key===row?.dataset.flowerUsageKey); if(!entry) return;
-  if(btn.dataset.flowerAction==='edit') openFlowerEditor(entry.flower);
+  if(btn.dataset.flowerAction==='edit') openFlowerEditor(entry.flower,entry);
   if(btn.dataset.flowerAction==='usage') openFlowerUsageDetail(entry);
+  if(btn.dataset.flowerAction==='delete') requestDeleteFlower(entry.key,'list');
 });
 document.getElementById('btnFlowerUsageClose').addEventListener('click', ()=> document.getElementById('flowerUsageModal').classList.remove('open'));
 document.getElementById('flowerUsageProducts').addEventListener('click', e=>{
   const btn=e.target.closest('[data-flower-usage-product]'); if(!btn) return;
   editFlowerUsageProduct(btn.dataset.flowerUsageProduct);
 });
-document.getElementById('btnFlowerEditorCancel').addEventListener('click', ()=> document.getElementById('flowerEditorModal').classList.remove('open'));
+document.getElementById('flowerEditorUsageList').addEventListener('click', e=>{
+  const btn=e.target.closest('[data-flower-editor-product]'); if(!btn) return;
+  document.getElementById('flowerEditorModal').classList.remove('open');
+  editFlowerUsageProduct(btn.dataset.flowerEditorProduct);
+});
+document.getElementById('btnFlowerEditorCancel').addEventListener('click', cancelFlowerEditor);
 document.getElementById('btnFlowerEditorSave').addEventListener('click', saveFlowerEditor);
+document.getElementById('flowerEditPrimaryPrice').addEventListener('input',updateFlowerCostImpactNotice);
+document.getElementById('btnFlowerViewCostImpact').addEventListener('click',showFlowerCostImpact);
+document.getElementById('btnFlowerCostImpactCancel').addEventListener('click',()=>document.getElementById('flowerCostImpactModal').classList.remove('open'));
+document.getElementById('btnFlowerCostImpactConfirm').addEventListener('click',()=>{
+  flowerCostImpactApproved = true;
+  document.getElementById('flowerCostImpactModal').classList.remove('open');
+  saveFlowerEditor();
+});
+document.getElementById('btnFlowerSubstitute').addEventListener('click',openFlowerSubstitutionDialog);
+document.getElementById('flowerSubstitutionTarget').addEventListener('change',refreshFlowerSubstitutionPreview);
+document.getElementById('flowerSubstitutionProducts').addEventListener('change',refreshFlowerSubstitutionPreview);
+document.getElementById('btnFlowerSubstitutionCancel').addEventListener('click',()=>{
+  pendingFlowerSubstitution = null;
+  lastFlowerSubstitutionUndo = null;
+  document.getElementById('flowerSubstitutionModal').classList.remove('open');
+});
+document.getElementById('btnFlowerSubstitutionApply').addEventListener('click',applyPendingFlowerSubstitution);
+document.getElementById('btnFlowerSubstitutionUndo').addEventListener('click',undoFlowerSubstitution);
+document.getElementById('btnFlowerEditorDelete').addEventListener('click', ()=> requestDeleteFlower(flowerEditorUsageKey,'modal'));
+document.getElementById('btnFlowerDeleteCancel').addEventListener('click', closeFlowerDeleteDialog);
+document.getElementById('btnFlowerDeleteConfirm').addEventListener('click', confirmDeleteFlower);
+document.getElementById('btnFlowerDeleteDeactivate').addEventListener('click', deactivatePendingFlower);
+document.getElementById('btnFlowerDeleteViewUsage').addEventListener('click', ()=>{
+  const entry = pendingFlowerDeletion?.plan?.entry;
+  closeFlowerDeleteDialog();
+  if(entry) openFlowerUsageDetail(entry);
+});
 document.getElementById('btnProductSelectPhoto').addEventListener('click', ()=> document.getElementById('productPhotoInput').click());
 document.getElementById('productPhotoInput').addEventListener('change', async e=>{
   const file = e.target.files?.[0];
@@ -5843,21 +6514,52 @@ document.getElementById('flowerAlternativeProviders').addEventListener('click', 
   flowerEditorProviders.splice(parseInt(row.dataset.flowerProviderIndex,10),1);
   renderFlowerAlternativeProviders();
 });
-['productEditCode','productEditName','productEditCategory','productEditVariantCode','productEditVariantName','productEditSize','productEditSalePrice','productEditVat','productEditActive','productEditNotes'].forEach(id=>{ document.getElementById(id).addEventListener('input', renderProductEditorLines); document.getElementById(id).addEventListener('change', renderProductEditorLines); });
-document.getElementById('btnProductAddFlower').addEventListener('click', ()=>{ productEditorLines.push({articleCode:'',articleName:'',stemsPerBouquet:0,supplier:'',unitCost:'',active:true,notes:''}); renderProductEditorLines(); });
+['productEditCode','productEditName','productEditCategory','productEditVariantCode','productEditVariantName','productEditSize','productEditSalePrice','productEditVat','productEditActive','productEditNotes','productEditMinimumMargin'].forEach(id=>{ document.getElementById(id).addEventListener('input', renderProductEditorLines); document.getElementById(id).addEventListener('change', renderProductEditorLines); });
+document.getElementById('btnProductAddFlower').addEventListener('click', ()=>{ productEditorLines.push({articleCode:'',articleName:'',supplier:'',unitCost:'',stems:{},active:true,notes:'',_masterFlowerKey:''}); renderProductEditorLines(); });
 document.getElementById('btnProductEditorCancel').addEventListener('click', ()=> document.getElementById('productEditorModal').classList.remove('open'));
 document.getElementById('btnProductEditorSave').addEventListener('click', saveProductEditor);
 document.getElementById('productFlowersTbody').addEventListener('change', e=>{
   const input=e.target.closest('[data-editor-field]'); if(!input) return;
   const idx=parseInt(input.closest('[data-editor-line]').dataset.editorLine,10); const line=productEditorLines[idx]; if(!line) return;
-  if(input.dataset.editorField==='active') line.active=input.value==='true';
+  if(input.dataset.editorField==='flowerSelection'){
+    const entry = findMasterFlowerEntry(masterFlowerCatalog,input.value);
+    if(entry){
+      productEditorLines[idx] = applyMasterFlowerToLine(line,entry);
+      delete productEditorLines[idx]._invalidFlowerSelection;
+    }else{
+      const existing = resolveSelectableFlowerForLine(line,flowers);
+      if(!existing || input.value.trim() !== existing.flower.articleName){
+        line._invalidFlowerSelection = input.value.trim();
+        alert('Selecciona una flor existente del catalogo maestro o crea una con Nueva flor.');
+      }
+    }
+  }
+  else if(input.dataset.editorField==='active') line.active=input.value==='true';
   else if(['stemsPerBouquet','unitCost'].includes(input.dataset.editorField)) line[input.dataset.editorField]=input.value===''?'':parseAppNumber(input.value);
   else if(input.dataset.editorField.startsWith('stem-')){ const p=input.dataset.editorField.split('-')[1]; line.stems = line.stems || {}; line.stems[p]=input.value===''?'':parseAppNumber(input.value); }
   else line[input.dataset.editorField]=input.value;
-  if(input.dataset.editorField==='articleCode' || input.dataset.editorField==='articleName') fillEditorLineFromFlower(line,input.value);
   renderProductEditorLines();
 });
-document.getElementById('productFlowersTbody').addEventListener('click', e=>{ const btn=e.target.closest('[data-editor-action="delete"]'); if(!btn) return; const idx=parseInt(btn.closest('[data-editor-line]').dataset.editorLine,10); if(confirm('Quitar esta flor del ramo?')){ productEditorLines.splice(idx,1); renderProductEditorLines(); } });
+document.getElementById('productFlowersTbody').addEventListener('click', e=>{
+  const btn=e.target.closest('[data-editor-action]');
+  if(!btn) return;
+  const idx=parseInt(btn.closest('[data-editor-line]').dataset.editorLine,10);
+  if(btn.dataset.editorAction === 'new-flower'){
+    startProductEditorNewFlower(idx);
+    return;
+  }
+  if(btn.dataset.editorAction === 'move-up' || btn.dataset.editorAction === 'move-down'){
+    rememberProductEditorUndo();
+    productEditorLines = moveCompositionLine(productEditorLines,idx,btn.dataset.editorAction === 'move-up' ? -1 : 1);
+    renderProductEditorLines();
+    return;
+  }
+  if(btn.dataset.editorAction === 'delete' && confirm('Quitar esta flor del ramo?')){
+    rememberProductEditorUndo();
+    productEditorLines.splice(idx,1);
+    renderProductEditorLines();
+  }
+});
 
 function productMasterCode(value){
   return productBaseName(String(value || '').trim()).replace(/[-_]COPY$/i,'');
@@ -6005,7 +6707,8 @@ function editorProductBase(){
     salePrice:document.getElementById('productEditSalePrice').value === '' ? '' : parseAppNumber(document.getElementById('productEditSalePrice').value),
     vat:document.getElementById('productEditVat').value === '' ? 10 : parseAppNumber(document.getElementById('productEditVat').value),
     active:document.getElementById('productEditActive').value === 'true',
-    productNotes:document.getElementById('productEditNotes').value.trim()
+    productNotes:document.getElementById('productEditNotes').value.trim(),
+    minimumMarginPercent:normalizeMinimumMarginPercent(document.getElementById('productEditMinimumMargin').value)
   };
 }
 function renderProductEditorLines(){
@@ -7301,7 +8004,7 @@ function buildProductPriceCatalogFromNomenclatures(lines=nomenclatures){
     const code = productMasterCode(line.productCode);
     if(!code) return;
     const priceNumber = productPriceNumber(line);
-    if(!catalog[code]) catalog[code] = {priceCount:1, prices:[]};
+    if(!catalog[code]) catalog[code] = {priceCount:1, prices:[], minimumMarginPercent:DEFAULT_MINIMUM_MARGIN_PERCENT};
     catalog[code].priceCount = Math.max(catalog[code].priceCount || 1, priceNumber);
     if(line.salePrice !== '' && line.salePrice !== undefined && line.salePrice !== null){
       catalog[code].prices[priceNumber - 1] = parseAppNumber(line.salePrice);
@@ -7311,6 +8014,7 @@ function buildProductPriceCatalogFromNomenclatures(lines=nomenclatures){
     const count = Math.max(1, Math.min(5, parseInt(catalog[code].priceCount || 1, 10) || 1));
     catalog[code].priceCount = count;
     catalog[code].prices = Array.from({length:count}, (_,i)=>catalog[code].prices[i] ?? '');
+    catalog[code].minimumMarginPercent = normalizeMinimumMarginPercent(catalog[code].minimumMarginPercent);
   });
   return catalog;
 }
@@ -7355,7 +8059,10 @@ function renderProductSummaries(){
   const q = (document.getElementById('nomenclatureSearch')?.value || '').trim().toLowerCase();
   const statusFilter = document.getElementById('nomenclatureActiveFilter')?.value || 'active';
   const catFilter = document.getElementById('nomenclatureSizeFilter')?.value || '';
-  const rows = productSummaries().filter(p=>{
+  const qualityFilter = document.getElementById('nomenclatureQualityFilter')?.value || '';
+  const summaries = productSummaries();
+  refreshNomenclatureProductAnalyses(summaries);
+  const rows = filterProductsByQuality(summaries,nomenclatureProductAnalyses,qualityFilter).filter(p=>{
     if(statusFilter && p.status !== statusFilter) return false;
     if(catFilter && p.category !== catFilter) return false;
     if(q && ![p.productCode,p.productName,p.category,p.notes].join(' ').toLowerCase().includes(q)) return false;
@@ -7373,6 +8080,8 @@ function renderProductSummaries(){
       <td class="num">${fmtNum(p.priceCount)}</td>
       <td class="num">${money(p.initialPrice)}</td>
       <td>${p.status === 'deleted' ? 'Papelera' : (p.status === 'active' ? 'Activo' : 'Inactivo')}</td>
+      <td><button type="button" class="quality-badge ${nomenclatureProductAnalyses.get(p.key).quality.status}" data-product-action="quality">${qualityLabel(nomenclatureProductAnalyses.get(p.key).quality.status)}</button></td>
+      <td><button type="button" class="economy-badge ${economyStatus(nomenclatureProductAnalyses.get(p.key)).key}" data-product-action="economy">${economyStatus(nomenclatureProductAnalyses.get(p.key)).label}</button></td>
       <td style="font-family:var(--mono);font-size:11px;color:var(--ink-soft);">${escapeHtml(formatDateTime(p.updatedAt))}</td>
       <td><div class="nomenclature-actions">
         <button class="btn-mini" data-product-action="edit">Editar</button>
@@ -7382,17 +8091,21 @@ function renderProductSummaries(){
           : '<button class="btn-mini warn" data-product-action="trash">Eliminar</button>'}
       </div></td>
     </tr>
-  `).join('') : `<tr><td colspan="8"><div class="empty-state">No hay productos que coincidan con los filtros.</div></td></tr>`;
+  `).join('') : `<tr><td colspan="10"><div class="empty-state">No hay productos que coincidan con los filtros.</div></td></tr>`;
   updateNomenclatureSortIndicators('product');
+  renderNomenclatureMarginAlerts();
 }
 function renderNomenclatures(){
-  document.body.classList.toggle('nomenclature-products-tab', nomenclatureTab === 'products');
-  document.body.classList.toggle('nomenclature-flowers-tab', nomenclatureTab === 'flowers');
+  document.body.classList.toggle('nomenclature-products-tab', !nomenclatureMarginsVisible && nomenclatureTab === 'products');
+  document.body.classList.toggle('nomenclature-flowers-tab', !nomenclatureMarginsVisible && nomenclatureTab === 'flowers');
   document.getElementById('btnNomenclatureProductsTab').classList.toggle('active', nomenclatureTab === 'products');
   document.getElementById('btnNomenclatureFlowersTab').classList.toggle('active', nomenclatureTab === 'flowers');
+  document.querySelector('.nomenclature-tabs').hidden = nomenclatureMarginsVisible;
+  document.getElementById('nomenclatureMarginsView').hidden = !nomenclatureMarginsVisible;
   renderNomenclatureFilters();
   renderProductSummaries();
   renderFlowers();
+  if(nomenclatureMarginsVisible) renderMarginDashboard();
   const activeProducts = productSummaries().filter(p=>p.status === 'active').length;
   const activeCount = nomenclatures.filter(n=>n.active && !n.deleted).length;
   document.getElementById('nomenclatureCount').textContent = `${activeProducts} productos activos / ${activeCount} lineas`;
@@ -7682,6 +8395,67 @@ document.getElementById('btnPrintGenerate').addEventListener('click', ()=>{
   else generateNomenclaturesPDF();
 });
 
+function currentProductEditorState(){
+  syncProductEditorLinesFromDom();
+  syncProductEditorPricesFromDom();
+  const priceCount = editorVisiblePriceCount();
+  return {
+    originalKey:productEditorOriginalKey || '',
+    productCode:document.getElementById('productEditCode').value.trim(),
+    productName:document.getElementById('productEditName').value.trim(),
+    category:document.getElementById('productEditCategory').value.trim(),
+    priceCount,
+    prices:Array.from({length:priceCount},(_,index)=>productEditorPrices[index] ?? ''),
+    active:document.getElementById('productEditActive').value === 'true',
+    notes:document.getElementById('productEditNotes').value,
+    minimumMarginPercent:normalizeMinimumMarginPercent(document.getElementById('productEditMinimumMargin').value),
+    photoDataUrl:productEditorPhotoData || '',
+    flowers:productEditorLines
+  };
+}
+function productEditorHasUnsavedChanges(){
+  if(!document.getElementById('productEditorModal').classList.contains('open')) return false;
+  return isEditorDirty(productEditorInitialSnapshot,currentProductEditorState());
+}
+function updateProductEditorDirtyStatus(){
+  const dirty = productEditorHasUnsavedChanges();
+  document.getElementById('productEditorDirtyStatus').textContent = dirty ? 'Cambios sin guardar' : 'Sin cambios pendientes';
+  return dirty;
+}
+function resetProductEditorSnapshot(){
+  productEditorInitialSnapshot = createEditorSnapshot(currentProductEditorState());
+  productEditorUndoSnapshot = null;
+  document.getElementById('btnProductUndo').disabled = true;
+  updateProductEditorDirtyStatus();
+}
+function rememberProductEditorUndo(){
+  productEditorUndoSnapshot = cloneData(productEditorLines);
+  document.getElementById('btnProductUndo').disabled = false;
+}
+function requestProductEditorLeave(action){
+  if(productEditorDiscarding || !productEditorHasUnsavedChanges()){
+    action();
+    return true;
+  }
+  pendingProductLeaveAction = action;
+  document.getElementById('unsavedProductModal').classList.add('open');
+  return false;
+}
+function closeProductEditor(){
+  document.getElementById('productEditorModal').classList.remove('open');
+  productEditorInitialSnapshot = '';
+  productEditorUndoSnapshot = null;
+}
+function openProductEditorSafely(summary){
+  const openSelected = ()=>{
+    if(document.getElementById('productEditorModal').classList.contains('open')) closeProductEditor();
+    openProductEditor(summary);
+  };
+  if(document.getElementById('productEditorModal').classList.contains('open')) return requestProductEditorLeave(openSelected);
+  openSelected();
+  return true;
+}
+
 function collectProductModel(code){
   const lines = nomenclatures.filter(n=>productMasterCode(n.productCode) === code && !n.deleted);
   const first = lines[0] || {};
@@ -7693,7 +8467,8 @@ function collectProductModel(code){
     const n = lines.find(l=>productPriceNumber(l) === i+1 && l.salePrice !== '' && l.salePrice !== undefined);
     return n ? n.salePrice : (catalogInfo.prices?.[i] ?? '');
   });
-  if(code) productPriceCatalog[code] = {...catalogInfo, priceCount, prices:prices.slice()};
+  const minimumMarginPercent = normalizeMinimumMarginPercent(catalogInfo.minimumMarginPercent);
+  if(code) productPriceCatalog[code] = {...catalogInfo, priceCount, prices:prices.slice(), minimumMarginPercent};
   const flowerMap = new Map();
   lines.forEach(l=>{
     const key = (l.articleCode || l.articleName || '').toLowerCase();
@@ -7713,6 +8488,7 @@ function collectProductModel(code){
     deleted:first.deleted || false,
     notes:first.productNotes || '',
     photoDataUrl:String(catalogInfo.photoDataUrl || ''),
+    minimumMarginPercent,
     flowers:[...flowerMap.values()]
   };
 }
@@ -7720,7 +8496,7 @@ function openProductEditor(summary=null){
   const modal = document.getElementById('productEditorModal');
   productEditorOriginalKey = summary?.key || null;
   const model = collectProductModel(summary?.key || '');
-  productEditorLines = model.flowers;
+  productEditorLines = model.flowers.map(line=>canonicalizeExistingFlowerLine(line,flowers));
   productEditorPrices = Array.from({length:model.priceCount}, (_,i)=>model.prices[i] ?? '');
   document.getElementById('productEditorTitle').textContent = summary ? 'Editar producto' : 'Anadir nuevo producto';
   document.getElementById('productEditCode').value = model.productCode;
@@ -7730,11 +8506,13 @@ function openProductEditor(summary=null){
   document.getElementById('productEditPriceCount').dataset.previous = String(model.priceCount);
   document.getElementById('productEditActive').value = model.active ? 'true' : 'false';
   document.getElementById('productEditNotes').value = model.notes;
+  document.getElementById('productEditMinimumMargin').value = normalizeMinimumMarginPercent(model.minimumMarginPercent);
   productEditorPhotoData = model.photoDataUrl || '';
   updateProductPhotoPreview();
   renderProductPriceFields(model.prices);
   renderProductEditorLines();
   modal.classList.add('open');
+  resetProductEditorSnapshot();
 }
 function renderProductPriceFields(values=[]){
   const wrap = document.getElementById('productPriceFields');
@@ -7783,25 +8561,35 @@ function editorProductBase(){
     priceCount:count,
     prices,
     active:document.getElementById('productEditActive').value === 'true',
-    productNotes:document.getElementById('productEditNotes').value.trim()
+    productNotes:document.getElementById('productEditNotes').value.trim(),
+    minimumMarginPercent:normalizeMinimumMarginPercent(document.getElementById('productEditMinimumMargin').value)
   };
 }
 function updateProductPriceSummaries(){
   // Actualiza costes/margenes sin reconstruir los inputs que la usuaria esta editando.
   syncProductEditorLinesFromDom();
   const base = editorProductBase();
-  const count = base.priceCount;
-  const costs = Array.from({length:count}, (_,i)=>productEditorLines.filter(l=>l.active !== false).reduce((s,l)=>s + parseAppNumber(l.unitCost) * parseAppNumber(l.stems?.[i+1] ?? 0), 0));
-  costs.forEach((cost,i)=>{
-    const pvp = parseAppNumber(base.prices[i]);
-    const pvpNet = pvp ? pvp / 1.10 : '';
-    const margin = pvpNet === '' ? '' : pvpNet - cost;
-    const marginPct = pvpNet ? margin / pvpNet : '';
+  const economy = analyzeProductEconomics({...base,flowers:productEditorLines,minimumMarginPercent:base.minimumMarginPercent});
+  economy.variants.forEach((variant,i)=>{
     const costEl = document.querySelector(`[data-price-cost="${i+1}"]`);
     const marginEl = document.querySelector(`[data-price-margin="${i+1}"]`);
-    if(costEl) costEl.textContent = `Coste: ${money(cost)}`;
-    if(marginEl) marginEl.textContent = margin === '' ? 'Margen: incompleto' : `Margen: ${money(margin)} (${pct(marginPct)})`;
+    if(costEl) costEl.textContent = `Coste: ${money(variant.cost)}`;
+    if(marginEl){
+      marginEl.classList.toggle('impact-warning',variant.lowMargin);
+      marginEl.textContent = variant.marginAmount === '' ? 'Margen: incompleto' : `Margen: ${money(variant.marginAmount)} (${variant.marginPercent.toFixed(1)}%)${variant.lowMargin?` · MARGEN BAJO ${variant.differencePoints.toFixed(1)} pp`:''}`;
+    }
   });
+  const table = document.getElementById('productEconomicsTable');
+  const cells = values=>values.map((value,index)=>`<td class="${economy.variants[index].lowMargin?'low':''}">${value}</td>`).join('');
+  table.innerHTML = `<thead><tr><th>Concepto</th>${economy.variants.map(variant=>`<th>P${variant.priceNumber}</th>`).join('')}</tr></thead><tbody>
+    <tr><td>PVP</td>${cells(economy.variants.map(variant=>variant.pvp===''?'—':money(variant.pvp)))}</tr>
+    <tr><td>PVP sin IVA</td>${cells(economy.variants.map(variant=>variant.pvpNet===''?'—':money(variant.pvpNet)))}</tr>
+    <tr><td>Coste teorico</td>${cells(economy.variants.map(variant=>money(variant.cost)))}</tr>
+    <tr><td>Margen €</td>${cells(economy.variants.map(variant=>variant.marginAmount===''?'—':money(variant.marginAmount)))}</tr>
+    <tr><td>Margen %</td>${cells(economy.variants.map(variant=>variant.marginPercent===''?'—':`${variant.marginPercent.toFixed(1)}%${variant.lowMargin?' · BAJO':''}`))}</tr>
+    <tr><td>Margen minimo</td>${cells(economy.variants.map(variant=>`${variant.minimumMarginPercent.toFixed(1)}%`))}</tr>
+  </tbody>`;
+  updateProductEditorDirtyStatus();
 }
 function renderProductEditorLines(){
   const tbody = document.getElementById('productFlowersTbody');
@@ -7809,31 +8597,28 @@ function renderProductEditorLines(){
   const count = base.priceCount;
   const headRow = document.querySelector('#productEditorModal .nomenclature-table thead tr');
   if(headRow){
-    headRow.innerHTML = `<th style="width:130px;">Codigo flor</th><th style="width:190px;">Flor / articulo</th><th style="width:110px;">Precio tallo</th>${Array.from({length:count},(_,i)=>`<th style="width:105px;">Tallos precio ${i+1}</th>`).join('')}<th style="width:90px;">Activo</th><th style="width:170px;">Observaciones</th><th style="width:90px;">Acciones</th>`;
+    headRow.innerHTML = `<th style="width:100px;">Codigo flor</th><th style="width:300px;">Flor / articulo maestro</th><th style="width:110px;">Precio tallo</th>${Array.from({length:count},(_,i)=>`<th style="width:105px;">Tallos precio ${i+1}</th>`).join('')}<th style="width:90px;">Activo</th><th style="width:170px;">Observaciones</th><th style="width:145px;">Orden / acciones</th>`;
   }
   document.getElementById('productEditCost').textContent = '';
   document.getElementById('productEditMargin').textContent = '';
   tbody.innerHTML = productEditorLines.length ? productEditorLines.map((l,i)=>`
     <tr data-editor-line="${i}">
-      <td><input data-editor-field="articleCode" list="flowerSuggestions" value="${escapeHtml(l.articleCode)}"></td>
-      <td><input data-editor-field="articleName" list="flowerSuggestions" value="${escapeHtml(l.articleName)}"></td>
+      <td><span class="flower-readonly muted">${escapeHtml(l.articleCode || '-')}</span></td>
+      <td><div class="product-flower-selector"><input data-editor-field="flowerSelection" list="flowerSuggestions" value="${escapeHtml(l.articleName)}" placeholder="Buscar flor activa..." autocomplete="off" title="Selecciona una flor del catalogo maestro"><button type="button" class="btn-mini" data-editor-action="new-flower">Nueva flor</button></div></td>
       <td class="num"><input data-editor-field="unitCost" type="text" inputmode="decimal" value="${escapeHtml(l.unitCost)}"></td>
       ${Array.from({length:count},(_,p)=>`<td class="num"><input data-editor-field="stem-${p+1}" type="text" inputmode="decimal" value="${escapeHtml(l.stems?.[p+1] ?? '')}"></td>`).join('')}
       <td><select data-editor-field="active"><option value="true" ${l.active!==false?'selected':''}>Activo</option><option value="false" ${l.active===false?'selected':''}>Inactivo</option></select></td>
       <td><input data-editor-field="notes" value="${escapeHtml(l.notes || '')}"></td>
-      <td><button class="btn-mini warn" data-editor-action="delete">Quitar</button></td>
+      <td><button type="button" class="btn-mini" data-editor-action="move-up" title="Mover arriba">↑</button><button type="button" class="btn-mini" data-editor-action="move-down" title="Mover abajo">↓</button><button type="button" class="btn-mini warn" data-editor-action="delete">Quitar</button></td>
     </tr>
   `).join('') : `<tr><td colspan="${count+7}"><div class="empty-state">Anade las flores o articulos que lleva este producto.</div></td></tr>`;
   updateProductPriceSummaries();
 }
 function fillEditorLineFromFlower(line, value){
-  const f = findFlower(value, value);
-  if(!f) return;
-  const pp = primaryProvider(f);
-  line.articleCode = f.articleCode;
-  line.articleName = f.articleName;
-  line.supplier = pp.supplier || '';
-  line.unitCost = pp.price === undefined ? '' : pp.price;
+  const entry = findMasterFlowerEntry(masterFlowerCatalog.length ? masterFlowerCatalog : buildMasterFlowerCatalog(flowers),value);
+  if(!entry) return false;
+  Object.assign(line,applyMasterFlowerToLine(line,entry));
+  return true;
 }
 function saveProductEditor(){
   syncProductEditorLinesFromDom();
@@ -7846,7 +8631,7 @@ function saveProductEditor(){
   const updated = nowIso();
   nomenclatures = nomenclatures.filter(n=>productMasterCode(n.productCode) !== (productEditorOriginalKey || base.productCode));
   if(productEditorOriginalKey && productEditorOriginalKey !== base.productCode) delete productPriceCatalog[productEditorOriginalKey];
-  productPriceCatalog[base.productCode] = {priceCount:base.priceCount, prices:base.prices.slice(0, base.priceCount), photoDataUrl:productEditorPhotoData};
+  productPriceCatalog[base.productCode] = {priceCount:base.priceCount, prices:base.prices.slice(0, base.priceCount), photoDataUrl:productEditorPhotoData, minimumMarginPercent:base.minimumMarginPercent};
   const lines = productEditorLines.length ? productEditorLines : [];
   lines.forEach(line=>{
     for(let p=1; p<=base.priceCount; p++){
@@ -7893,17 +8678,106 @@ function saveProductEditor(){
     }
   });
 }
+function writeProductModelToLocal(model){
+  const code = productMasterCode(model.productCode);
+  const updatedAt = nowIso();
+  nomenclatures = nomenclatures.filter(line=>productMasterCode(line.productCode) !== code);
+  const priceCount = Math.max(1,Math.min(5,parseInt(model.priceCount || 1,10) || 1));
+  productPriceCatalog[code] = {
+    priceCount,
+    prices:Array.from({length:priceCount},(_,index)=>model.prices?.[index] ?? ''),
+    photoDataUrl:model.photoDataUrl || '',
+    minimumMarginPercent:normalizeMinimumMarginPercent(model.minimumMarginPercent)
+  };
+  const lines = model.flowers?.length ? model.flowers : [{articleCode:'',articleName:'',supplier:'',unitCost:'',stems:{},active:true,notes:''}];
+  lines.forEach(line=>{
+    for(let priceNumber=1;priceNumber<=priceCount;priceNumber++){
+      nomenclatures.push(normalizeNomenclatureLine({
+        productCode:code,
+        productName:model.productName,
+        category:categoryFromProductCode(code,model.productName),
+        size:String(priceNumber),
+        priceNumber,
+        salePrice:model.prices?.[priceNumber-1] ?? '',
+        productNotes:model.notes || '',
+        articleCode:line.articleCode || '',
+        articleName:line.articleName || '',
+        supplier:line.supplier || '',
+        unitCost:line.unitCost ?? '',
+        stemsPerBouquet:line.stems?.[priceNumber] ?? 0,
+        active:model.active !== false && line.active !== false,
+        deleted:false,
+        notes:line.notes || '',
+        updatedAt
+      }));
+    }
+  });
+}
 function duplicateProductFromSummary(summary){
-  const newCode = prompt('Nuevo codigo producto para la copia:', summary.productCode + '-COPY');
-  if(!newCode) return;
-  if(nomenclatures.some(n=>productMasterCode(n.productCode) === newCode)){ alert('Ya existe un producto con ese codigo.'); return; }
-  const copied = nomenclatures.filter(n=>productMasterCode(n.productCode) === summary.key).map(n=>normalizeNomenclatureLine({...n, id:null, productCode:newCode, category:categoryFromProductCode(newCode, n.productName), deleted:false, updatedAt:nowIso()}));
-  if(productPriceCatalog[summary.key]) productPriceCatalog[newCode] = cloneData(productPriceCatalog[summary.key]);
-  nomenclatures.push(...copied);
+  pendingDuplicateProduct = summary;
+  document.getElementById('duplicateProductCode').value = `${summary.productCode}-COPY`;
+  document.getElementById('duplicateProductName').value = `${summary.productName} copia`;
+  document.getElementById('duplicateCopyComposition').checked = true;
+  document.getElementById('duplicateCopyPrices').checked = true;
+  document.getElementById('duplicateCopyNotes').checked = true;
+  document.getElementById('duplicateProductModal').classList.add('open');
+}
+function confirmDuplicateProduct(){
+  if(!pendingDuplicateProduct) return;
+  const newCode = document.getElementById('duplicateProductCode').value.trim();
+  const newName = document.getElementById('duplicateProductName').value.trim();
+  if(!newCode || !newName){ alert('Indica el nuevo codigo y nombre.'); return; }
+  if(nomenclatures.some(line=>productMasterCode(line.productCode) === productMasterCode(newCode))){ alert('Ya existe un producto con ese codigo.'); return; }
+  const source = collectProductModel(pendingDuplicateProduct.key);
+  source.flowers = source.flowers.map(line=>canonicalizeExistingFlowerLine(line,flowers));
+  const copied = duplicateProductModel(source,{
+    productCode:newCode,
+    productName:newName,
+    category:categoryFromProductCode(newCode,newName),
+    copyComposition:document.getElementById('duplicateCopyComposition').checked,
+    copyPrices:document.getElementById('duplicateCopyPrices').checked,
+    copyNotes:document.getElementById('duplicateCopyNotes').checked
+  });
+  writeProductModelToLocal(copied);
   nomenclatureMeta.updatedAt = nowIso();
   markNomenclatureDirty();
   saveState();
+  pendingDuplicateProduct = null;
+  document.getElementById('duplicateProductModal').classList.remove('open');
   renderNomenclatures();
+}
+function openCopyCompositionDialog(){
+  syncProductEditorLinesFromDom();
+  const count = editorVisiblePriceCount();
+  const source = document.getElementById('copyCompositionSource');
+  source.innerHTML = Array.from({length:count},(_,index)=>`<option value="${index+1}">Precio ${index+1}</option>`).join('');
+  document.getElementById('copyCompositionTargets').innerHTML = Array.from({length:count},(_,index)=>`<label><input type="checkbox" value="${index+1}" ${index===0?'disabled':''}> Precio ${index+1}</label>`).join('');
+  document.getElementById('copyCompositionWarning').textContent = '';
+  document.getElementById('copyCompositionModal').classList.add('open');
+}
+function refreshCopyCompositionTargets(){
+  const source = parseInt(document.getElementById('copyCompositionSource').value,10);
+  document.querySelectorAll('#copyCompositionTargets input').forEach(input=>{
+    input.disabled = parseInt(input.value,10) === source;
+    if(input.disabled) input.checked = false;
+  });
+}
+function applyCopyComposition(){
+  syncProductEditorLinesFromDom();
+  const source = parseInt(document.getElementById('copyCompositionSource').value,10);
+  const targets = [...document.querySelectorAll('#copyCompositionTargets input:checked')].map(input=>parseInt(input.value,10));
+  if(!targets.length){ alert('Selecciona al menos un precio destino.'); return; }
+  let result = copyCompositionBetweenPrices(productEditorLines,source,targets);
+  if(result.requiresConfirmation){
+    const labels = result.conflicts.map(price=>`Precio ${price}`).join(', ');
+    document.getElementById('copyCompositionWarning').textContent = `${labels} ya tiene composicion.`;
+    if(!confirm(`${labels} ya tiene composicion. ¿Reemplazarla por una copia exacta del Precio ${source}?`)) return;
+    result = copyCompositionBetweenPrices(productEditorLines,source,targets,{replace:true});
+  }
+  rememberProductEditorUndo();
+  productEditorLines = result.lines;
+  document.getElementById('copyCompositionModal').classList.remove('open');
+  renderProductEditorLines();
 }
 function structuredNomenclatureProducts(){
   return productSummaries().map(summary=>{
@@ -7920,6 +8794,7 @@ function structuredNomenclatureProducts(){
       nombre:model.productName,
       categoria:categoryFromProductCode(model.productCode, model.productName),
       numeroPrecios:model.priceCount,
+      margenMinimoPct:normalizeMinimumMarginPercent(model.minimumMarginPercent),
       precios:prices,
       activo:model.active,
       estado:summary.status,
@@ -8018,6 +8893,15 @@ document.getElementById('productFlowersTbody').addEventListener('input', e=>{
   const line = productEditorLines[idx];
   if(!line) return;
   const field = input.dataset.editorField;
+  if(field === 'flowerSelection'){
+    renderFlowerSuggestions(input.value);
+    const entry = findMasterFlowerEntry(masterFlowerCatalog,input.value);
+    const existing = resolveSelectableFlowerForLine(line,flowers);
+    const validExisting = existing && input.value.trim() === existing.flower.articleName;
+    input.setCustomValidity(entry || validExisting || !input.value.trim() ? '' : 'Selecciona una flor del catalogo maestro.');
+    line._invalidFlowerSelection = entry || validExisting || !input.value.trim() ? '' : input.value.trim();
+    return;
+  }
   if(field === 'active') line.active = input.value === 'true';
   else if(field === 'unitCost') line.unitCost = input.value === '' ? '' : parseAppNumber(input.value);
   else if(field.startsWith('stem-')){
@@ -8082,8 +8966,20 @@ function editorBaseFinal(){
     priceCount,
     prices,
     active:document.getElementById('productEditActive').value === 'true',
-    productNotes:document.getElementById('productEditNotes').value.trim()
+    productNotes:document.getElementById('productEditNotes').value.trim(),
+    minimumMarginPercent:normalizeMinimumMarginPercent(document.getElementById('productEditMinimumMargin').value)
   };
+}
+
+function validateProductEditorFlowerSelections(){
+  const invalidIndex = productEditorLines.findIndex(line=>{
+    if(String(line._invalidFlowerSelection || '').trim()) return true;
+    if(!String(line.articleName || line.articleCode || '').trim()) return false;
+    return !resolveSelectableFlowerForLine(line,flowers);
+  });
+  if(invalidIndex < 0) return true;
+  alert(`La linea ${invalidIndex+1} no contiene una flor valida del catalogo maestro. Seleccionala o crea una con Nueva flor.`);
+  return false;
 }
 
 async function openProductEditorFinal(summary=null){
@@ -8109,7 +9005,7 @@ async function openProductEditorFinal(summary=null){
       }
     }
   }
-  productEditorLines = model.flowers;
+  productEditorLines = model.flowers.map(line=>canonicalizeExistingFlowerLine(line,flowers));
   productEditorPrices = Array.from({length:model.priceCount}, (_,i)=>model.prices[i] ?? '');
   document.getElementById('productEditorTitle').textContent = summary ? 'Editar producto' : 'Anadir nuevo producto';
   document.getElementById('productEditCode').value = model.productCode;
@@ -8119,21 +9015,24 @@ async function openProductEditorFinal(summary=null){
   document.getElementById('productEditPriceCount').dataset.previous = String(model.priceCount);
   document.getElementById('productEditActive').value = model.active ? 'true' : 'false';
   document.getElementById('productEditNotes').value = model.notes;
+  document.getElementById('productEditMinimumMargin').value = normalizeMinimumMarginPercent(model.minimumMarginPercent);
   productEditorPhotoData = model.photoDataUrl || '';
   updateProductPhotoPreview();
   renderProductPriceFields(model.prices);
   renderProductEditorLines();
   modal.classList.add('open');
+  resetProductEditorSnapshot();
 }
 
 async function saveProductEditorFinal(){
   const base = editorBaseFinal();
+  if(!validateProductEditorFlowerSelections()) return;
   if(!base.productCode){ alert('Introduce un codigo de producto.'); return; }
   if(!base.productName){ alert('Introduce un nombre de producto.'); return; }
   const updated = nowIso();
   nomenclatures = nomenclatures.filter(n=>productMasterCode(n.productCode) !== (productEditorOriginalKey || base.productCode));
   if(productEditorOriginalKey && productEditorOriginalKey !== base.productCode) delete productPriceCatalog[productEditorOriginalKey];
-  productPriceCatalog[base.productCode] = {priceCount:base.priceCount, prices:base.prices.slice(0, base.priceCount), photoDataUrl:productEditorPhotoData};
+  productPriceCatalog[base.productCode] = {priceCount:base.priceCount, prices:base.prices.slice(0, base.priceCount), photoDataUrl:productEditorPhotoData, minimumMarginPercent:base.minimumMarginPercent};
   const lines = productEditorLines.length ? productEditorLines : [{articleCode:'', articleName:'', supplier:'', unitCost:'', stems:{}, active:base.active, notes:''}];
   lines.forEach(line=>{
     for(let p=1; p<=base.priceCount; p++){
@@ -8165,7 +9064,7 @@ async function saveProductEditorFinal(){
   const ok = await writeStateToOneDrive(null, {silent:false}).catch(()=>false);
   const el = document.getElementById('nomenclatureCloudStatus');
   if(el) el.textContent = ok ? 'Producto guardado en OneDrive' : 'Producto guardado localmente. Pulsa Guardar para actualizar OneDrive.';
-  document.getElementById('productEditorModal').classList.remove('open');
+  closeProductEditor();
   renderNomenclatures();
 }
 
@@ -8177,7 +9076,14 @@ document.getElementById('nomenclatureTbody').addEventListener('click', e=>{
   const row = btn.closest('[data-product-master],[data-product-key]');
   const key = row?.dataset.productMaster || row?.dataset.productKey;
   const summary = productSummaries().find(p=>p.key === key);
-  if(summary) openProductEditorFinal(summary);
+  if(summary){
+    const openSelected = ()=>{
+      if(document.getElementById('productEditorModal').classList.contains('open')) closeProductEditor();
+      openProductEditorFinal(summary);
+    };
+    if(document.getElementById('productEditorModal').classList.contains('open')) requestProductEditorLeave(openSelected);
+    else openSelected();
+  }
 }, true);
 
 document.getElementById('btnProductEditorSave').addEventListener('click', e=>{
@@ -8185,6 +9091,106 @@ document.getElementById('btnProductEditorSave').addEventListener('click', e=>{
   e.stopImmediatePropagation();
   saveProductEditorFinal();
 }, true);
+document.getElementById('btnProductEditorCancel').addEventListener('click', e=>{
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  requestProductEditorLeave(closeProductEditor);
+}, true);
+document.getElementById('btnUnsavedKeepEditing').addEventListener('click', ()=>{
+  pendingProductLeaveAction = null;
+  document.getElementById('unsavedProductModal').classList.remove('open');
+});
+document.getElementById('btnUnsavedDiscard').addEventListener('click', ()=>{
+  const action = pendingProductLeaveAction;
+  pendingProductLeaveAction = null;
+  document.getElementById('unsavedProductModal').classList.remove('open');
+  productEditorDiscarding = true;
+  if(action) action();
+  productEditorDiscarding = false;
+});
+document.getElementById('productEditorModal').addEventListener('input', ()=>requestAnimationFrame(updateProductEditorDirtyStatus));
+document.getElementById('productEditorModal').addEventListener('change', ()=>requestAnimationFrame(updateProductEditorDirtyStatus));
+document.addEventListener('keydown', event=>{
+  if((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's'){
+    if(document.getElementById('productEditorModal').classList.contains('open')){
+      event.preventDefault();
+      saveProductEditorFinal();
+    }else if(document.getElementById('flowerEditorModal').classList.contains('open')){
+      event.preventDefault();
+      saveFlowerEditor();
+    }
+    return;
+  }
+  if(event.key !== 'Escape') return;
+  if(document.getElementById('unsavedProductModal').classList.contains('open')){
+    document.getElementById('btnUnsavedKeepEditing').click();
+  }else if(document.getElementById('productEditorModal').classList.contains('open')){
+    event.preventDefault();
+    requestProductEditorLeave(closeProductEditor);
+  }else if(document.getElementById('flowerEditorModal').classList.contains('open')){
+    event.preventDefault();
+    cancelFlowerEditor();
+  }
+});
+document.getElementById('btnProductQualityClose').addEventListener('click',()=>document.getElementById('productQualityModal').classList.remove('open'));
+document.getElementById('btnViewMarginAlerts').addEventListener('click',openMarginAlerts);
+document.getElementById('btnViewNomenclatureProducts').addEventListener('click',()=>{
+  if(activeModule !== 'nomenclaturas') goToModule('nomenclaturas');
+  nomenclatureMarginsVisible = false;
+  setNomenclatureTab('products');
+});
+document.getElementById('btnViewMargins').addEventListener('click',()=>{
+  if(activeModule !== 'nomenclaturas') goToModule('nomenclaturas');
+  setNomenclatureMarginsVisible(true);
+});
+document.getElementById('btnMarginsBack').addEventListener('click',()=>setNomenclatureMarginsVisible(false));
+document.getElementById('marginDashboardKpis').addEventListener('click',event=>{
+  const button = event.target.closest('[data-margin-kpi]');
+  if(!button) return;
+  document.getElementById('marginDashboardStatusFilter').value = button.dataset.marginKpi;
+  renderMarginDashboard();
+});
+['marginDashboardStatusFilter','marginDashboardCategoryFilter','marginDashboardSearch','marginDashboardSort'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',renderMarginDashboard);
+  document.getElementById(id).addEventListener('change',renderMarginDashboard);
+});
+document.getElementById('marginDashboardList').addEventListener('click',event=>{
+  const button = event.target.closest('[data-margin-action]');
+  const card = button?.closest('[data-margin-product]');
+  if(!button || !card) return;
+  if(button.dataset.marginAction === 'detail') openMarginDetail(card.dataset.marginProduct);
+  if(button.dataset.marginAction === 'edit'){
+    const summary = productSummaries().find(product=>product.key === card.dataset.marginProduct);
+    if(summary){ setNomenclatureMarginsVisible(false); openProductEditorSafely(summary); }
+  }
+});
+document.getElementById('btnMarginDetailClose').addEventListener('click',()=>document.getElementById('marginDetailModal').classList.remove('open'));
+document.getElementById('btnMarginDetailEdit').addEventListener('click',()=>{
+  const summary = productSummaries().find(product=>product.key === marginDashboardDetailCode);
+  document.getElementById('marginDetailModal').classList.remove('open');
+  if(summary){ setNomenclatureMarginsVisible(false); openProductEditorSafely(summary); }
+});
+document.getElementById('btnMarginAlertsClose').addEventListener('click',()=>document.getElementById('marginAlertsModal').classList.remove('open'));
+document.getElementById('marginAlertsList').addEventListener('click',event=>{
+  const button = event.target.closest('[data-margin-alert-product]');
+  if(!button) return;
+  const summary = productSummaries().find(product=>product.key === button.dataset.marginAlertProduct);
+  document.getElementById('marginAlertsModal').classList.remove('open');
+  if(summary) openProductEditorSafely(summary);
+});
+document.getElementById('btnDuplicateProductCancel').addEventListener('click',()=>{pendingDuplicateProduct=null;document.getElementById('duplicateProductModal').classList.remove('open');});
+document.getElementById('btnDuplicateProductConfirm').addEventListener('click',confirmDuplicateProduct);
+document.getElementById('btnCopyComposition').addEventListener('click',openCopyCompositionDialog);
+document.getElementById('copyCompositionSource').addEventListener('change',refreshCopyCompositionTargets);
+document.getElementById('btnCopyCompositionCancel').addEventListener('click',()=>document.getElementById('copyCompositionModal').classList.remove('open'));
+document.getElementById('btnCopyCompositionApply').addEventListener('click',applyCopyComposition);
+document.getElementById('btnProductUndo').addEventListener('click',()=>{
+  if(!productEditorUndoSnapshot) return;
+  const current = cloneData(productEditorLines);
+  productEditorLines = cloneData(productEditorUndoSnapshot);
+  productEditorUndoSnapshot = current;
+  renderProductEditorLines();
+});
 
 async function setNomenclatureMode(enabled){
   if(nomenclatureMode && !enabled) await saveNomenclaturesToOneDrive();
@@ -8205,7 +9211,7 @@ async function openProductEditor(summary=null){
   }
   productEditorOriginalKey = summary?.key || null;
   const model = collectProductModel(summary?.key || '');
-  productEditorLines = model.flowers;
+  productEditorLines = model.flowers.map(line=>canonicalizeExistingFlowerLine(line,flowers));
   productEditorPrices = Array.from({length:model.priceCount}, (_,i)=>model.prices[i] ?? '');
   document.getElementById('productEditorTitle').textContent = summary ? 'Editar producto' : 'Anadir nuevo producto';
   document.getElementById('productEditCode').value = model.productCode;
@@ -8215,11 +9221,13 @@ async function openProductEditor(summary=null){
   document.getElementById('productEditPriceCount').dataset.previous = String(model.priceCount);
   document.getElementById('productEditActive').value = model.active ? 'true' : 'false';
   document.getElementById('productEditNotes').value = model.notes;
+  document.getElementById('productEditMinimumMargin').value = normalizeMinimumMarginPercent(model.minimumMarginPercent);
   productEditorPhotoData = model.photoDataUrl || '';
   updateProductPhotoPreview();
   renderProductPriceFields(model.prices);
   renderProductEditorLines();
   modal.classList.add('open');
+  resetProductEditorSnapshot();
 }
 
 // ---------- Reloj ----------

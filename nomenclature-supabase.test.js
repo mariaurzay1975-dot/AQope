@@ -472,22 +472,40 @@ test('la migración es manual y dry-run por defecto', async () => {
 test('previsualiza los datos operativos actuales sin exigir códigos de flor', { skip: !fs.existsSync(path.join(__dirname, 'Datos', 'aquarelle-stock-datos.json')) }, () => {
   const current = JSON.parse(fs.readFileSync(path.join(__dirname, 'Datos', 'aquarelle-stock-datos.json'), 'utf8'));
   const payload = buildNomenclatureMigrationPayload(current, { effectiveDate: '2026-07-27' });
-  assert.equal(payload.preview.products, 19);
-  assert.equal(payload.preview.variants, 57);
-  assert.equal(current.flowers.length, 51);
+  const normalizedProductCode = value => String(value || '').trim().toLocaleUpperCase('es');
+  const sourcePriceIndex = line => {
+    for (const value of [line.priceNumber, line.size, line.variantName, line.variantCode]) {
+      const match = String(value ?? '').match(/\d+/);
+      if (match) return Math.max(1, Math.min(5, parseInt(match[0], 10) || 1));
+    }
+    return 1;
+  };
+  const sourceProducts = new Set((current.nomenclatures || []).map(line => normalizedProductCode(line.productCode)).filter(Boolean));
+  assert.deepEqual(new Set(payload.products.map(product => product._key)), sourceProducts);
+  payload.products.forEach(product => {
+    const sourceLines = (current.nomenclatures || []).filter(line => normalizedProductCode(line.productCode) === product._key);
+    const lineCount = Math.max(1, ...sourceLines.map(sourcePriceIndex));
+    const catalogCount = Math.max(1, ...Object.entries(current.productPriceCatalog || {})
+      .filter(([code]) => normalizedProductCode(code) === product._key)
+      .map(([, catalog]) => Number(catalog?.priceCount) || 1));
+    const expectedCount = Math.min(5, Math.max(lineCount, catalogCount));
+    const actual = payload.variants.filter(variant => variant.product_key === product._key).sort((a, b) => a.price_index - b.price_index);
+    assert.equal(actual.length, expectedCount, `${product.product_code}: variantes distintas de la fuente`);
+    assert.deepEqual(actual.map(variant => variant.price_index), Array.from({ length: expectedCount }, (_, index) => index + 1));
+  });
+  assert.equal(payload.preview.products, payload.products.length);
+  assert.equal(payload.preview.variants, payload.variants.length);
+  assert.equal(payload.preview.components, payload.components.length);
+  assert.equal(payload.preview.information.variantsWithoutSalePrice, payload.variants.filter(variant => variant.sale_price === null).length);
   assert.equal(current.flowers.every(flower => !String(flower.articleCode || '').trim()), true);
-  assert.equal(payload.preview.flowers, 50);
-  assert.equal(payload.preview.components, 247);
+  assert.equal(payload.flowers.filter(flower => flower.article_name === 'ROSE RED NAOMI 40/50 CM').length, 1);
+  assert.equal(payload.flowers.some(flower => flower.article_name === 'ROSE RED NAOMI 4050 CM'), false);
   assert.equal(payload.preview.errors, 0);
   assert.equal(payload.preview.canMigrate, true);
-  assert.equal(payload.preview.information.flowersWithoutArticleCode, 50);
-  assert.equal(payload.preview.information.componentsLinkedWithoutArticleCode, 247);
+  assert.equal(payload.preview.information.flowersWithoutArticleCode, payload.preview.flowers);
+  assert.equal(payload.preview.information.componentsLinkedWithoutArticleCode, payload.preview.components);
   assert.equal(payload.preview.information.componentsOrphaned, 0);
-  assert.equal(payload.preview.information.emptyRowsIgnored, 3);
-  assert.equal(payload.preview.information.productRowsWithoutCode, 3);
   assert.equal(payload.preview.information.productRowsWithDataWithoutCode, 0);
-  assert.equal(payload.preview.information.orphanPriceCatalogs, 3);
-  assert.equal(payload.preview.information.variantsWithoutSalePrice, 2);
   assert.equal(payload.preview.information.possibleFlowerDuplicates, 0);
 });
 

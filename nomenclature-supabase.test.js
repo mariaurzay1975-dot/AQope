@@ -111,7 +111,7 @@ function sampleState() {
   return {
     nomenclatures,
     productPriceCatalog: {
-      'A-TEST-5': { priceCount: 5, prices },
+      'A-TEST-5': { priceCount: 5, prices, manufacturingRates: ['12,5', '', 10, null, 8] },
       'a-test-5': { priceCount: 5, prices },
       'C-UNO': { priceCount: 1, prices: [22] },
       'S-PAPELERA': { priceCount: 1, prices: [10] },
@@ -212,6 +212,8 @@ test('transforma productos, variantes, flores, proveedores y composiciones sin p
   assert.equal(payload.flowers.find(row => row.article_name === 'Eucalyptus').article_code, null);
   assert.equal(payload.flowers.find(row => row.article_name === 'Eucalyptus').active, false);
   assert.equal(payload.variants.filter(row => row.product_key === 'A-TEST-5').length, 5);
+  assert.equal(payload.variants.find(row => row._key === 'A-TEST-5|1').manufacturing_rate_per_hour_person, '12.5000');
+  assert.equal(payload.variants.find(row => row._key === 'A-TEST-5|2').manufacturing_rate_per_hour_person, null);
   assert.equal(payload.components.find(row => row._key === 'A-TEST-5|1|NAME:EUCALYPTUS|||').stems, '5.0000');
   assert.equal(payload.flowerSuppliers.find(row => row._key === 'CODE:ROS001|HOORN').current_unit_cost, '0.4200');
   assert.equal(payload.preview.information.flowersWithoutArticleCode, 2);
@@ -434,11 +436,13 @@ test('compara la copia local con la forma relacional de Supabase', () => {
   const rounded = compareNomenclaturePayload(payload, remote);
   assert.ok(rounded.differences.some(diff => diff.entity === 'variant' && diff.field === 'sale_price' && diff.kind === 'rounding'));
   remote.variants[0].sale_price = payload.variants[0].sale_price;
+  remote.variants[0].manufacturing_rate_per_hour_person = '99.0000';
   remote.components[0].stems = '999.0000';
   remote.flowerSuppliers[0].current_unit_cost = '9.9999';
   const changed = compareNomenclaturePayload(payload, remote);
   assert.equal(changed.matches, false);
   assert.ok(changed.differences.some(diff => diff.entity === 'component' && diff.field === 'stems'));
+  assert.ok(changed.differences.some(diff => diff.entity === 'variant' && diff.field === 'manufacturing_rate_per_hour_person'));
   assert.ok(changed.differences.some(diff => diff.entity === 'flower_supplier' && diff.field === 'current_unit_cost'));
   assert.ok(changed.differences.some(diff => diff.entity === 'economics' && diff.field === 'theoretical_cost'));
 });

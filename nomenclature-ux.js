@@ -255,6 +255,12 @@
           const stored = lines.find(line => priceNumber(line) === index + 1 && line.salePrice !== '' && line.salePrice !== undefined && line.salePrice !== null);
           return stored ? stored.salePrice : (catalog.prices?.[index] ?? '');
         }),
+        manufacturingRates: Array.from({ length: priceCount }, (_, index) => {
+          const value = catalog.manufacturingRates?.[index];
+          if (value === '' || value === null || value === undefined) return null;
+          const number = Number(String(value).replace(',', '.'));
+          return Number.isFinite(number) && number > 0 ? number : null;
+        }),
         active: lines.some(line => line.active !== false),
         notes: text(first.productNotes),
         photoDataUrl: text(catalog.photoDataUrl),
@@ -324,6 +330,7 @@
       category: text(options.category),
       priceCount: Math.max(1, parseInt(model.priceCount || 1, 10) || 1),
       prices: copyPrices ? clone(model.prices || []) : Array.from({ length: Math.max(1, parseInt(model.priceCount || 1, 10) || 1) }, () => ''),
+      manufacturingRates: clone(model.manufacturingRates || Array.from({ length: Math.max(1, parseInt(model.priceCount || 1, 10) || 1) }, () => null)),
       active: true,
       deleted: false,
       notes: copyNotes ? text(model.notes) : '',

@@ -386,11 +386,14 @@
     Object.entries(state?.productPriceCatalog || {}).forEach(([code, value]) => {
       const key = businessKey(code);
       if (!key) return;
-      const existing = result.get(key) || { priceCount: 1, prices: [], sourceCodes: [] };
+      const existing = result.get(key) || { priceCount: 1, prices: [], manufacturingRates: [], sourceCodes: [] };
       existing.sourceCodes.push(code);
       existing.priceCount = Math.max(existing.priceCount, Math.min(5, Number(value?.priceCount) || 1));
       (value?.prices || []).forEach((price, index) => {
         if (price !== '' && price !== null && price !== undefined) existing.prices[index] = price;
+      });
+      (value?.manufacturingRates || []).forEach((rate, index) => {
+        if (rate !== '' && rate !== null && rate !== undefined) existing.manufacturingRates[index] = rate;
       });
       result.set(key, existing);
     });
@@ -726,12 +729,18 @@
         const salePrice = rawSalePrice === '' ? null : decimalString(rawSalePrice);
         const rawVat = representative.vat === '' || representative.vat === undefined ? 10 : representative.vat;
         const vatRate = decimalString(rawVat);
+        const rawManufacturingRate = catalogInfo.manufacturingRates?.[index - 1] ?? '';
+        let manufacturingRate = rawManufacturingRate === '' || rawManufacturingRate === null ? null : decimalString(rawManufacturingRate);
+        if (manufacturingRate !== null && Number(manufacturingRate) <= 0) manufacturingRate = null;
         if (rawSalePrice !== '' && salePrice === null) {
           issues.error('SALE_PRICE_INVALID', 'El PVP no es numérico.', { productCode: product.code, priceIndex: index, value: rawSalePrice });
         }
         if (salePrice === null) {
           issues.warn('SALE_PRICE_MISSING', 'La variante no tiene PVP; el margen inicial quedará incompleto.', { productCode: product.code, priceIndex: index });
           quality.variantsWithoutSalePrice += 1;
+        }
+        if (rawManufacturingRate !== '' && rawManufacturingRate !== null && manufacturingRate === null) {
+          issues.error('MANUFACTURING_RATE_INVALID', 'El rendimiento de fabricación debe ser un número mayor que cero.', { productCode: product.code, priceIndex: index, value: rawManufacturingRate });
         }
         const variantKey = `${product.key}|${index}`;
         variants.push({
@@ -743,6 +752,7 @@
           price_index: index,
           sale_price: salePrice,
           vat_rate: vatRate,
+          manufacturing_rate_per_hour_person: manufacturingRate,
           active: !deleted && variantLines.some(line => toBoolean(line.active, true)),
           notes: '',
           created_by: userId,
@@ -1424,7 +1434,7 @@
     for (const row of local.variants) {
       const other = remoteVariants.get(row._key);
       if (!other) { add('variant', row._key, '*', row, null, 'missing'); continue; }
-      ['sale_price', 'vat_rate'].forEach(field => {
+      ['sale_price', 'vat_rate', 'manufacturing_rate_per_hour_person'].forEach(field => {
         addDecimalDifference('variant', row._key, field, row[field], other[field]);
       });
       if (row.active !== other.active) add('variant', row._key, 'active', row.active, other.active);

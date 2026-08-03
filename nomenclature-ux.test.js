@@ -43,6 +43,7 @@ function product(overrides = {}) {
     productName: 'Ramo prueba',
     priceCount: 2,
     prices: [33, 44],
+    manufacturingRates: [12.5, null],
     minimumMarginPercent: 70,
     flowers: [{ articleName: 'Rosa', unitCost: 1, active: true, stems: { 1: 5, 2: 7 }, _masterFlowerKey: 'NAME:ROSA' }],
     ...overrides
@@ -191,11 +192,13 @@ test('duplicacion avanzada respeta opciones, copia margen y no crea flores nueva
   assert.deepEqual(full.flowers, original.flowers);
   assert.notEqual(full.flowers, original.flowers);
   assert.deepEqual(full.prices, original.prices);
+  assert.deepEqual(full.manufacturingRates, original.manufacturingRates);
   assert.equal(full.notes, 'Privado');
   assert.equal(full.active, true);
   const empty = duplicateProductModel(original, { productCode: '201', productName: 'Vacia', copyComposition: false, copyPrices: false, copyNotes: false });
   assert.deepEqual(empty.flowers, []);
   assert.deepEqual(empty.prices, ['', '']);
+  assert.deepEqual(empty.manufacturingRates, original.manufacturingRates);
   assert.equal(empty.notes, '');
 });
 
@@ -292,12 +295,13 @@ test('modelo operativo conserva variantes declaradas y detecta PVP ausentes', ()
       priceNumber: 1, size: '1', salePrice: 31,
       articleName: 'Eucalyptus', stemsPerBouquet: 5, unitCost: 0.2, active: true
     }],
-    productPriceCatalog: { '56058': { priceCount: 3, prices: [31, '', ''] } }
+    productPriceCatalog: { '56058': { priceCount: 3, prices: [31, '', ''], manufacturingRates: ['12,5', '', 8] } }
   };
   const models = buildOperationalProductModels(state);
   assert.equal(models.length, 1);
   assert.equal(models[0].priceCount, 3);
   assert.deepEqual(models[0].prices, [31, '', '']);
+  assert.deepEqual(models[0].manufacturingRates, [12.5, null, 8]);
   const analysis = analyzeProduct(models[0], { isKnownFlower: () => true });
   assert.deepEqual(analysis.economy.variants.map(variant => variant.priceNumber), [1, 2, 3]);
   assert.equal(analysis.economy.withoutCalculableMargin, 2);

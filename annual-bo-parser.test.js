@@ -71,6 +71,10 @@ function assertEqual(actual,expected,label){
 }
 
 const result=parse(COMPLETE_BLOCK);
+const fridayCoverage=vm.runInContext("annualWeekCoverage(2026,29,[{start:'2026-07-13',end:'2026-07-17'}])",context);
+assertEqual(fridayCoverage.complete,true,'semana completa con cobertura de lunes a viernes');
+const thursdayCoverage=vm.runInContext("annualWeekCoverage(2026,29,[{start:'2026-07-13',end:'2026-07-16'}])",context);
+assertEqual(thursdayCoverage.complete,false,'semana parcial si falta el viernes');
 const expectedCategories={ROSAS:168,COMPUESTOS:262,SIMPLES:87,PLANTAS:13};
 for(const [category,total] of Object.entries(expectedCategories)) assertEqual(result.categories[category],total,category);
 assertEqual(result.total,530,'TOTAL');

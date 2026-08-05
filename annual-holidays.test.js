@@ -40,10 +40,48 @@ test('rechaza fechas de otro ejercicio y festivos sin impacto',()=>{
   assert.equal(Holidays.addHoliday(yearData(),{...holiday,affectsShipping:false,affectsProduction:false}).ok,false);
 });
 
+test('lee la previsión anual mediante la clave real de Planificación anual',()=>{
+  const planning={years:{'2026':{year:2026,weeks:{'2026-33':{year:2026,week:33,currentForecast:469}}}}};
+  const result=Holidays.getAnnualForecastForWeek(planning,2026,33);
+  assert.equal(Holidays.annualWeekKey(2026,33),'2026-33');
+  assert.equal(result.status,'found');assert.equal(result.key,'2026-33');assert.equal(result.value,469);assert.equal(result.weekData.currentForecast,469);
+});
+
+test('distingue carga, semana inexistente, previsión pendiente y cero válido',()=>{
+  assert.equal(Holidays.getAnnualForecastForWeek(null,2026,33).status,'loading');
+  const planning={years:{'2026':{year:2026,weeks:{'2026-33':{year:2026,week:33,currentForecast:null},'2026-34':{year:2026,week:34,currentForecast:0}}}}};
+  assert.equal(Holidays.getAnnualForecastForWeek(planning,2026,32).status,'not_found');
+  assert.equal(Holidays.getAnnualForecastForWeek(planning,2026,33).status,'pending');
+  const zero=Holidays.getAnnualForecastForWeek(planning,2026,34);assert.equal(zero.status,'found');assert.equal(zero.value,0);
+});
+
+test('resuelve claves semanales legadas sin confundir el año ISO',()=>{
+  const planning={years:{'2026':{year:2026,weeks:{'2026-W53':{year:2026,week:53,currentForecast:321},'2026-S33':{year:2026,week:33,currentForecast:469}}}}};
+  assert.equal(Holidays.getAnnualForecastForWeek(planning,2026,33).key,'2026-S33');
+  const iso=Holidays.isoWeekInfo('2027-01-01');assert.equal(iso.year,2026);assert.equal(iso.week,53);
+  const boundary=Holidays.getAnnualForecastForWeek(planning,iso.year,iso.week);assert.equal(boundary.status,'found');assert.equal(boundary.value,321);
+});
+
+test('el ciclo de carga pasa de Cargando a la previsión real de S33',()=>{
+  const before=Holidays.getAnnualForecastForWeek(undefined,2026,33);
+  const supabaseState={annualPlanning:{years:{'2026':{weeks:{'2026-33':{year:2026,week:33,currentForecast:469}}}}}};
+  const after=Holidays.getAnnualForecastForWeek(supabaseState.annualPlanning,2026,33);
+  assert.equal(before.status,'loading');assert.equal(before.value,null);
+  assert.equal(after.status,'found');assert.equal(after.value,469);
+});
+
 test('Planificación anual ofrece CRUD visual y Producción lee el calendario, no las observaciones',()=>{
   const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
   assert.match(html,/id="btnAnnualHolidays"/);assert.match(html,/id="annualHolidayModal"/);assert.match(html,/id="btnAnnualHolidayAdd"/);
   assert.match(html,/data-holiday-name/);assert.match(html,/data-holiday-date/);assert.match(html,/data-holiday-scope/);assert.match(html,/data-holiday-shipping/);assert.match(html,/data-holiday-production/);assert.match(html,/data-holiday-active/);assert.match(html,/data-holiday-delete/);
   assert.match(html,/class="annual-holiday-marker"/);assert.match(html,/function productionStructuredHolidayContext/);assert.match(html,/annualHolidayImpactForWeek\(year,week\)/);
   assert.doesNotMatch(html,/function productionHolidayUnknown/);
+});
+
+test('la carga compartida vuelve a renderizar Planificación anual y Producción',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+  const refresh=html.match(/function refreshAppAfterCloudLoad\(\)\{([\s\S]*?)\n\}/)?.[1]||'';
+  assert.match(refresh,/renderAnnualPlanning\(\)/);assert.match(refresh,/renderProduction\(\)/);assert.match(refresh,/renderProductionWeek\(\)/);
+  assert.match(html,/getAnnualForecastForWeek\(annualPlanning,year,week\)/);
+  assert.match(html,/annualForecastStatusLabel/);
 });

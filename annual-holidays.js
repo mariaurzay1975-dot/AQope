@@ -17,6 +17,23 @@
   function clone(value){return JSON.parse(JSON.stringify(value));}
   function dateParts(value){const match=text(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!match)return null;const year=Number(match[1]),month=Number(match[2]),day=Number(match[3]),date=new Date(Date.UTC(year,month-1,day));return date.getUTCFullYear()===year&&date.getUTCMonth()===month-1&&date.getUTCDate()===day?{year,month,day,date}:null;}
   function isoWeekInfo(value){const parts=dateParts(value);if(!parts)return null;const date=new Date(parts.date),weekday=date.getUTCDay()||7;date.setUTCDate(date.getUTCDate()+4-weekday);const isoYear=date.getUTCFullYear(),start=new Date(Date.UTC(isoYear,0,1)),week=Math.ceil((((date-start)/86400000)+1)/7);return {year:isoYear,week,dayCode:DAY_CODES[(parts.date.getUTCDay()+6)%7]};}
+  function annualWeekKey(year,week){const safeYear=Number.parseInt(year,10),safeWeek=Number.parseInt(week,10);return Number.isInteger(safeYear)&&safeYear>=2000&&safeYear<=2200&&Number.isInteger(safeWeek)&&safeWeek>=1&&safeWeek<=53?`${safeYear}-${String(safeWeek).padStart(2,'0')}`:'';}
+  function annualWeekKeyCandidates(year,week){const expectedKey=annualWeekKey(year,week);if(!expectedKey)return [];const safeYear=Number.parseInt(year,10),safeWeek=Number.parseInt(week,10),padded=String(safeWeek).padStart(2,'0');return [...new Set([expectedKey,`${safeYear}-${safeWeek}`,`${safeYear}-W${padded}`,`${safeYear}-W${safeWeek}`,`${safeYear}-S${padded}`,`${safeYear}-S${safeWeek}`,`S${padded}`,`S${safeWeek}`,`W${padded}`,`W${safeWeek}`,padded,String(safeWeek)])];}
+  function getAnnualForecastForWeek(annualPlanning,year,week){
+    const safeYear=Number.parseInt(year,10),safeWeek=Number.parseInt(week,10),expectedKey=annualWeekKey(safeYear,safeWeek),base={year:safeYear,week:safeWeek,expectedKey,key:null,weekData:null,value:null};
+    if(!expectedKey)return {...base,status:'not_found',reason:'invalid_week'};
+    if(!annualPlanning||typeof annualPlanning!=='object'||Array.isArray(annualPlanning)||!annualPlanning.years||typeof annualPlanning.years!=='object'||Array.isArray(annualPlanning.years))return {...base,status:'loading',reason:'annual_planning_not_loaded'};
+    const yearData=annualPlanning.years[String(safeYear)];
+    if(!yearData||typeof yearData!=='object'||Array.isArray(yearData))return {...base,status:'not_found',reason:'year_not_found'};
+    const weeks=yearData.weeks;
+    if(!weeks||typeof weeks!=='object'||Array.isArray(weeks))return {...base,status:'not_found',reason:'weeks_not_found'};
+    let key=annualWeekKeyCandidates(safeYear,safeWeek).find(candidate=>Object.prototype.hasOwnProperty.call(weeks,candidate))||null;
+    if(!key){const matches=Object.entries(weeks).filter(([,row])=>row&&Number(row.year??safeYear)===safeYear&&Number(row.week)===safeWeek);if(matches.length===1)key=matches[0][0];}
+    if(!key)return {...base,status:'not_found',reason:'week_not_found'};
+    const weekData=weeks[key],raw=weekData?.currentForecast;
+    if(raw===null||raw===undefined||raw===''||!Number.isFinite(Number(raw)))return {...base,key,weekData,status:'pending',reason:'forecast_missing'};
+    return {...base,key,weekData,status:'found',reason:'forecast_found',value:Number(raw)};
+  }
   function normalizeScope(value){const code=text(value).toLowerCase();return SCOPES.some(item=>item.code===code)?code:'local';}
   function createId(year,index,now){const stamp=now?new Date(now).getTime():Date.now();return `holiday-${year}-${stamp}-${index}`;}
   function normalizeHoliday(input={},options={}){
@@ -35,5 +52,5 @@
   function holidayDaysForWeek(yearData,year,week,options={}){return [...new Set(holidaysForWeek(yearData,year,week,options).map(item=>isoWeekInfo(item.date).dayCode))];}
   function weekImpact(yearData,year,week){const holidays=holidaysForWeek(yearData,year,week),shipping=holidays.filter(item=>item.affectsShipping),production=holidays.filter(item=>item.affectsProduction);return {holidays,shipping,production,shippingDays:[...new Set(shipping.map(item=>isoWeekInfo(item.date).dayCode))],productionDays:[...new Set(production.map(item=>isoWeekInfo(item.date).dayCode))]};}
 
-  return {SCOPES,DAY_CODES,dateParts,isoWeekInfo,normalizeHoliday,normalizeYearData,validateHoliday,addHoliday,updateHoliday,removeHoliday,holidaysForYear,holidaysForWeek,holidayDaysForWeek,weekImpact};
+  return {SCOPES,DAY_CODES,dateParts,isoWeekInfo,annualWeekKey,annualWeekKeyCandidates,getAnnualForecastForWeek,normalizeHoliday,normalizeYearData,validateHoliday,addHoliday,updateHoliday,removeHoliday,holidaysForYear,holidaysForWeek,holidayDaysForWeek,weekImpact};
 });

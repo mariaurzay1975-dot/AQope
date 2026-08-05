@@ -1998,29 +1998,37 @@ function showAuthenticatedUser(user){
 }
 
 function refreshAppAfterCloudLoad(){
+  const moduleBeforeLoad=activeModule;
   populateFilter();
   const toggle=document.getElementById('toggleGroup');
   if(toggle) toggle.checked=groupView;
   render();
-  activeModule=nomenclatureMode?'nomenclaturas':(planningMode?'planning':'stock');
+  activeModule=moduleBeforeLoad||(nomenclatureMode?'nomenclaturas':(planningMode?'planning':'stock'));
   applyActiveModule();
   checkWeekRollover();
   renderNomenclatures();
   renderPreasignDiaView();
+  renderAnnualPlanning();
+  renderProduction();
+  renderProductionWeek();
 }
 
 async function loadStateFromSupabase(){
   if(!supabaseUser) return false;
+  annualPlanningLoadState='loading';
+  if(activeModule==='production') renderProductionWeek();
   setSaveStatus('Cargando datos compartidos…');
   const {data:row,error}=await supabaseClient
     .from('app_states')
     .select('state,version,updated_at,updated_by')
     .eq('week_key',SUPABASE_STATE_KEY)
     .maybeSingle();
-  if(error) throw error;
+  if(error){annualPlanningLoadState='ready';throw error;}
   if(!row){
+    annualPlanningLoadState='ready';
     supabaseStateVersion=null;
     setSaveStatus('Supabase todavía está vacío','warn');
+    if(activeModule==='production') renderProductionWeek();
     return false;
   }
   suppressSupabaseAutoSave=true;
@@ -2400,6 +2408,7 @@ let oneDriveAutoSaveTimer = null;
 let suppressOneDriveAutoSave = false;
 let weekSnapshots = {};
 let annualPlanning = null;
+let annualPlanningLoadState = 'loading';
 let activeWeekKey = '';
 let currentWeekKey = '';
 let planningMode = false;
@@ -2409,6 +2418,7 @@ let productionTab = 'weekly';
 let productionWeekCursor = AquarelleProduction.isoWeekInfo(new Date());
 let productionWeeklyDraft = null;
 let productionWeeklyDirty = false;
+let productionAnnualForecastLookup = {status:'loading',value:null,key:null,expectedKey:null};
 let forecastAdjustments = {};
 
 let weekState = {
@@ -2729,6 +2739,7 @@ function applyAppState(state){
   preasignDia = state.preasignDia ? {...preasignDiaDefaults(), ...state.preasignDia} : preasignDiaDefaults();
   comprasTallosOverrides = state.comprasTallosOverrides && typeof state.comprasTallosOverrides === 'object' ? state.comprasTallosOverrides : {};
   annualPlanning = normalizeAnnualPlanning(state.annualPlanning);
+  annualPlanningLoadState = 'ready';
   productionState = AquarelleProduction.createProductionState(state.productionState);
   productionWeeklyDraft = null;
   productionWeeklyDirty = false;
@@ -4175,7 +4186,7 @@ function createAnnualYear(year,previousYear,comparableYear,growthPercent=0,impor
 }
 function annualYearData(year=ensureAnnualPlanning().selectedYear){ return ensureAnnualPlanning().years[String(year)]||null; }
 function annualYearSettings(year=ensureAnnualPlanning().selectedYear){ const plan=ensureAnnualPlanning(),data=annualYearData(year); return {previousYear:data?.previousYear??plan.previousYear,comparableYear:data?.comparableYear??plan.comparableYear,projectionSettings:{...plan.projectionSettings,...(data?.projectionSettings||{})}}; }
-function annualWeek(year,week){ return annualYearData(year)?.weeks?.[annualKey(year,week)]||null; }
+function annualWeek(year,week){ return AquarelleAnnualHolidays.getAnnualForecastForWeek(annualPlanning,year,week).weekData||null; }
 function annualImportWeek(year,week){ return ensureAnnualPlanning().imports?.[String(year)]?.weeks?.[annualKey(year,week)]||null; }
 function annualCampaignsForYear(year=ensureAnnualPlanning().selectedYear){ const data=annualYearData(year); if(!data) return []; migrateAnnualCampaignsForYear(data); return data.campaigns; }
 function annualCampaignWeekNumber(item){ const date=parseAnnualDate(item?.date); return date?getISOWeek(date):null; }
@@ -5113,17 +5124,27 @@ document.getElementById('productionTasksTbody').addEventListener('click',event=>
   if(!result.ok){alert(result.errors.join(' '));return;}productionState=result.state;saveState();renderProduction();
 });
 
-function productionAnnualForecastFor(year,week){return annualWeek(year,week)?.currentForecast??null;}
+function productionAnnualForecastFor(year,week){
+  if(annualPlanningLoadState==='loading')return {status:'loading',year:Number(year),week:Number(week),expectedKey:AquarelleAnnualHolidays.annualWeekKey(year,week),key:null,weekData:null,value:null,reason:'annual_planning_loading'};
+  return AquarelleAnnualHolidays.getAnnualForecastForWeek(annualPlanning,year,week);
+}
+function annualForecastStatusLabel(lookup){
+  if(lookup?.status==='found')return productionNumber(lookup.value);
+  if(lookup?.status==='pending')return 'Pendiente';
+  if(lookup?.status==='not_found')return 'No encontrada';
+  return 'Cargando';
+}
 function ensureProductionWeeklyDraft(){
   const key=AquarelleProduction.weeklyPlanKey(productionWeekCursor.year,productionWeekCursor.week);
   if(!productionWeeklyDraft||productionWeeklyDraft.key!==key){
     productionWeeklyDraft=AquarelleProduction.weeklyPlanFor(productionState,productionWeekCursor.year,productionWeekCursor.week);
-    const annualValue=productionAnnualForecastFor(productionWeekCursor.year,productionWeekCursor.week);
-    if(productionWeeklyDraft.annualForecast!==annualValue){productionWeeklyDraft.annualForecast=annualValue;productionWeeklyDraft.status='draft';productionWeeklyDraft.validatedAt=null;}
     const holidayContext=productionStructuredHolidayContext(productionWeekCursor.year,productionWeekCursor.week),holidayDetails=productionHolidayDetails(holidayContext),previousHolidaySignature=JSON.stringify([productionWeeklyDraft.distributionContext.holidayDays,productionWeeklyDraft.distributionContext.productionHolidayDays,productionWeeklyDraft.distributionContext.holidayDetails]),nextHolidaySignature=JSON.stringify([holidayContext.shippingDays,holidayContext.productionDays,holidayDetails]);
     if(previousHolidaySignature!==nextHolidaySignature){productionWeeklyDraft.distributionContext={...productionWeeklyDraft.distributionContext,holidayDays:holidayContext.shippingDays,productionHolidayDays:holidayContext.productionDays,holidayDetails,references:[],excluded:[],calculatedAt:'',method:'Pendiente de recalcular tras actualizar el calendario de festivos'};productionWeeklyDraft.status='draft';productionWeeklyDraft.validatedAt=null;}
     productionWeeklyDirty=false;
   }
+  productionAnnualForecastLookup=productionAnnualForecastFor(productionWeekCursor.year,productionWeekCursor.week);
+  const annualValue=productionAnnualForecastLookup.status==='found'?productionAnnualForecastLookup.value:null;
+  if(productionWeeklyDraft.annualForecast!==annualValue){productionWeeklyDraft.annualForecast=annualValue;productionWeeklyDraft.status='draft';productionWeeklyDraft.validatedAt=null;}
   return productionWeeklyDraft;
 }
 function markProductionWeekDirty(){productionWeeklyDirty=true;productionWeeklyDraft.status='draft';productionWeeklyDraft.validatedAt=null;renderProductionWeekStatus();}
@@ -5174,7 +5195,7 @@ async function refreshProductionDistribution(force=false){
 function renderProductionWeekStatus(){const plan=ensureProductionWeeklyDraft(),status=plan.status==='validated'?'Validada':'Borrador';document.getElementById('productionWeekLabel').textContent=`Semana ${plan.week} / ${plan.year}`;document.getElementById('productionWeekStatus').innerHTML=`<span class="production-badge ${plan.status==='validated'?'validated':''}">${status}</span> · ${formatDateTime(plan.updatedAt)}${productionWeeklyDirty?' · <span class="production-dirty">Cambios sin guardar</span>':''}`;}
 function renderProductionDistribution(){
   const plan=ensureProductionWeeklyDraft(),balance=AquarelleProduction.distributionBalance(plan);
-  document.getElementById('productionAnnualForecast').textContent=productionNumber(plan.annualForecast);
+  const annualForecastEl=document.getElementById('productionAnnualForecast');annualForecastEl.textContent=annualForecastStatusLabel(productionAnnualForecastLookup);annualForecastEl.dataset.state=productionAnnualForecastLookup.status;annualForecastEl.title=productionAnnualForecastLookup.status==='found'?`Leída de ${productionAnnualForecastLookup.key}.currentForecast`:productionAnnualForecastLookup.status==='pending'?`La semana ${productionAnnualForecastLookup.key} existe, pero currentForecast está vacío.`:productionAnnualForecastLookup.status==='not_found'?`No se localizó ${productionAnnualForecastLookup.expectedKey} en Planificación anual.`:'Esperando la carga de Planificación anual.';
   document.getElementById('productionAdjustment').value=plan.productionAdjustment||0;
   document.getElementById('productionTotalUsed').textContent=productionNumber(balance.used);
   document.getElementById('productionDistributionTbody').innerHTML=AquarelleProduction.WEEK_DAYS.map(day=>`<tr><td>${day.label}</td><td><input type="text" inputmode="decimal" data-distribution-day="${day.code}" value="${plan.dailyExpeditions[day.code]||0}"></td><td>${productionNumber(balance.percentages[day.code])}%</td></tr>`).join('');

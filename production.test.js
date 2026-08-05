@@ -8,6 +8,18 @@ const NOW='2026-08-05T10:00:00.000Z';
 const days=(monday=0,tuesday=0,wednesday=0,thursday=0,friday=0,saturday=0,sunday=0)=>({monday,tuesday,wednesday,thursday,friday,saturday,sunday});
 const historyWeek=(year,week,daily,extra={})=>({year,week,daily,status:'closed',isComplete:true,campaigns:[],holidayDays:[],...extra});
 
+test('identifica S33/2026 con clave y rango ISO propios de Producción',()=>{
+  assert.equal(Production.weeklyPlanKey(2026,33),'2026-W33');
+  assert.deepEqual(Production.isoWeekRange(2026,33),{start:'2026-08-10',end:'2026-08-16'});
+});
+
+test('el cambio de semana respeta el cambio de año ISO',()=>{
+  const next=Production.shiftWeek(2026,53,1);
+  assert.equal(next.year,2027);assert.equal(next.week,1);assert.equal(next.key,'2027-W01');
+  const previous=Production.shiftWeek(next.year,next.week,-1);
+  assert.equal(previous.year,2026);assert.equal(previous.week,53);assert.equal(previous.key,'2026-W53');
+});
+
 test('crea una colección única con cuatro principales especiales y seis satélite',()=>{
   const state=Production.createProductionState(null,{now:NOW});
   assert.equal(state.version,4);

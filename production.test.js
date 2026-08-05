@@ -2,193 +2,208 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
-const production=require('./production.js');
+const Production=require('./production.js');
 
-const NOW='2026-07-31T10:00:00.000Z';
+const NOW='2026-08-05T10:00:00.000Z';
+const days=(monday=0,tuesday=0,wednesday=0,thursday=0,friday=0,saturday=0,sunday=0)=>({monday,tuesday,wednesday,thursday,friday,saturday,sunday});
+const historyWeek=(year,week,daily,extra={})=>({year,week,daily,status:'closed',isComplete:true,campaigns:[],holidayDays:[],...extra});
 
-function configuredState(){
-  let state=production.createProductionState({satelliteTasks:[]},{now:NOW});
-  for(const category of production.PRODUCT_CATEGORIES){
-    state=production.updateCategoryRate(state,category.code,'reception',category.code==='ROSAS'?120:60,{now:NOW}).state;
-    state=production.updateCategoryRate(state,category.code,'preassignment',category.code==='ROSAS'?60:30,{now:NOW}).state;
-  }
-  return production.updateShippingRate(state,100,{now:NOW}).state;
-}
-
-test('separa cuatro tareas principales, categorías existentes y planificación semanal',()=>{
-  const state=production.createProductionState(null,{now:NOW});
-  assert.equal(state.version,3);
-  assert.deepEqual(Object.keys(state.mainTasks),['RECEPTION','PREASSIGNMENT','MANUFACTURING','SHIPPING']);
-  assert.deepEqual(production.PRODUCT_CATEGORIES.map(item=>item.code),['ROSAS','COMPUESTOS','SIMPLES','PLANTAS']);
-  assert.deepEqual(state.weeklyPlans,{});
-  assert.equal('validFrom' in state,false);
-  assert.equal('validTo' in state,false);
+test('crea una colección única con cuatro principales especiales y seis satélite',()=>{
+  const state=Production.createProductionState(null,{now:NOW});
+  assert.equal(state.version,4);
+  assert.equal(state.tasks.length,10);
+  assert.equal(state.tasks.filter(task=>task.type===Production.TASK_TYPES.MAIN).length,4);
+  assert.equal(state.tasks.filter(task=>task.type===Production.TASK_TYPES.SATELLITE).length,6);
+  assert.deepEqual(state.tasks.filter(task=>task.specialKind).map(task=>task.code),['RECEPTION','PREASSIGNMENT','MANUFACTURING','SHIPPING']);
+  assert.equal('mainTasks' in state,false);
+  assert.equal('satelliteTasks' in state,false);
 });
 
-test('carga estados anteriores y convierte duración por personas a horas-persona fijas',()=>{
-  const state=production.createProductionState({
-    tasks:[
-      {id:'old-main',code:'RECEPTION',type:'principal',name:'Recepción antigua',priority:'Alta',mobility:'Fija'},
-      {id:'old-satellite',code:'OLD_TASK',type:'satelite',name:'Tarea antigua',calculationType:'duracion_personas',durationHours:2,peopleCount:3,priority:'Normal'}
-    ],
-    timeHistory:[{id:'old-history',taskId:'old-main',validFrom:'2026-01-01',performance:100}]
-  },{now:NOW});
-  assert.equal(state.mainTasks.RECEPTION.name,'Recepción antigua');
-  assert.equal(state.mainTasks.RECEPTION.priority,'Alta');
-  assert.equal(state.satelliteTasks[0].calculationType,'tiempo_fijo');
-  assert.equal(state.satelliteTasks[0].durationHours,6);
-  assert.equal('peopleCount' in state.satelliteTasks[0],false);
-  assert.equal(state.legacy.timeHistory[0].validFrom,'2026-01-01');
+test('migra en memoria estados v3 sin perder tareas, rendimientos ni semanas',()=>{
+  const old={version:3,mainTasks:{RECEPTION:{code:'RECEPTION',name:'Recepción muelle',priority:'Alta',mobility:'Fija',active:true}},categoryRates:{ROSAS:{reception:100,preassignment:80}},shippingRate:120,satelliteTasks:[{id:'old-clean',code:'CLEANING',name:'Limpieza',calculationType:'tiempo_fijo',durationHours:3,active:true}],weeklyPlans:{'2026-W32':{year:2026,week:32,dailyForecast:{monday:{system:100,adjustment:5}},bouquetSystem:100,bouquetAdjustment:5}},updatedAt:NOW};
+  const state=Production.createProductionState(old,{now:NOW});
+  assert.equal(state.tasks.find(task=>task.code==='RECEPTION').name,'Recepción muelle');
+  assert.equal(state.tasks.find(task=>task.id==='old-clean').type,'satelite');
+  assert.equal(state.categoryRates.ROSAS.reception,100);
+  assert.equal(state.shippingRate,120);
+  assert.equal(state.weeklyPlans['2026-W32'].annualForecast,100);
+  assert.equal(state.weeklyPlans['2026-W32'].productionAdjustment,5);
+  assert.equal(state.weeklyPlans['2026-W32'].dailyExpeditions.monday,105);
 });
 
-test('edita prioridad, movilidad, estado y nombre de tareas principales',()=>{
-  const state=production.createProductionState({satelliteTasks:[]},{now:NOW});
-  const result=production.updateMainTask(state,'RECEPTION',{name:'Entrada de producto',priority:'Alta',mobility:'Fija',active:false},{now:'2026-07-31T11:00:00.000Z',comment:'Ajuste operativo'});
+test('permite crear y cambiar una tarea general entre Principal y Satélite',()=>{
+  let state=Production.createProductionState(null,{now:NOW});
+  let result=Production.addProductionTask(state,{name:'Etiquetado especial',type:'principal',calculationType:'por_cantidad',performance:40,priority:'Alta',mobility:'Flexible'},{now:NOW});
   assert.equal(result.ok,true);
-  assert.deepEqual(result.task,{code:'RECEPTION',name:'Entrada de producto',priority:'Alta',mobility:'Fija',active:false,rateMode:'category'});
-  assert.equal(result.state.changeHistory.length,4);
-  assert.ok(result.state.changeHistory.every(entry=>entry.scope==='main'&&entry.comment==='Ajuste operativo'));
+  assert.equal(result.task.code,'ETIQUETADO_ESPECIAL');
+  assert.equal(result.task.type,'principal');
+  result=Production.updateProductionTask(result.state,result.task.id,{type:'satelite',calculationType:'tiempo_fijo',performance:null,durationHours:2},{now:'2026-08-05T11:00:00.000Z',comment:'Cambio operativo'});
+  assert.equal(result.ok,true);
+  assert.equal(result.task.type,'satelite');
+  assert.equal(result.task.durationHours,2);
+  assert.ok(result.state.changeHistory.some(entry=>entry.field==='type'&&entry.comment==='Cambio operativo'));
 });
 
-test('guarda Recepción y Preasignación por categoría y Expedición global',()=>{
-  let state=production.createProductionState({satelliteTasks:[]},{now:NOW});
-  state=production.updateCategoryRate(state,'ROSAS','reception','120,5',{now:NOW}).state;
-  state=production.updateCategoryRate(state,'ROSAS','preassignment','60.25',{now:NOW}).state;
-  state=production.updateShippingRate(state,'35,5',{now:NOW}).state;
-  assert.deepEqual(state.categoryRates.ROSAS,{reception:120.5,preassignment:60.25});
-  assert.equal(state.shippingRate,35.5);
-  assert.ok(state.changeHistory.every(entry=>!('validFrom' in entry)&&!('validTo' in entry)));
+test('una tarea base puede ser Satélite, conserva su fórmula y vuelve al resumen Principal',()=>{
+  let state=Production.createProductionState(null,{now:NOW});
+  const reception=state.tasks.find(task=>task.code==='RECEPTION');
+  let updated=Production.updateProductionTask(state,reception.id,{type:'satelite',calculationType:'tiempo_fijo',durationHours:5},{now:NOW});
+  assert.equal(updated.ok,true);assert.equal(updated.task.type,'satelite');assert.equal(updated.task.calculationType,'especial');assert.match(Production.taskTimingText(updated.task),/categoría/);
+  state=Production.updateCategoryRate(updated.state,'ROSAS','reception',100,{now:NOW}).state;
+  let plan=Production.createWeeklyPlan(2026,32,{now:NOW});plan.satelliteAssignments=[{taskId:reception.id,day:'automatic',quantity:null}];
+  let calc=Production.calculateWeeklyPlan(plan,state,{purchases:[{day:'monday',category:'ROSAS',units:200}]});
+  assert.equal(calc.days.monday.reception,2);assert.equal(calc.satelliteByTask[reception.id],2);assert.equal(calc.weekly.satelliteTotal,2);assert.equal(calc.mainByTask[reception.id],undefined);
+  updated=Production.updateProductionTask(state,reception.id,{type:'principal'},{now:NOW});
+  calc=Production.calculateWeeklyPlan(plan,updated.state,{purchases:[{day:'monday',category:'ROSAS',units:200}]});
+  assert.equal(calc.mainByTask[reception.id],2);assert.equal(calc.satelliteByTask[reception.id],undefined);assert.equal(calc.weekly.mainTotal,2);
+  assert.equal(Production.deleteProductionTask(updated.state,reception.id).ok,false);
 });
 
-test('Fabricación continúa por variante, admite decimales y no duplica rendimientos',()=>{
-  assert.deepEqual(production.normalizeManufacturingRates(['6','5','4,5'],3),[6,5,4.5]);
-  const descriptor=production.manufacturingTaskDescriptor();
-  assert.equal(descriptor.source,'nomenclatures');
-  assert.equal(descriptor.editable,false);
-  assert.equal(descriptor.unit,'unidades / hora / persona');
+test('una semana guarda previsión anual, ajuste separado y decisiones sin maestros duplicados',()=>{
+  const state=Production.createProductionState(null,{now:NOW});
+  const plan=Production.createWeeklyPlan(2026,32,{now:NOW});
+  plan.annualForecast=2310;
+  plan.productionAdjustment=40;
+  plan.dailyExpeditions=days(470,470,470,470,470);
+  plan.distributionContext={method:'Referencias',references:[{year:2026,week:31,weight:40}],warnings:[]};
+  const saved=Production.saveWeeklyPlan(state,plan,{now:NOW});
+  assert.equal(Production.weeklyTotalUsed(saved.plan),2350);
+  assert.equal(saved.plan.annualForecast,2310);
+  assert.equal(saved.plan.productionAdjustment,40);
+  assert.equal('tasks' in saved.plan,false);
+  assert.equal(saved.plan.distributionContext.references.length,1);
 });
 
-test('las tareas satélite solo admiten Por cantidad o Tiempo fijo',()=>{
-  let state=production.createProductionState({satelliteTasks:[]},{now:NOW});
-  const quantity=production.addProductionTask(state,{name:'Relleno',code:'FILL',calculationType:'por_cantidad',performance:80,priority:'Media',mobility:'Flexible'},{now:NOW});
-  assert.equal(quantity.ok,true);
-  assert.equal(production.calculateTaskPersonHours(quantity.task,240),3);
-  state=quantity.state;
-  const fixed=production.addProductionTask(state,{name:'Inventario',code:'INVENTORY',calculationType:'tiempo_fijo',durationHours:12,priority:'Alta',mobility:'Fija'},{now:NOW});
-  assert.equal(fixed.ok,true);
-  assert.equal(production.calculateTaskPersonHours(fixed.task),12);
-  assert.equal('peopleCount' in fixed.task,false);
-  assert.deepEqual(new Set(fixed.state.satelliteTasks.map(task=>task.calculationType)),new Set(['por_cantidad','tiempo_fijo']));
+test('semana normal combina cuatro semanas recientes 40/30/20/10 y año comparable',()=>{
+  const proposal=Production.proposeDailyDistribution({year:2026,week:20,total:1000,comparableYear:2024,historyWeeks:[
+    historyWeek(2026,19,days(40,30,20,10)),historyWeek(2026,18,days(30,30,20,20)),historyWeek(2026,17,days(20,30,30,20)),historyWeek(2026,16,days(10,20,30,40)),historyWeek(2024,20,days(25,25,25,25))
+  ],now:NOW});
+  assert.equal(Object.values(proposal.dailyExpeditions).reduce((a,b)=>a+b,0),1000);
+  assert.equal(Math.round(Object.values(proposal.percentages).reduce((a,b)=>a+b,0)),100);
+  assert.equal(proposal.references.length,5);
+  assert.equal(proposal.references.find(ref=>ref.year===2024).weight,30);
+  assert.equal(proposal.references[0].reason,'Semana reciente comparable');
 });
 
-test('valida los datos aplicables al crear tareas satélite',()=>{
-  const state=production.createProductionState({satelliteTasks:[]},{now:NOW});
-  assert.equal(production.addProductionTask(state,{name:'Sin rendimiento',code:'NO_RATE',calculationType:'por_cantidad'}).ok,false);
-  assert.equal(production.addProductionTask(state,{name:'Sin horas',code:'NO_HOURS',calculationType:'tiempo_fijo'}).ok,false);
-  assert.match(production.taskTimingText({name:'Limpieza',calculationType:'tiempo_fijo',durationHours:2}),/2 h-persona/);
+test('una campaña utiliza prioritariamente la misma campaña aunque cambie de semana ISO',()=>{
+  const proposal=Production.proposeDailyDistribution({year:2026,week:7,total:500,campaigns:['San Valentín'],comparableYear:2025,historyWeeks:[
+    historyWeek(2025,7,days(50,100,150,100,100),{campaigns:['San Valentín']}),
+    historyWeek(2024,6,days(100,100,100,100,100),{campaigns:['San Valentín']}),
+    historyWeek(2026,6,days(10,10,10,10,10))
+  ],now:NOW});
+  assert.equal(proposal.method,'Histórico de la misma campaña');
+  assert.equal(proposal.references.length,2);
+  assert.ok(proposal.references.every(ref=>/campaña|Misma semana/.test(ref.reason)));
+  assert.equal(proposal.dailyExpeditions.saturday,0);
 });
 
-test('crea, normaliza y navega semanas ISO independientes',()=>{
-  const week=production.createWeeklyPlan(2026,32,{now:NOW});
-  assert.equal(week.key,'2026-W32');
-  assert.equal(week.status,'draft');
-  assert.equal(week.preassignmentDays.monday,'monday');
-  assert.equal(week.receptionDays.monday,'');
-  assert.deepEqual(production.shiftWeek(2026,53,1),{year:2027,week:1,key:'2027-W01'});
+test('una semana con festivo solo utiliza referencias con el mismo patrón de festivos',()=>{
+  const proposal=Production.proposeDailyDistribution({year:2026,week:33,total:400,holidayDays:['saturday'],comparableYear:2025,historyWeeks:[
+    historyWeek(2025,33,days(80,80,80,80,80,0,0),{holidayDays:['saturday']}),
+    historyWeek(2026,32,days(60,60,60,60,60,60,40))
+  ],now:NOW});
+  assert.equal(proposal.references.length,1);
+  assert.equal(proposal.references[0].year,2025);
+  assert.equal(proposal.dailyExpeditions.saturday,0);
+  assert.equal(proposal.dailyExpeditions.sunday,0);
 });
 
-test('mantiene previsión sistema, ajuste, mix y decisiones semanales sin mezclar maestros',()=>{
-  const plan=production.normalizeWeeklyPlan({
-    year:2026,week:32,status:'draft',
-    dailyForecast:{monday:{system:100,adjustment:20}},
-    bouquetSystem:90,bouquetAdjustment:10,
-    categoryMix:{monday:{ROSAS:60,COMPUESTOS:60}},
-    preassignmentDays:{monday:'friday'},receptionDays:{monday:'wednesday'},
-    satelliteAssignments:[{taskId:'task-1',day:'automatic',quantity:240}]
-  },{now:NOW});
-  assert.equal(production.forecastUsed(plan.dailyForecast.monday),120);
-  assert.deepEqual(plan.categoryMix.monday,{ROSAS:60,COMPUESTOS:60,SIMPLES:0,PLANTAS:0});
-  assert.equal(plan.preassignmentDays.monday,'friday');
-  assert.equal(plan.receptionDays.monday,'wednesday');
-  assert.equal(plan.satelliteAssignments[0].quantity,240);
+test('sin referencias suficientes no inventa reparto y explica la limitación',()=>{
+  const proposal=Production.proposeDailyDistribution({year:2026,week:33,total:400,holidayDays:['monday'],historyWeeks:[historyWeek(2026,32,days(80,80,80,80,80))],now:NOW});
+  assert.equal(proposal.references.length,0);
+  assert.equal(Object.values(proposal.dailyExpeditions).reduce((a,b)=>a+b,0),0);
+  assert.ok(proposal.warnings.some(message=>/mismos festivos/.test(message)));
+  assert.ok(proposal.warnings.some(message=>/referencias diarias/.test(message)));
 });
 
-test('calcula horas-persona diarias y semanales con todas las fuentes de verdad',()=>{
-  let state=configuredState();
-  state=production.addProductionTask(state,{id:'fill',name:'Relleno',code:'FILL',calculationType:'por_cantidad',performance:80,priority:'Media',mobility:'Fija'},{now:NOW}).state;
-  state=production.addProductionTask(state,{id:'inventory',name:'Inventario',code:'INVENTORY',calculationType:'tiempo_fijo',durationHours:12,priority:'Alta',mobility:'Flexible'},{now:NOW}).state;
-  const plan=production.normalizeWeeklyPlan({
-    year:2026,week:32,dailyForecast:{monday:{system:100,adjustment:20}},
-    categoryMix:{monday:{ROSAS:60,COMPUESTOS:60}},
-    receptionDays:{monday:'monday'},preassignmentDays:{monday:'monday'},
-    variantMix:[{day:'monday',productKey:'toscana',variantKey:'toscana|1',productName:'Toscana',variantName:'P1',units:60}],
-    satelliteAssignments:[{taskId:'fill',day:'monday',quantity:240},{taskId:'inventory',day:'automatic'}]
-  },{now:NOW});
-  const result=production.calculateWeeklyPlan(plan,state,{variantRates:{'toscana|1':6}});
-  assert.equal(result.forecastTotal,120);
-  assert.equal(result.bouquetTotal,120);
-  assert.equal(result.days.monday.reception,1.5);
-  assert.equal(result.days.monday.preassignment,3);
-  assert.equal(result.days.monday.manufacturing,10);
-  assert.equal(result.days.monday.shipping,1.2);
-  assert.equal(result.days.monday.satellite,3);
-  assert.equal(result.unassignedSatelliteHours,12);
-  assert.ok(Math.abs(result.weekly.total-30.7)<1e-9);
-  assert.ok(result.issues.some(issue=>issue.code==='SATELLITE_DAY_AUTOMATIC'));
+test('la acción de repartir corrige la diferencia diaria sin cambiar el total semanal',()=>{
+  const plan=Production.createWeeklyPlan(2026,32,{now:NOW});
+  plan.annualForecast=101;
+  plan.dailyExpeditions=days(20,20,20,20,20);
+  const adjusted=Production.spreadDailyDifference(plan);
+  assert.equal(Object.values(adjusted.dailyExpeditions).reduce((a,b)=>a+b,0),101);
+  assert.equal(adjusted.dailyManual,true);
+  assert.equal(adjusted.annualForecast,101);
 });
 
-test('avisa y bloquea la validación cuando faltan mix o rendimientos de Fabricación',()=>{
-  const state=configuredState();
-  const withoutMix=production.createWeeklyPlan(2026,32,{now:NOW});
-  withoutMix.dailyForecast.monday={system:100,adjustment:0};
-  assert.ok(production.calculateWeeklyPlan(withoutMix,state).issues.some(issue=>issue.code==='CATEGORY_MIX_MISSING'));
-  const plan=production.normalizeWeeklyPlan({year:2026,week:32,dailyForecast:{monday:{system:10}},categoryMix:{monday:{ROSAS:10}},receptionDays:{monday:'monday'},variantMix:[{day:'monday',variantKey:'missing',units:10}]},{now:NOW});
-  const calculated=production.calculateWeeklyPlan(plan,state,{variantRates:{}});
-  assert.ok(calculated.issues.some(issue=>issue.code==='MANUFACTURING_RATE_MISSING'));
-  assert.equal(production.validateWeeklyPlan(state,plan,{variantRates:{}}).ok,false);
+test('Recepción usa compras agrupadas por día y categoría, no expediciones',()=>{
+  let state=Production.createProductionState(null,{now:NOW});
+  state=Production.updateCategoryRate(state,'ROSAS','reception',100,{now:NOW}).state;
+  state=Production.updateCategoryRate(state,'COMPUESTOS','reception',50,{now:NOW}).state;
+  const plan=Production.createWeeklyPlan(2026,32,{now:NOW});plan.annualForecast=100;plan.dailyExpeditions=days(100);
+  const calc=Production.calculateWeeklyPlan(plan,state,{purchases:[{day:'monday',category:'ROSAS',units:200},{day:'wednesday',category:'COMPUESTOS',units:100}]});
+  assert.equal(calc.days.monday.reception,2);
+  assert.equal(calc.days.wednesday.reception,2);
+  assert.equal(calc.weekly.reception,4);
+  assert.equal(calc.issues.some(issue=>issue.code==='RECEPTION_DATA_MISSING'),false);
 });
 
-test('guarda semanas por clave y valida únicamente planes completos',()=>{
-  const state=configuredState();
-  const plan=production.createWeeklyPlan(2026,32,{now:NOW});
-  const saved=production.saveWeeklyPlan(state,plan,{now:'2026-07-31T11:00:00.000Z'});
-  assert.equal(saved.ok,true);
-  assert.equal(saved.state.weeklyPlans['2026-W32'].status,'draft');
-  const validated=production.validateWeeklyPlan(saved.state,saved.plan,{now:'2026-07-31T12:00:00.000Z'});
-  assert.equal(validated.ok,true);
-  assert.equal(validated.state.weeklyPlans['2026-W32'].status,'validated');
-  assert.equal(production.summarizeProductionState(validated.state).validatedWeeks,1);
+test('Recepción informa claramente cuando faltan datos de Compras',()=>{
+  const state=Production.createProductionState(null,{now:NOW}),plan=Production.createWeeklyPlan(2026,32,{now:NOW});
+  const calc=Production.calculateWeeklyPlan(plan,state,{purchases:[]});
+  assert.ok(calc.issues.some(issue=>issue.message==='Recepción pendiente de datos de Compras.'));
 });
 
-test('una tarea utilizada por una semana no se elimina físicamente',()=>{
-  let state=production.createProductionState({satelliteTasks:[]},{now:NOW});
-  const added=production.addProductionTask(state,{id:'used',name:'Usada',code:'USED',calculationType:'tiempo_fijo',durationHours:1},{now:NOW});
-  state=added.state;
-  const plan=production.createWeeklyPlan(2026,32,{now:NOW});
-  plan.satelliteAssignments=[{taskId:'used',day:'monday',quantity:null}];
-  state=production.saveWeeklyPlan(state,plan,{now:NOW}).state;
-  const deleted=production.deleteProductionTask(state,'used',{now:NOW});
-  assert.equal(deleted.ok,false);
-  assert.match(deleted.errors[0],/desactívala/);
+test('calcula Preasignación por categoría y día decidido',()=>{
+  let state=Production.createProductionState(null,{now:NOW});state=Production.updateCategoryRate(state,'ROSAS','preassignment',50,{now:NOW}).state;
+  const plan=Production.createWeeklyPlan(2026,32,{now:NOW});plan.annualForecast=100;plan.dailyExpeditions=days(100);plan.categoryMix.monday.ROSAS=100;plan.preassignmentDays.monday='friday';
+  const calc=Production.calculateWeeklyPlan(plan,state,{purchases:[]});
+  assert.equal(calc.days.friday.preassignment,2);
 });
 
-test('el SQL propuesto separa maestros y planificación sin vigencias ni personas',()=>{
+test('Fabricación usa rendimientos de Nomenclaturas y detalla variantes incompletas',()=>{
+  const state=Production.createProductionState(null,{now:NOW}),plan=Production.createWeeklyPlan(2026,32,{now:NOW});
+  plan.annualForecast=30;plan.dailyExpeditions=days(30);plan.categoryMix.monday.COMPUESTOS=30;plan.variantMix=[{day:'monday',variantKey:'A|1',productName:'Ramo A',variantName:'P1',units:20},{day:'monday',variantKey:'B|1',productName:'Ramo B',variantName:'P1',units:10}];
+  const calc=Production.calculateWeeklyPlan(plan,state,{purchases:[],variantRates:{'A|1':10}});
+  assert.equal(calc.days.monday.manufacturing,2);
+  assert.ok(calc.issues.some(issue=>issue.code==='MANUFACTURING_RATE_MISSING'&&issue.variantKey==='B|1'));
+});
+
+test('Expedición divide cada día por el rendimiento global',()=>{
+  let state=Production.createProductionState(null,{now:NOW});state=Production.updateShippingRate(state,50,{now:NOW}).state;
+  const plan=Production.createWeeklyPlan(2026,32,{now:NOW});plan.annualForecast=150;plan.dailyExpeditions=days(100,50);
+  const calc=Production.calculateWeeklyPlan(plan,state,{purchases:[]});
+  assert.equal(calc.days.monday.shipping,2);
+  assert.equal(calc.days.tuesday.shipping,1);
+  assert.equal(calc.weekly.shipping,3);
+});
+
+test('tareas satélite seleccionadas calculan cantidad o tiempo fijo y separan subtotal',()=>{
+  let state=Production.createProductionState(null,{now:NOW});
+  const quantity=Production.addProductionTask(state,{name:'Etiquetas',type:'satelite',calculationType:'por_cantidad',performance:100,mobility:'Fija'},{now:NOW});state=quantity.state;
+  const fixed=Production.addProductionTask(state,{name:'Reunión',type:'satelite',calculationType:'tiempo_fijo',durationHours:1.5,mobility:'Flexible'},{now:NOW});state=fixed.state;
+  const plan=Production.createWeeklyPlan(2026,32,{now:NOW});plan.satelliteAssignments=[{taskId:quantity.task.id,day:'monday',quantity:200},{taskId:fixed.task.id,day:'automatic',quantity:null}];
+  const calc=Production.calculateWeeklyPlan(plan,state,{purchases:[]});
+  assert.equal(calc.days.monday.satellite,2);
+  assert.equal(calc.weekly.satelliteTotal,3.5);
+  assert.equal(calc.satelliteByTask[fixed.task.id],1.5);
+});
+
+test('el SQL propuesto usa una tabla única de tareas y no contiene vigencias',()=>{
   const sql=fs.readFileSync(path.join(__dirname,'supabase-production.sql'),'utf8');
-  for(const table of ['production_main_tasks','production_category_times','production_settings','production_satellite_tasks','production_weekly_plans','production_weekly_forecasts','production_weekly_category_mix','production_weekly_variant_mix','production_weekly_satellite_tasks','production_change_history']) assert.match(sql,new RegExp(`create table if not exists public\\.${table}\\b`,'i'));
-  assert.doesNotMatch(sql,/\bvalid_from\b|\bvalid_to\b/i);
-  assert.doesNotMatch(sql,/duracion_personas|people_count/i);
-  assert.match(sql,/check \(calculation_type in \('por_cantidad','tiempo_fijo'\)\)/i);
-  assert.match(sql,/references public\.nomenclature_variants\(id\)/i);
+  assert.match(sql,/create table if not exists public\.production_tasks/i);
+  assert.match(sql,/activity_type text/i);
+  assert.doesNotMatch(sql,/production_main_tasks/i);
+  assert.doesNotMatch(sql,/production_satellite_tasks/i);
+  assert.doesNotMatch(sql,/valid_from|valid_to/i);
+  assert.match(sql,/annual_forecast/i);
+  assert.match(sql,/production_adjustment/i);
+  assert.match(sql,/distribution_references/i);
 });
 
-test('la interfaz muestra ambas secciones compactas, guardado explícito y sin controles eliminados',()=>{
+test('la interfaz elimina Resumen y muestra la planificación semanal primero',()=>{
   const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
-  assert.match(html,/data-production-tab="weekly"[^>]*>Planificación semanal/);
-  assert.match(html,/id="productionMainTasksTbody"/);
-  assert.match(html,/id="btnProductionSaveWeek"[^>]*>Guardar/);
-  assert.match(html,/id="btnProductionValidateWeek"[^>]*>Validar semana/);
-  assert.match(html,/id="productionResultTbody"/);
-  assert.match(html,/Gestionar rendimientos de fabricación/);
-  assert.doesNotMatch(html,/id="productionTaskPeople"|duracion_personas|data-production-tab="forecasts"/);
-  assert.doesNotMatch(html,/\.production-(?:main|satellite)-table\{[^}]*min-width/i);
+  const production=html.slice(html.indexOf('<section class="production-view"'),html.indexOf('<div class="annual-floating-tooltip"'));
+  assert.doesNotMatch(production,/data-production-(?:tab|panel)="summary"/);
+  assert.ok(production.indexOf('data-production-tab="weekly"')<production.indexOf('data-production-tab="times"'));
+  assert.match(production,/Tarea<\/th><th>Tipo<\/th><th>Tiempo \/ rendimiento/);
+  assert.match(production,/Ver cálculo de la distribución/);
+  assert.match(production,/TOTAL HORAS-PERSONA DE LA SEMANA/);
+  assert.match(production,/id="productionDayDetail"/);
+  assert.match(html,/data-production-day-detail=/);
+  assert.match(html,/Detalle de \$\{day\.label\}/);
+  assert.match(html,/type==='satelite'\|\|!task\.specialKind/);
+  assert.match(html,/Esta tarea tiene una lógica de cálculo específica\. Cambiar su clasificación no modifica su fuente de datos ni su fórmula\./);
+  assert.match(html,/productionTaskType'\)\.disabled=false/);
+  assert.match(html,/let productionTab = 'weekly'/);
 });

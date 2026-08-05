@@ -705,7 +705,8 @@
   #annualImportModal .modal{max-height:calc(100vh - 32px);overflow-y:auto;overscroll-behavior:contain}
   #annualImportModal .annual-import-preview{max-height:34vh}
   #annualCampaignModal .modal{width:min(780px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto}.annual-campaign-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0;padding:10px 12px;background:#f3f0e8;border:1px solid var(--line);border-radius:4px}.annual-campaign-toolbar strong{color:var(--moss-deep)}.annual-campaign-toolbar span{font:700 13px var(--mono)}.annual-campaign-table-head,.annual-campaign-row{display:grid;grid-template-columns:minmax(170px,1fr) 145px 70px 72px 78px;gap:8px;align-items:center}.annual-campaign-table-head{padding:4px 7px;color:var(--ink-soft);font:9px var(--mono);text-transform:uppercase}.annual-campaign-row{margin-bottom:6px;padding:7px;background:#faf8f2;border:1px solid var(--line);border-radius:4px}.annual-campaign-row input[type="text"],.annual-campaign-row input[type="date"]{width:100%;min-width:0;padding:7px;border:1px solid var(--line);border-radius:3px;background:#fff}.annual-campaign-date-field{min-width:0}.annual-campaign-weekday{display:block;margin-top:2px;color:var(--ink-soft);font:9px var(--mono);text-transform:capitalize}.annual-campaign-active{display:flex;align-items:center;justify-content:center;gap:5px;font-size:10px}.annual-campaign-week{text-align:center;font:700 11px var(--mono);color:var(--moss-deep)}.annual-campaign-row .btn{padding:7px 8px}.annual-campaign-empty{padding:18px;text-align:center;color:var(--ink-soft);border:1px dashed var(--line);border-radius:4px}.annual-campaign-add{display:grid;grid-template-columns:minmax(170px,1fr) 145px auto;gap:8px;align-items:end;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}.annual-campaign-add label{font:9px var(--mono);text-transform:uppercase;color:var(--ink-soft)}.annual-campaign-add input{display:block;width:100%;margin-top:4px;padding:7px;border:1px solid var(--line);border-radius:3px}.annual-campaign-status{min-height:18px;margin:7px 0;color:var(--ink-soft);font-size:10px}
-  @media(max-width:680px){.annual-campaign-table-head{display:none}.annual-campaign-row{grid-template-columns:1fr 1fr}.annual-campaign-row [data-campaign-name]{grid-column:1/-1}.annual-campaign-add{grid-template-columns:1fr}.annual-campaign-toolbar{align-items:flex-start;flex-direction:column}}
+  #annualHolidayModal .modal{width:min(1050px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto}.annual-holiday-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0;padding:10px 12px;background:#f3f0e8;border:1px solid var(--line);border-radius:4px}.annual-holiday-toolbar span{font:700 13px var(--mono)}.annual-holiday-table-head,.annual-holiday-row{display:grid;grid-template-columns:minmax(145px,1.2fr) 128px 105px 76px 76px 62px minmax(130px,1fr) 72px;gap:7px;align-items:center}.annual-holiday-table-head{padding:4px 7px;color:var(--ink-soft);font:9px var(--mono);text-transform:uppercase}.annual-holiday-row{margin-bottom:6px;padding:7px;background:#faf8f2;border:1px solid var(--line);border-radius:4px}.annual-holiday-row input[type="text"],.annual-holiday-row input[type="date"],.annual-holiday-row select{width:100%;min-width:0;padding:7px;border:1px solid var(--line);border-radius:3px;background:#fff}.annual-holiday-check{display:flex;align-items:center;justify-content:center;gap:4px;font-size:9px}.annual-holiday-row .btn{padding:7px 8px}.annual-holiday-add{margin-top:12px;padding:12px;border-top:1px solid var(--line);background:#faf8f2}.annual-holiday-add-grid{display:grid;grid-template-columns:1.2fr 145px 120px 1fr;gap:9px}.annual-holiday-add label{font:9px var(--mono);text-transform:uppercase;color:var(--ink-soft)}.annual-holiday-add input,.annual-holiday-add select{display:block;width:100%;margin-top:4px;padding:7px;border:1px solid var(--line);border-radius:3px;background:#fff}.annual-holiday-impact{display:flex;gap:16px;align-items:center;margin:10px 0}.annual-holiday-impact label{display:flex;align-items:center;gap:5px}.annual-holiday-status{min-height:18px;margin:7px 0;color:var(--ink-soft);font-size:10px}.annual-table tbody tr.has-holiday .annual-week-cell{background:linear-gradient(90deg,rgba(199,101,63,.18),transparent)}.annual-holiday-marker{display:inline-block;margin-left:4px;color:var(--coral);font-size:12px}.annual-week-tooltip strong{display:block;margin-top:3px}
+  @media(max-width:680px){.annual-campaign-table-head,.annual-holiday-table-head{display:none}.annual-campaign-row{grid-template-columns:1fr 1fr}.annual-campaign-row [data-campaign-name]{grid-column:1/-1}.annual-campaign-add{grid-template-columns:1fr}.annual-campaign-toolbar{align-items:flex-start;flex-direction:column}.annual-holiday-row,.annual-holiday-add-grid{grid-template-columns:1fr 1fr}.annual-holiday-row [data-holiday-name],.annual-holiday-row [data-holiday-notes]{grid-column:1/-1}.annual-holiday-toolbar{align-items:flex-start;flex-direction:column}}
   #annualImportModal .annual-import-footer{position:sticky;bottom:-26px;z-index:12;margin:16px -28px -26px;padding:12px 28px 16px;background:var(--panel);border-top:1px solid var(--line);box-shadow:0 -8px 18px rgba(35,61,44,.08)}
   @media(max-width:680px){#annualImportModal .modal{max-height:calc(100vh - 16px);padding:18px 16px}#annualImportModal .annual-import-preview{max-height:30vh}#annualImportModal .annual-import-footer{bottom:-18px;margin:14px -16px -18px;padding:12px 16px 14px}}
 
@@ -723,6 +724,7 @@
   .production-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}.production-toolbar h3{margin:0;color:var(--moss-deep);font-family:var(--serif)}.production-note{margin:0;color:var(--ink-soft);font-size:11px}
   .production-section-card{padding:15px;border:1px solid var(--line);border-radius:6px;background:#faf8f2;margin-bottom:14px}.production-section-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:11px}.production-section-title h3{margin:0;color:var(--moss-deep);font-family:var(--serif)}.production-section-title p{margin:3px 0 0;color:var(--ink-soft);font-size:10px}
   .production-table-wrap{overflow-x:hidden;border:1px solid var(--line);border-radius:5px;background:#fff}.production-table{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}.production-table th{padding:8px;background:var(--moss-deep);color:#fff;text-align:left;font:8.5px var(--mono);text-transform:uppercase}.production-table td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle;overflow-wrap:anywhere}.production-table tr.inactive{opacity:.58}.production-task-name strong{display:block;color:var(--moss-deep)}.production-task-name small{display:block;margin-top:2px;color:var(--ink-soft)}.production-badge{display:inline-block;padding:3px 6px;border-radius:999px;background:#e7efe8;color:var(--moss-deep);font:9px var(--mono)}.production-badge.inactive{background:#eceae3;color:var(--ink-soft)}.production-badge.validated{background:#dce9d9;color:#31563c}.production-row-actions{display:flex;gap:4px;flex-wrap:wrap}.production-history{margin-top:14px}.production-history summary{cursor:pointer;color:var(--moss-deep);font-weight:650}.production-history .production-table-wrap{margin-top:9px}
+  .production-day-link{border:0;background:transparent;color:var(--moss-deep);padding:0;font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:2px;cursor:pointer}.production-day-detail{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:5px;background:#fff}.production-day-detail[hidden]{display:none}.production-day-detail-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.production-day-detail-head h4{margin:0;color:var(--moss-deep)}
   .production-main-table col:nth-child(1){width:23%}.production-main-table col:nth-child(2){width:25%}.production-main-table col:nth-child(3){width:12%}.production-main-table col:nth-child(4){width:13%}.production-main-table col:nth-child(5){width:12%}.production-main-table col:nth-child(6){width:15%}
   .production-satellite-table col:nth-child(1){width:28%}.production-satellite-table col:nth-child(2){width:22%}.production-satellite-table col:nth-child(3){width:13%}.production-satellite-table col:nth-child(4){width:13%}.production-satellite-table col:nth-child(5){width:11%}.production-satellite-table col:nth-child(6){width:13%}
   .production-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.production-form-grid label{font:9px var(--mono);text-transform:uppercase;color:var(--ink-soft)}.production-form-grid input,.production-form-grid select,.production-form-grid textarea{display:block;width:100%;margin-top:4px;padding:8px;border:1px solid var(--line);border-radius:3px;background:#fff;font:12px var(--sans)}.production-form-grid label[hidden],.production-form-block[hidden]{display:none!important}.production-form-grid .wide{grid-column:1/-1}.production-form-grid textarea{min-height:62px;resize:vertical}.production-form-hint{grid-column:1/-1;padding:8px 10px;background:#f4f2ea;border-radius:4px;color:var(--ink-soft);font-size:10.5px}.production-form-error{min-height:18px;margin-top:10px;color:var(--neg);font-size:12px}.production-form-block{grid-column:1/-1;padding:11px;border:1px solid var(--line);border-radius:5px;background:#faf8f2}.production-form-block h4{margin:0 0 8px;color:var(--moss-deep)}
@@ -735,6 +737,12 @@
   @media(max-width:900px){.production-kpis{grid-template-columns:repeat(2,minmax(130px,1fr))}.production-mix-grid{grid-template-columns:repeat(2,minmax(150px,1fr))}.production-satellite-planning{grid-template-columns:1fr}}
   @media(max-width:700px){.production-view{padding:12px}.production-responsive-table thead{display:none}.production-responsive-table,.production-responsive-table tbody{display:block}.production-responsive-table tbody{padding:8px;background:#f5f2e9}.production-responsive-table tr{display:grid;grid-template-columns:1fr 1fr;margin-bottom:8px;padding:8px;border:1px solid var(--line);border-radius:5px;background:#fff}.production-responsive-table td{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px;border:0}.production-responsive-table td::before{content:attr(data-label);color:var(--ink-soft);font:8px var(--mono);text-transform:uppercase}.production-responsive-table td:first-child,.production-responsive-table td:last-child{grid-column:1/-1}.production-responsive-table td:first-child{display:block}.production-responsive-table td:first-child::before{display:none}.production-row-actions{justify-content:flex-end}.production-result-table{font-size:9px}.production-result-table th,.production-result-table td{padding:6px 3px}.production-week-task{grid-template-columns:auto minmax(0,1fr) 105px}.production-week-task .production-week-task-quantity{grid-column:2/-1}.production-week-summary{grid-template-columns:repeat(2,minmax(120px,1fr))}}
   @media(max-width:560px){.production-kpis,.production-form-grid,.production-mix-grid,.production-week-summary{grid-template-columns:1fr}.production-form-grid .wide{grid-column:auto}.production-responsive-table tr{grid-template-columns:1fr}.production-responsive-table td,.production-responsive-table td:first-child,.production-responsive-table td:last-child{grid-column:1}.production-week-head,.production-section-title{align-items:stretch;flex-direction:column}.production-week-selector{justify-content:space-between}.production-week-actions .btn{flex:1}.production-week-task{grid-template-columns:auto minmax(0,1fr)}.production-week-task select,.production-week-task .production-week-task-quantity{grid-column:2}.production-result-table{font-size:8px}.production-result-table th{font-size:7px}}
+  .production-unified-table col:nth-child(1){width:21%}.production-unified-table col:nth-child(2){width:10%}.production-unified-table col:nth-child(3){width:22%}.production-unified-table col:nth-child(4){width:10%}.production-unified-table col:nth-child(5){width:11%}.production-unified-table col:nth-child(6){width:10%}.production-unified-table col:nth-child(7){width:16%}
+  .production-total-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.production-total-grid>div,.production-total-grid>label{display:block;padding:12px;border:1px solid var(--line);border-radius:5px;background:#fff}.production-total-grid span{display:block;color:var(--ink-soft);font:8.5px var(--mono);text-transform:uppercase}.production-total-grid strong{display:block;margin-top:6px;color:var(--moss-deep);font:600 22px var(--serif)}.production-total-grid input{width:100%;margin-top:6px;padding:7px;border:1px solid var(--line);border-radius:3px;text-align:right}.production-total-grid .total{background:#e9f0e8}
+  .production-distribution-table th:nth-child(n+2),.production-distribution-table td:nth-child(n+2){text-align:right}.production-distribution-table input{width:100px;max-width:100%;padding:6px;border:1px solid var(--line);border-radius:3px;text-align:right}.production-distribution-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-top:9px}.production-distribution-actions span{font:10px var(--mono);color:var(--ink-soft)}.production-distribution-actions span.warn{color:var(--neg);font-weight:700}.production-explanation{padding:11px;margin-top:8px;border:1px solid var(--line);border-radius:5px;background:#fff;font-size:10.5px}.production-explanation dl{display:grid;grid-template-columns:150px 1fr;gap:5px 10px;margin:0}.production-explanation dt{font-weight:700;color:var(--moss-deep)}.production-explanation dd{margin:0}.production-reference-list{margin:8px 0 0;padding-left:18px}.production-reference-list li{margin:3px 0}
+  .production-reception-status{margin:0 0 9px;padding:8px 10px;border-radius:4px;background:#eef4ec;color:var(--moss-deep);font-size:10.5px}.production-reception-status.warn{background:#fff3d4;color:#71550c}.production-hours-summary th:last-child,.production-hours-summary td:last-child{text-align:right}.production-hours-summary tfoot td{font-weight:750;background:#edf2ec}.production-satellite-summary{margin-top:10px}.production-week-grand-total{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:14px 0;padding:16px 18px;border:1px solid #94ad9a;border-radius:6px;background:#dfeae1;color:var(--moss-deep)}.production-week-grand-total span{font:800 11px var(--mono);letter-spacing:.04em}.production-week-grand-total strong{font:700 28px var(--serif)}
+  .production-result-table{table-layout:fixed}.production-result-table th,.production-result-table td{white-space:normal}.production-type-badge{display:inline-block;padding:3px 6px;border-radius:999px;background:#eef1e7;color:var(--moss-deep);font:9px var(--mono)}
+  @media(max-width:760px){.production-total-grid{grid-template-columns:1fr}.production-explanation dl{grid-template-columns:1fr}.production-result-table{font-size:8px}.production-result-table th{font-size:6.8px}.production-result-table th,.production-result-table td{padding:6px 2px}}
 
 </style>
 </head>
@@ -892,7 +900,6 @@
         <button type="button" class="side-nav-toggle" data-toggle-for="production" aria-label="Desplegar/plegar Producción">▾</button>
       </div>
       <div class="side-nav-actions" data-actions-for="production">
-        <button type="button" class="btn btn-ghost" data-production-nav="summary">Resumen</button>
         <button type="button" class="btn btn-ghost" data-production-nav="weekly">Planificación semanal</button>
         <button type="button" class="btn btn-ghost" data-production-nav="times">Tiempos y tareas</button>
         <button type="button" class="btn btn-ghost" data-production-nav="staff">Personal</button>
@@ -1212,7 +1219,7 @@
           <label>Estado<select id="annualStatusFilter"><option value="">Todas</option><option value="closed">Cerradas</option><option value="partial">Parciales</option><option value="current">Actual</option><option value="future">Futuras</option></select></label>
         </div>
       </div>
-      <div class="annual-actions"><button class="btn btn-primary" id="btnAnnualCreateTop">Crear nuevo año</button><button class="btn btn-ghost" id="btnAnnualImportTop">Importar BO</button><button class="btn btn-ghost" id="btnAnnualProjectTop">Proyectar semanas futuras</button><button class="btn btn-ghost" id="btnAnnualCampaigns">Gestionar campañas</button><button class="btn btn-ghost" id="btnAnnualOpenHistory">Histórico de expediciones</button><button type="button" class="btn btn-ghost" id="btnAnnualChartToggle" aria-expanded="false" aria-controls="annualChartPanel">Mostrar gráfico</button></div>
+      <div class="annual-actions"><button class="btn btn-primary" id="btnAnnualCreateTop">Crear nuevo año</button><button class="btn btn-ghost" id="btnAnnualImportTop">Importar BO</button><button class="btn btn-ghost" id="btnAnnualProjectTop">Proyectar semanas futuras</button><button class="btn btn-ghost" id="btnAnnualCampaigns">Gestionar campañas</button><button class="btn btn-ghost" id="btnAnnualHolidays">Gestionar festivos</button><button class="btn btn-ghost" id="btnAnnualOpenHistory">Histórico de expediciones</button><button type="button" class="btn btn-ghost" id="btnAnnualChartToggle" aria-expanded="false" aria-controls="annualChartPanel">Mostrar gráfico</button></div>
     </div>
     <div class="annual-summary" id="annualSummary"></div>
     <div class="annual-chart" id="annualChartPanel" hidden><div class="annual-chart-legend" id="annualChartLegend"></div><svg id="annualChart" viewBox="0 0 1000 190" preserveAspectRatio="none" aria-label="Gráfico anual"></svg></div>
@@ -1261,57 +1268,60 @@
   </section>
   <section class="production-view" id="productionView">
     <div class="production-head">
-      <div><h2>Producción</h2><p>Datos maestros de trabajo y planificación semanal en horas-persona.</p></div>
+      <div><h2>Producción</h2><p>Planificación semanal y tiempos maestros en horas-persona.</p></div>
       <span class="production-head-status" id="productionUpdated">Sin cambios</span>
     </div>
     <div class="production-tabs" role="tablist" aria-label="Secciones de Producción">
-      <button type="button" data-production-tab="summary">Resumen</button>
-      <button type="button" data-production-tab="times">Tiempos y tareas</button>
       <button type="button" data-production-tab="weekly">Planificación semanal</button>
+      <button type="button" data-production-tab="times">Tiempos y tareas</button>
       <button type="button" data-production-tab="staff">Personal</button>
       <button type="button" data-production-tab="capacity">Capacidad</button>
     </div>
-    <div class="production-panel" data-production-panel="summary">
-      <div class="production-kpis" id="productionSummaryKpis"></div>
-      <div class="production-placeholder" style="margin-top:14px"><h3>Base operativa preparada</h3><p>Los datos maestros y las decisiones semanales están separados. Personal, Capacidad y el optimizador permanecen pendientes.</p></div>
-    </div>
-    <div class="production-panel" data-production-panel="times" hidden>
-      <section class="production-section-card">
-        <div class="production-section-title"><div><h3>Tareas principales</h3><p>Los rendimientos actuales se editan desde cada tarea. No existen vigencias.</p></div></div>
-        <div class="production-table-wrap"><table class="production-table production-main-table production-responsive-table"><colgroup><col><col><col><col><col><col></colgroup><thead><tr><th>Tarea</th><th>Rendimiento</th><th>Prioridad</th><th>Movilidad</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="productionMainTasksTbody"></tbody></table></div>
-      </section>
-      <section class="production-section-card">
-        <div class="production-section-title"><div><h3>Tareas satélite</h3><p>Tareas auxiliares configurables por cantidad o por horas-persona fijas.</p></div><button type="button" class="btn btn-primary" id="btnAddProductionTask">Añadir tarea</button></div>
-        <div class="production-table-wrap"><table class="production-table production-satellite-table production-responsive-table"><colgroup><col><col><col><col><col><col></colgroup><thead><tr><th>Tarea</th><th>Tiempo / rendimiento</th><th>Prioridad</th><th>Movilidad</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="productionTasksTbody"></tbody></table></div>
-      </section>
-      <details class="production-history"><summary>Historial informativo de modificaciones</summary><div class="production-table-wrap"><table class="production-table"><thead><tr><th>Fecha</th><th>Elemento</th><th>Anterior</th><th>Nuevo</th><th>Comentario</th></tr></thead><tbody id="productionHistoryTbody"></tbody></table></div></details>
-    </div>
-    <div class="production-panel" data-production-panel="weekly" hidden>
+    <div class="production-panel" data-production-panel="weekly">
       <div class="production-week-head">
         <div class="production-week-selector"><button type="button" class="btn btn-ghost" id="productionPreviousWeek" aria-label="Semana anterior">←</button><strong id="productionWeekLabel"></strong><button type="button" class="btn btn-ghost" id="productionNextWeek" aria-label="Semana siguiente">→</button></div>
         <div class="production-week-actions"><span class="production-week-status" id="productionWeekStatus"></span><button type="button" class="btn btn-ghost" id="btnProductionSaveWeek">Guardar</button><button type="button" class="btn btn-primary" id="btnProductionValidateWeek">Validar semana</button></div>
       </div>
       <section class="production-section-card">
-        <div class="production-section-title"><div><h3>1. Previsión</h3><p>La previsión utilizada es sistema + ajuste manual. El ajuste nunca sobrescribe el valor sistema.</p></div></div>
-        <div class="production-table-wrap"><table class="production-table production-forecast-table"><thead><tr><th>Día expedición</th><th>Sistema</th><th>Ajuste</th><th>Utilizada</th></tr></thead><tbody id="productionForecastTbody"></tbody></table></div>
-        <div class="production-week-total"><span>Total expediciones: <strong id="productionForecastTotal">0</strong></span><span>Ramos previstos semana: <strong id="productionBouquetTotal">0</strong></span></div>
-        <div class="production-form-grid" style="margin-top:10px"><label>Ramos sistema (opcional)<input id="productionBouquetSystem" type="text" inputmode="decimal" placeholder="Se usa el total de expediciones"></label><label>Ajuste manual de ramos<input id="productionBouquetAdjustment" type="text" inputmode="decimal" value="0"></label></div>
-        <details class="production-history"><summary>Composición prevista por categoría</summary><p class="production-note">Unidades previstas por día de expedición. El modelo admite además desglose por producto y variante cuando esté disponible.</p><div class="production-mix-grid" id="productionCategoryMixGrid"></div></details>
+        <div class="production-section-title"><div><h3>1. Total semanal de expediciones</h3><p>La previsión procede de Planificación anual. El ajuste de Producción se guarda aparte.</p></div></div>
+        <div class="production-total-grid">
+          <div><span>Planificación anual</span><strong id="productionAnnualForecast">Pendiente</strong></div>
+          <label><span>Ajuste Producción</span><input id="productionAdjustment" type="text" inputmode="decimal" value="0"></label>
+          <div class="total"><span>Total utilizado</span><strong id="productionTotalUsed">0</strong></div>
+        </div>
       </section>
       <section class="production-section-card">
-        <div class="production-section-title"><div><h3>2. Preasignación y Recepción</h3><p>Asigna a qué día de trabajo corresponde la carga de cada día de expedición.</p></div></div>
-        <div class="production-table-wrap"><table class="production-table production-assignment-table"><thead><tr><th>Día expedición</th><th>Ramos previstos</th><th>Día preasignación</th><th>Día recepción</th></tr></thead><tbody id="productionAssignmentsTbody"></tbody></table></div>
+        <div class="production-section-title"><div><h3>2. Distribución diaria propuesta</h3><p>Edita expediciones por día; los porcentajes y la diferencia se recalculan automáticamente.</p></div><button type="button" class="btn btn-ghost" id="btnProductionRefreshDistribution">Actualizar propuesta</button></div>
+        <div class="production-table-wrap"><table class="production-table production-distribution-table"><thead><tr><th>Día</th><th>Expediciones</th><th>% semanal</th></tr></thead><tbody id="productionDistributionTbody"></tbody></table></div>
+        <div class="production-distribution-actions"><span id="productionDistributionBalance"></span><button type="button" class="btn btn-ghost" id="btnProductionSpreadDifference">Ajustar/repartir diferencia</button></div>
+        <details class="production-history" id="productionDistributionDetails"><summary>Ver cálculo de la distribución</summary><div id="productionDistributionExplanation" class="production-explanation"></div></details>
+        <details class="production-history"><summary>Asignación de Preasignación y composición prevista</summary><p class="production-note">La composición por categoría sigue siendo necesaria para Preasignación. El detalle de producto y variante se utilizará para Fabricación cuando esté disponible.</p><div class="production-table-wrap"><table class="production-table production-assignment-table"><thead><tr><th>Día expedición</th><th>Expediciones</th><th>Día preasignación</th></tr></thead><tbody id="productionAssignmentsTbody"></tbody></table></div><div class="production-mix-grid" id="productionCategoryMixGrid"></div></details>
       </section>
       <section class="production-section-card">
-        <div class="production-section-title"><div><h3>3. Tareas satélite</h3><p>Selecciona las tareas activas, su día y la cantidad cuando corresponda.</p></div></div>
+        <div class="production-section-title"><div><h3>3. Actividades principales</h3><p>Resumen semanal calculado desde Compras, Preasignación, Nomenclaturas y expediciones.</p></div></div>
+        <div class="production-reception-status" id="productionReceptionStatus"></div>
+        <div class="production-satellite-planning" id="productionOtherMainTasks"></div>
+        <div class="production-table-wrap"><table class="production-table production-hours-summary"><thead><tr><th>Tarea</th><th>Horas-persona semana</th></tr></thead><tbody id="productionMainSummaryTbody"></tbody><tfoot id="productionMainSummaryTfoot"></tfoot></table></div>
+      </section>
+      <section class="production-section-card">
+        <div class="production-section-title"><div><h3>4. Actividades satélite</h3><p>Selecciona las tareas activas, su día y la cantidad cuando corresponda.</p></div></div>
         <div class="production-satellite-planning" id="productionWeekTasks"></div>
+        <div class="production-table-wrap production-satellite-summary"><table class="production-table production-hours-summary"><thead><tr><th>Tarea</th><th>Horas-persona semana</th></tr></thead><tbody id="productionSatelliteSummaryTbody"></tbody><tfoot id="productionSatelliteSummaryTfoot"></tfoot></table></div>
       </section>
+      <section class="production-week-grand-total"><span>TOTAL HORAS-PERSONA DE LA SEMANA</span><strong id="productionGrandTotal">0</strong></section>
       <section class="production-section-card">
-        <div class="production-section-title"><div><h3>4. Resultado</h3><p>Carga calculada en horas-persona. Se actualiza automáticamente mientras editas.</p></div></div>
-        <div class="production-table-wrap"><table class="production-table production-result-table"><thead><tr><th>Día</th><th>Recep.</th><th>Preasig.</th><th>Fabric.</th><th>Exped.</th><th>Satélite</th><th>Total</th></tr></thead><tbody id="productionResultTbody"></tbody><tfoot id="productionResultTfoot"></tfoot></table></div>
-        <div class="production-week-summary" id="productionWeekSummary"></div>
+        <div class="production-section-title"><div><h3>5. Desglose diario</h3><p>Las nuevas tareas se agrupan para mantener una tabla compacta.</p></div></div>
+        <div class="production-table-wrap"><table class="production-table production-result-table"><thead><tr><th>Día</th><th>Recepción</th><th>Preasignación</th><th>Fabricación</th><th>Expedición</th><th>Otras principales</th><th>Satélite</th><th>Total</th></tr></thead><tbody id="productionResultTbody"></tbody><tfoot id="productionResultTfoot"></tfoot></table></div>
+        <div class="production-day-detail" id="productionDayDetail" hidden></div>
         <div class="production-plan-issues" id="productionPlanIssues"></div>
       </section>
+    </div>
+    <div class="production-panel" data-production-panel="times" hidden>
+      <section class="production-section-card">
+        <div class="production-section-title"><div><h3>Tiempos y tareas</h3><p>Una única colección editable. Los cuatro procesos base conservan sus fuentes de rendimiento específicas.</p></div><button type="button" class="btn btn-primary" id="btnAddProductionTask">Crear tarea</button></div>
+        <div class="production-table-wrap"><table class="production-table production-unified-table production-responsive-table"><colgroup><col><col><col><col><col><col><col></colgroup><thead><tr><th>Tarea</th><th>Tipo</th><th>Tiempo / rendimiento</th><th>Prioridad</th><th>Movilidad</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="productionTasksTbody"></tbody></table></div>
+      </section>
+      <details class="production-history"><summary>Historial informativo de modificaciones</summary><div class="production-table-wrap"><table class="production-table"><thead><tr><th>Fecha</th><th>Elemento</th><th>Anterior</th><th>Nuevo</th><th>Comentario</th></tr></thead><tbody id="productionHistoryTbody"></tbody></table></div></details>
     </div>
     <div class="production-panel" data-production-panel="staff" hidden><div class="production-placeholder"><h3>Personal</h3><p>Sección pendiente. No se registran personas ni turnos todavía.</p></div></div>
     <div class="production-panel" data-production-panel="capacity" hidden><div class="production-placeholder"><h3>Capacidad</h3><p>Sección pendiente. Usará los resultados semanales en horas-persona.</p></div></div>
@@ -1581,42 +1591,26 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="productionMainTaskModal">
-  <div class="modal" style="max-width:760px">
-    <h3 id="productionMainTaskModalTitle">Editar tarea principal</h3>
-    <input type="hidden" id="productionMainTaskCode">
-    <div class="production-form-grid">
-      <label>Nombre<input id="productionMainTaskName" autocomplete="off"></label>
-      <label>Estado<select id="productionMainTaskActive"><option value="true">Activa</option><option value="false">Inactiva</option></select></label>
-      <label>Prioridad<select id="productionMainTaskPriority"><option>Baja</option><option>Media</option><option>Alta</option></select></label>
-      <label>Movilidad<select id="productionMainTaskMobility"><option>Fija</option><option>Flexible</option></select></label>
-      <div class="production-form-block" id="productionMainCategoryBlock" hidden><h4>Rendimiento por categoría</h4><table class="production-rate-editor"><thead><tr><th>Categoría</th><th>Uds/h/persona</th></tr></thead><tbody id="productionMainCategoryRates"></tbody></table></div>
-      <div class="production-form-block" id="productionMainManufacturingBlock" hidden><h4>Rendimientos de Fabricación</h4><p>El rendimiento de fabricación se define por producto y variante en Nomenclaturas.</p><button type="button" class="btn btn-ghost" id="btnProductionManageManufacturing">Gestionar rendimientos de fabricación</button></div>
-      <div class="production-form-block" id="productionMainShippingBlock" hidden><h4>Rendimiento global</h4><label>Expediciones/hora/persona<input id="productionMainShippingRate" type="text" inputmode="decimal"></label></div>
-      <label class="wide">Comentario del cambio<input id="productionMainTaskComment" placeholder="Opcional; únicamente informativo"></label>
-      <div class="production-form-hint">Se utiliza siempre el valor actual. No existen fechas de vigencia.</div>
-    </div>
-    <div class="production-form-error" id="productionMainTaskError"></div>
-    <div class="modal-actions"><button type="button" class="btn btn-ghost" id="btnProductionMainTaskCancel">Cancelar</button><button type="button" class="btn btn-primary" id="btnProductionMainTaskSave">Guardar tarea</button></div>
-  </div>
-</div>
-
 <div class="modal-overlay" id="productionTaskModal">
   <div class="modal" style="max-width:820px">
-    <h3 id="productionTaskModalTitle">Añadir tarea satélite</h3>
+    <h3 id="productionTaskModalTitle">Crear tarea</h3>
     <input type="hidden" id="productionTaskId">
     <div class="production-form-grid">
       <label>Nombre<input id="productionTaskName" autocomplete="off"></label>
-      <label>Código estable<input id="productionTaskCode" autocomplete="off" placeholder="ETIQUETADO_ESPECIAL"></label>
+      <label>Tipo de actividad<select id="productionTaskType"><option value="principal">Principal</option><option value="satelite">Satélite</option></select></label>
       <label>Estado<select id="productionTaskActive"><option value="true">Activa</option><option value="false">Inactiva</option></select></label>
-      <label>Tipo de tiempo<select id="productionTaskCalculation"><option value="por_cantidad">Por cantidad</option><option value="tiempo_fijo">Tiempo fijo</option></select></label>
-      <label id="productionTaskValueLabel">Rendimiento<input id="productionTaskValue" type="text" inputmode="decimal"></label>
-      <label>Frecuencia<input id="productionTaskFrequency" placeholder="Diaria, semanal, mensual, bajo demanda..."></label>
       <label>Prioridad<select id="productionTaskPriority"><option>Baja</option><option>Media</option><option>Alta</option></select></label>
       <label>Movilidad<select id="productionTaskMobility"><option>Fija</option><option>Flexible</option></select></label>
+      <label id="productionTaskCalculationLabel">Tipo de tiempo<select id="productionTaskCalculation"><option value="por_cantidad">Por cantidad</option><option value="tiempo_fijo">Tiempo fijo</option></select></label>
+      <label id="productionTaskValueLabel">Rendimiento<input id="productionTaskValue" type="text" inputmode="decimal"></label>
+      <label id="productionTaskFrequencyLabel">Frecuencia<input id="productionTaskFrequency" placeholder="Diaria, semanal, mensual, bajo demanda..."></label>
+      <div class="production-form-block" id="productionTaskCategoryBlock" hidden><h4>Rendimiento por categoría</h4><table class="production-rate-editor"><thead><tr><th>Categoría</th><th>Uds/h/persona</th></tr></thead><tbody id="productionTaskCategoryRates"></tbody></table></div>
+      <div class="production-form-block" id="productionTaskManufacturingBlock" hidden><h4>Rendimientos de Fabricación</h4><p>La fuente maestra está en cada producto y variante de Nomenclaturas; Producción no la duplica.</p><button type="button" class="btn btn-ghost" id="btnProductionManageManufacturing">Gestionar rendimientos en Nomenclaturas</button></div>
+      <div class="production-form-block" id="productionTaskShippingBlock" hidden><h4>Rendimiento global</h4><label>Expediciones/hora/persona<input id="productionTaskShippingRate" type="text" inputmode="decimal"></label></div>
       <label class="wide">Comentario del cambio<input id="productionTaskComment" placeholder="Opcional; se guarda en el historial informativo"></label>
       <label class="wide">Observaciones<textarea id="productionTaskNotes"></textarea></label>
-      <div class="production-form-hint">Por cantidad usa unidades/hora/persona. Tiempo fijo se expresa directamente en horas-persona; no se define un número de personas.</div>
+      <div class="production-form-hint" id="productionTaskSpecificLogicWarning" hidden>Esta tarea tiene una lógica de cálculo específica. Cambiar su clasificación no modifica su fuente de datos ni su fórmula.</div>
+      <div class="production-form-hint">Se utiliza siempre el valor actual. Por cantidad usa unidades/hora/persona; Tiempo fijo se expresa en horas-persona.</div>
     </div>
     <div class="production-form-error" id="productionTaskError"></div>
     <div class="modal-actions"><button type="button" class="btn btn-ghost" id="btnProductionTaskCancel">Cancelar</button><button type="button" class="btn btn-primary" id="btnProductionTaskSave">Guardar tarea</button></div>
@@ -1937,12 +1931,29 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="annualHolidayModal">
+  <div class="modal" style="max-width:none">
+    <h3>Festivos y días no operativos</h3>
+    <p>Calendario estructurado utilizado por Planificación anual y Producción. Las observaciones libres no se interpretan como festivos.</p>
+    <div class="annual-holiday-toolbar"><div><small>Ejercicio</small><br><span id="annualHolidayYearLabel">—</span></div><span id="annualHolidayCount">0 festivos</span></div>
+    <div class="annual-holiday-table-head"><span>Nombre</span><span>Fecha</span><span>Ámbito</span><span>Exped.</span><span>Producción</span><span>Activo</span><span>Observaciones</span><span></span></div>
+    <div id="annualHolidayListEditor"></div>
+    <div class="annual-holiday-add">
+      <div class="annual-holiday-add-grid"><label>Nombre<input id="annualHolidayNewName" placeholder="Nombre del festivo"></label><label>Fecha<input type="date" id="annualHolidayNewDate"></label><label>Ámbito<select id="annualHolidayNewScope"><option value="national">Nacional</option><option value="regional">Autonómico</option><option value="local" selected>Local</option><option value="company">Empresa</option></select></label><label>Observaciones<input id="annualHolidayNewNotes" placeholder="Opcional"></label></div>
+      <div class="annual-holiday-impact"><label><input type="checkbox" id="annualHolidayNewShipping" checked> Afecta a expediciones</label><label><input type="checkbox" id="annualHolidayNewProduction" checked> Afecta a producción</label><button class="btn btn-primary" id="btnAnnualHolidayAdd">Añadir festivo</button></div>
+    </div>
+    <div class="annual-holiday-status" id="annualHolidayStatus"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" data-close-annual="annualHolidayModal">Cerrar</button></div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="nomenclature-flower-usage.js"></script>
 <script src="nomenclature-ux.js"></script>
+<script src="annual-holidays.js"></script>
 <script src="production.js"></script>
 <script>
 // ---------- Supabase: usuarios y datos compartidos ----------
@@ -2394,7 +2405,7 @@ let currentWeekKey = '';
 let planningMode = false;
 let activeModule = 'stock';
 let productionState = AquarelleProduction.createProductionState();
-let productionTab = 'summary';
+let productionTab = 'weekly';
 let productionWeekCursor = AquarelleProduction.isoWeekInfo(new Date());
 let productionWeeklyDraft = null;
 let productionWeeklyDirty = false;
@@ -4110,7 +4121,7 @@ function normalizeAnnualPlanning(value){
   if(!value||typeof value!=='object'||Array.isArray(value)) return base;
   const normalized={...base,...value,projectionSettings:{...base.projectionSettings,...(value.projectionSettings||{})},imports:value.imports&&typeof value.imports==='object'?cloneData(value.imports):{},years:value.years&&typeof value.years==='object'?value.years:{},campaignCatalog:Array.isArray(value.campaignCatalog)?value.campaignCatalog:base.campaignCatalog,changeHistory:Array.isArray(value.changeHistory)?value.changeHistory:[]};
   Object.values(normalized.imports).forEach(item=>{ if(item&&typeof item==='object'){ delete item.days; delete item.records; delete item.legacyWeeks; } });
-  Object.values(normalized.years).forEach(yearData=>{ if(yearData.previousYear===undefined) yearData.previousYear=normalized.previousYear; if(yearData.comparableYear===undefined) yearData.comparableYear=normalized.comparableYear; if(!yearData.projectionSettings) yearData.projectionSettings={...normalized.projectionSettings}; migrateAnnualCampaignsForYear(yearData); });
+  Object.values(normalized.years).forEach(yearData=>{ if(yearData.previousYear===undefined) yearData.previousYear=normalized.previousYear; if(yearData.comparableYear===undefined) yearData.comparableYear=normalized.comparableYear; if(!yearData.projectionSettings) yearData.projectionSettings={...normalized.projectionSettings}; migrateAnnualCampaignsForYear(yearData); Object.assign(yearData,AquarelleAnnualHolidays.normalizeYearData(yearData)); });
   return normalized;
 }
 function ensureAnnualPlanning(){ annualPlanning=normalizeAnnualPlanning(annualPlanning); return annualPlanning; }
@@ -4154,7 +4165,7 @@ function createAnnualYear(year,previousYear,comparableYear,growthPercent=0,impor
   if(plan.years[key]) return false;
   const objectives=importObjectives?objectivesForAnnualYear(year):{},weeks={},totalWeeks=isoWeeksInYear(year);
   for(let week=1;week<=totalWeeks;week++){ const row=createAnnualWeek(year,week); if(objectives[week]!==undefined){ row.initialForecast=objectives[week]; row.currentForecast=objectives[week]; row.categoryDistributionProjected=distributeAnnualForecast(row,objectives[week]); } weeks[annualKey(year,week)]=row; }
-  plan.selectedYear=year; plan.previousYear=previousYear; plan.comparableYear=comparableYear; plan.projectionSettings.defaultGrowthPercent=growthPercent; plan.years[key]={year,createdAt:new Date().toISOString(),weeks,campaigns:[],campaignCalendarVersion:1};
+  plan.selectedYear=year; plan.previousYear=previousYear; plan.comparableYear=comparableYear; plan.projectionSettings.defaultGrowthPercent=growthPercent; plan.years[key]={year,createdAt:new Date().toISOString(),weeks,campaigns:[],campaignCalendarVersion:1,holidays:[],holidayCalendarVersion:1};
   plan.years[key].previousYear=previousYear; plan.years[key].comparableYear=comparableYear; plan.years[key].projectionSettings={...plan.projectionSettings,defaultGrowthPercent:growthPercent};
   const campaignSourceYear=year-1;
   if(copyCampaigns&&plan.years[String(campaignSourceYear)]?.campaigns) plan.years[key].campaigns=plan.years[String(campaignSourceYear)].campaigns.map((item,index)=>({...cloneData(item),id:`campaign-${year}-${Date.now()}-${index}`,date:shiftAnnualCampaignDate(item.date,year)}));
@@ -4170,6 +4181,10 @@ function annualCampaignsForYear(year=ensureAnnualPlanning().selectedYear){ const
 function annualCampaignWeekNumber(item){ const date=parseAnnualDate(item?.date); return date?getISOWeek(date):null; }
 function annualCampaignWeekday(value){ const date=parseAnnualDate(value); return date?date.toLocaleDateString('es-ES',{weekday:'long',timeZone:'UTC'}):''; }
 function annualCampaignsForWeek(year,week){ return annualCampaignsForYear(year).filter(item=>item.active!==false&&annualCampaignWeekNumber(item)===Number(week)&&isoYearForDate(parseAnnualDate(item.date))===Number(year)); }
+function annualHolidaysForYear(year=ensureAnnualPlanning().selectedYear){ const data=annualYearData(year); if(!data) return []; Object.assign(data,AquarelleAnnualHolidays.normalizeYearData(data)); return AquarelleAnnualHolidays.holidaysForYear(data); }
+function annualHolidaysForWeek(year,week,impact='any'){ const data=annualYearData(year); return data?AquarelleAnnualHolidays.holidaysForWeek(data,year,week,{impact}):[]; }
+function annualHolidayWeekNumber(item){ return AquarelleAnnualHolidays.isoWeekInfo(item?.date)?.week??null; }
+function annualHolidayImpactForWeek(year,week){ const data=annualYearData(year); return data?AquarelleAnnualHolidays.weekImpact(data,year,week):{holidays:[],shipping:[],production:[],shippingDays:[],productionDays:[]}; }
 function applyAnnualCampaignCalendar(year=ensureAnnualPlanning().selectedYear){
   const data=annualYearData(year);
   if(!data) return;
@@ -4747,10 +4762,10 @@ function renderAnnualPlanning(){
   document.getElementById('annualSummary').innerHTML=kpis.map(([label,value,sub])=>`<div class="annual-kpi"><span>${label}</span><strong>${value}</strong><small>${sub}</small></div>`).join('');
   const statusFilter=document.getElementById('annualStatusFilter').value,visibleRows=statusFilter?rows.filter(row=>row.status===statusFilter):rows;
   document.getElementById('annualTbody').innerHTML=visibleRows.map(row=>{
-    const statusLabel=row.status==='closed'?'Cerrada':row.status==='current'?'Actual':row.status==='partial'?'Parcial':'Futura',usesReal=annualRowUsesImportedReal(row),imported=annualTableImportedWeek(row),mailingCategories=annualMailingCategories(row,imported?.products),percentages=annualTableCategoryPercentages(row),dates=`${fmtDateShort(new Date(row.startDate+'T00:00:00Z'))} – ${fmtDateShort(new Date(row.endDate+'T00:00:00Z'))}`,campaign=String(row.campaign||'').trim(),campaignItems=annualCampaignsForWeek(year,row.week),campaignDetail=campaignItems.map(item=>`${item.name} (${new Date(`${item.date}T00:00:00Z`).toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'short',timeZone:'UTC'})})`).join(' · '),selected=annualSelectedWeekKey===annualKey(year,row.week);
+    const statusLabel=row.status==='closed'?'Cerrada':row.status==='current'?'Actual':row.status==='partial'?'Parcial':'Futura',usesReal=annualRowUsesImportedReal(row),imported=annualTableImportedWeek(row),mailingCategories=annualMailingCategories(row,imported?.products),percentages=annualTableCategoryPercentages(row),dates=`${fmtDateShort(new Date(row.startDate+'T00:00:00Z'))} – ${fmtDateShort(new Date(row.endDate+'T00:00:00Z'))}`,campaign=String(row.campaign||'').trim(),campaignItems=annualCampaignsForWeek(year,row.week),campaignDetail=campaignItems.map(item=>`${item.name} (${new Date(`${item.date}T00:00:00Z`).toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'short',timeZone:'UTC'})})`).join(' · '),holidays=annualHolidaysForWeek(year,row.week),holidayDetail=holidays.map(item=>`${item.name} (${new Date(`${item.date}T00:00:00Z`).toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'short',timeZone:'UTC'})}; ${item.affectsShipping?'expediciones':''}${item.affectsShipping&&item.affectsProduction?' y ':''}${item.affectsProduction?'producción':''})`).join(' · '),selected=annualSelectedWeekKey===annualKey(year,row.week);
     const currentValue=usesReal?(imported?.total??null):null,forecastValue=row.currentForecast??row.initialForecast??0;
-    const displayedValue=usesReal?currentValue:forecastValue,currentCell=usesReal?`<span class="annual-expedition-real" title="Expediciones reales importadas">${annualNumber(currentValue)}</span>`:`<div class="annual-expedition-forecast"><input type="number" min="0" data-annual-forecast="${row.week}" value="${forecastValue}" aria-label="Previsión de expediciones semana ${row.week}"><small>Previsión</small></div>`,growth=annualGrowthAgainstComparable(displayedValue,row.comparableRealTotal),previousGrowth=annualGrowthAgainstComparable(displayedValue,row.previousYearRealTotal),weekDetails=`${dates}${campaign?` · Campaña: ${campaignDetail||campaign}`:''}`;
-    return `<tr data-annual-week="${row.week}" class="${row.status}${selected?' selected':''}"><td class="annual-week-cell${campaign?' has-campaign':''}" tabindex="0" aria-label="Semana ${row.week}, ${escapeHtml(weekDetails)}">S${String(row.week).padStart(2,'0')}<span class="annual-week-tooltip">${escapeHtml(dates)}${campaign?`<strong>Campaña: ${escapeHtml(campaignDetail||campaign)}</strong>`:''}</span></td><td><span class="annual-status ${row.status}">${statusLabel}</span></td><td>${annualNumber(row.comparableRealTotal)}</td><td>${annualNumber(row.previousYearRealTotal)}</td><td>${currentCell}</td><td><span class="annual-growth ${growth.className}">${growth.text}</span></td><td><span class="annual-growth ${previousGrowth.className}">${previousGrowth.text}</span></td>${ANNUAL_CATEGORIES.map((cat,index)=>`<td class="${index===0?'annual-category-start ':index===ANNUAL_CATEGORIES.length-1?'annual-category-end ':''}${mailingCategories.has(cat)?'annual-mailing-highlight':''}"><span class="annual-category-percent">${formatAnnualTablePercentage(percentages[cat])}</span></td>`).join('')}<td class="annual-mailing-cell" title="${escapeHtml(row.mailing||'')}">${escapeHtml(row.mailing||'—')}</td><td title="${escapeHtml(row.mailingProductCode||'')}">${escapeHtml(row.mailingProductCode||'—')}</td></tr>`;
+    const displayedValue=usesReal?currentValue:forecastValue,currentCell=usesReal?`<span class="annual-expedition-real" title="Expediciones reales importadas">${annualNumber(currentValue)}</span>`:`<div class="annual-expedition-forecast"><input type="number" min="0" data-annual-forecast="${row.week}" value="${forecastValue}" aria-label="Previsión de expediciones semana ${row.week}"><small>Previsión</small></div>`,growth=annualGrowthAgainstComparable(displayedValue,row.comparableRealTotal),previousGrowth=annualGrowthAgainstComparable(displayedValue,row.previousYearRealTotal),weekDetails=`${dates}${campaign?` · Campaña: ${campaignDetail||campaign}`:''}${holidays.length?` · Festivos: ${holidayDetail}`:''}`;
+    return `<tr data-annual-week="${row.week}" class="${row.status}${selected?' selected':''}${holidays.length?' has-holiday':''}"><td class="annual-week-cell${campaign?' has-campaign':''}" tabindex="0" aria-label="Semana ${row.week}, ${escapeHtml(weekDetails)}">S${String(row.week).padStart(2,'0')}${holidays.length?'<span class="annual-holiday-marker" aria-hidden="true">◆</span>':''}<span class="annual-week-tooltip">${escapeHtml(dates)}${campaign?`<strong>Campaña: ${escapeHtml(campaignDetail||campaign)}</strong>`:''}${holidays.length?`<strong>Festivos: ${escapeHtml(holidayDetail)}</strong>`:''}</span></td><td><span class="annual-status ${row.status}">${statusLabel}</span></td><td>${annualNumber(row.comparableRealTotal)}</td><td>${annualNumber(row.previousYearRealTotal)}</td><td>${currentCell}</td><td><span class="annual-growth ${growth.className}">${growth.text}</span></td><td><span class="annual-growth ${previousGrowth.className}">${previousGrowth.text}</span></td>${ANNUAL_CATEGORIES.map((cat,index)=>`<td class="${index===0?'annual-category-start ':index===ANNUAL_CATEGORIES.length-1?'annual-category-end ':''}${mailingCategories.has(cat)?'annual-mailing-highlight':''}"><span class="annual-category-percent">${formatAnnualTablePercentage(percentages[cat])}</span></td>`).join('')}<td class="annual-mailing-cell" title="${escapeHtml(row.mailing||'')}">${escapeHtml(row.mailing||'—')}</td><td title="${escapeHtml(row.mailingProductCode||'')}">${escapeHtml(row.mailingProductCode||'—')}</td></tr>`;
   }).join('');
   centerAnnualSelectedWeekInTable();
   renderAnnualChart(rows);
@@ -4962,359 +4977,266 @@ document.querySelectorAll('[data-production-nav]').forEach(button=>button.addEve
   setProductionTab(button.dataset.productionNav);
 }));
 
-function productionNumber(value){
-  return value == null ? 'Pendiente' : Number(value).toLocaleString('es-ES',{maximumFractionDigits:2});
-}
-function productionCalculationLabel(type){
-  return ({por_cantidad:'Por cantidad',tiempo_fijo:'Tiempo fijo'})[type] || type;
-}
-function setProductionTab(tab){
-  const allowed=new Set(['summary','times','weekly','staff','capacity']);
-  productionTab=allowed.has(tab)?tab:'summary';
-  document.querySelectorAll('[data-production-tab]').forEach(button=>button.classList.toggle('active',button.dataset.productionTab===productionTab));
-  document.querySelectorAll('[data-production-panel]').forEach(panel=>panel.hidden=panel.dataset.productionPanel!==productionTab);
-  if(productionTab==='times') renderProductionTimes();
-  if(productionTab==='weekly') renderProductionWeek();
-}
-function manufacturingRateSummary(){
-  const rates=[];
-  let variants=0;
-  productSummaries().filter(summary=>summary.status!=='deleted').forEach(summary=>{
-    const model=collectProductModel(summary.key);
-    const count=model.priceCount;
-    variants+=count;
-    AquarelleProduction.normalizeManufacturingRates(model.manufacturingRates,count).forEach(value=>{ if(value!=null) rates.push(value); });
-  });
-  return {variants,configured:rates.length,average:rates.length?rates.reduce((sum,value)=>sum+value,0)/rates.length:null};
-}
-function renderProduction(){
-  productionState=AquarelleProduction.createProductionState(productionState);
-  const summary=AquarelleProduction.summarizeProductionState(productionState);
-  const manufacturing=manufacturingRateSummary();
-  const kpis=document.getElementById('productionSummaryKpis');
-  if(kpis) kpis.innerHTML=[
-    ['Tareas principales',`${summary.mainActive}/4`,'Activas / totales'],
-    ['Rendimientos categoría',`${summary.configuredCategoryRates}/8`,'Recepción y Preasignación'],
-    ['Tareas satélite',`${summary.activeSatellite}/${summary.satellite}`,'Activas / totales'],
-    ['Semanas guardadas',`${summary.validatedWeeks}/${summary.weeklyPlans}`,'Validadas / guardadas']
-  ].map(([label,value,note])=>`<div class="production-kpi"><span>${label}</span><strong>${value}</strong><small>${note}</small></div>`).join('');
-  const updated=document.getElementById('productionUpdated');
-  if(updated) updated.textContent=`Actualizado: ${formatDateTime(productionState.updatedAt)}`;
-  setProductionTab(productionTab);
-}
-function productionTaskValue(task){
-  return AquarelleProduction.taskTimingText(task) || 'Pendiente';
-}
-function productionMainRateSummary(code){
-  if(code==='RECEPTION'||code==='PREASSIGNMENT'){
-    const field=code==='RECEPTION'?'reception':'preassignment';
-    const configured=AquarelleProduction.PRODUCT_CATEGORIES.filter(category=>productionState.categoryRates[category.code][field]!=null).length;
-    return `Por categoría · ${configured}/${AquarelleProduction.PRODUCT_CATEGORIES.length}`;
-  }
-  if(code==='MANUFACTURING'){
-    const summary=manufacturingRateSummary();
-    return `Por producto/variante · ${summary.configured}/${summary.variants}`;
-  }
-  return productionState.shippingRate==null?'Pendiente':`${productionNumber(productionState.shippingRate)} exp/h/persona`;
-}
-function renderProductionTimes(){
-  const mainBody=document.getElementById('productionMainTasksTbody');
-  const body=document.getElementById('productionTasksTbody');
-  if(!mainBody||!body) return;
-  mainBody.innerHTML=AquarelleProduction.MAIN_TASK_DEFINITIONS.map(definition=>{
-    const task=productionState.mainTasks[definition.code];
-    return `<tr class="${task.active?'':'inactive'}"><td class="production-task-name" data-label="Tarea"><strong>${escapeHtml(task.name)}</strong></td><td data-label="Rendimiento">${escapeHtml(productionMainRateSummary(definition.code))}</td><td data-label="Prioridad">${escapeHtml(task.priority)}</td><td data-label="Movilidad">${escapeHtml(task.mobility)}</td><td data-label="Estado"><span class="production-badge ${task.active?'':'inactive'}">${task.active?'Activa':'Inactiva'}</span></td><td data-label="Acción"><button type="button" class="btn-mini" data-main-task-edit="${definition.code}">Editar</button></td></tr>`;
-  }).join('');
-  body.innerHTML=productionState.satelliteTasks.length?productionState.satelliteTasks.map(task=>`<tr class="${task.active?'':'inactive'}"><td class="production-task-name" data-label="Tarea"><strong>${escapeHtml(task.name)}</strong><small>${escapeHtml(task.frequency||'Sin frecuencia')}</small></td><td data-label="Tiempo / rendimiento">${escapeHtml(productionTaskValue(task))}</td><td data-label="Prioridad">${escapeHtml(task.priority)}</td><td data-label="Movilidad">${escapeHtml(task.mobility)}</td><td data-label="Estado"><span class="production-badge ${task.active?'':'inactive'}">${task.active?'Activa':'Inactiva'}</span></td><td data-label="Acción"><div class="production-row-actions"><button type="button" class="btn-mini" data-production-action="edit" data-task-id="${escapeHtml(task.id)}">Editar</button><button type="button" class="btn-mini warn" data-production-action="delete" data-task-id="${escapeHtml(task.id)}">Eliminar</button></div></td></tr>`).join(''):`<tr><td colspan="6"><div class="empty-state">No hay tareas satélite.</div></td></tr>`;
-  renderProductionHistory();
-}
-function renderProductionHistory(){
-  const tasks=new Map(productionState.satelliteTasks.map(task=>[task.id,task]));
-  const categories=new Map(AquarelleProduction.PRODUCT_CATEGORIES.map(category=>[category.code,category.label]));
-  const body=document.getElementById('productionHistoryTbody');
-  const sorted=productionState.changeHistory.slice().sort((a,b)=>b.changedAt.localeCompare(a.changedAt));
-  body.innerHTML=sorted.length?sorted.map(entry=>{
-    let label='Expedición';
-    if(entry.scope==='category') label=`${categories.get(entry.entityKey)||entry.entityKey} · ${entry.field==='reception'?'Recepción':'Preasignación'}`;
-    if(entry.scope==='task') label=tasks.get(entry.entityKey)?.name||'Tarea satélite';
-    if(entry.scope==='main') label=productionState.mainTasks[entry.entityKey]?.name||'Tarea principal';
-    const previous=entry.previousValue===null||entry.previousValue===''?'Sin valor':entry.previousValue;
-    const next=entry.newValue===null||entry.newValue===''?'Sin valor':entry.newValue;
-    return `<tr><td>${formatDateTime(entry.changedAt)}</td><td>${escapeHtml(label)}</td><td>${escapeHtml(previous)}</td><td>${escapeHtml(next)}</td><td>${escapeHtml(entry.comment||'—')}</td></tr>`;
-  }).join(''):`<tr><td colspan="5"><div class="empty-state">Todavía no hay modificaciones registradas.</div></td></tr>`;
-}
-function openProductionMainTaskEditor(code){
-  const task=productionState.mainTasks[code];
-  if(!task) return;
-  document.getElementById('productionMainTaskModalTitle').textContent=`Editar ${task.name}`;
-  document.getElementById('productionMainTaskCode').value=code;
-  document.getElementById('productionMainTaskName').value=task.name;
-  document.getElementById('productionMainTaskPriority').value=task.priority;
-  document.getElementById('productionMainTaskMobility').value=task.mobility;
-  document.getElementById('productionMainTaskActive').value=String(task.active);
-  document.getElementById('productionMainTaskComment').value='';
-  document.getElementById('productionMainTaskError').textContent='';
-  const categoryBlock=document.getElementById('productionMainCategoryBlock');
-  const manufacturingBlock=document.getElementById('productionMainManufacturingBlock');
-  const shippingBlock=document.getElementById('productionMainShippingBlock');
-  categoryBlock.hidden=!['RECEPTION','PREASSIGNMENT'].includes(code);
-  manufacturingBlock.hidden=code!=='MANUFACTURING';
-  shippingBlock.hidden=code!=='SHIPPING';
-  if(!categoryBlock.hidden){
-    const field=code==='RECEPTION'?'reception':'preassignment';
-    document.getElementById('productionMainCategoryRates').innerHTML=AquarelleProduction.PRODUCT_CATEGORIES.map(category=>`<tr><td>${escapeHtml(category.label)}</td><td><input type="text" inputmode="decimal" data-main-category="${category.code}" data-main-operation="${field}" value="${productionState.categoryRates[category.code][field]??''}" placeholder="—"></td></tr>`).join('');
-  }
-  document.getElementById('productionMainShippingRate').value=productionState.shippingRate??'';
-  document.getElementById('productionMainTaskModal').classList.add('open');
-}
-function saveProductionMainTask(){
-  const code=document.getElementById('productionMainTaskCode').value;
-  const comment=document.getElementById('productionMainTaskComment').value;
-  let staged=productionState;
-  let result=AquarelleProduction.updateMainTask(staged,code,{
-    name:document.getElementById('productionMainTaskName').value,
-    priority:document.getElementById('productionMainTaskPriority').value,
-    mobility:document.getElementById('productionMainTaskMobility').value,
-    active:document.getElementById('productionMainTaskActive').value==='true'
-  },{comment});
-  if(!result.ok){document.getElementById('productionMainTaskError').textContent=result.errors.join(' ');return;}
-  staged=result.state;
-  for(const input of document.querySelectorAll('#productionMainCategoryRates [data-main-category]')){
-    result=AquarelleProduction.updateCategoryRate(staged,input.dataset.mainCategory,input.dataset.mainOperation,input.value,{comment});
-    if(!result.ok){input.classList.add('invalid');document.getElementById('productionMainTaskError').textContent=result.errors.join(' ');return;}
-    staged=result.state;
-  }
-  if(code==='SHIPPING'){
-    result=AquarelleProduction.updateShippingRate(staged,document.getElementById('productionMainShippingRate').value,{comment});
-    if(!result.ok){document.getElementById('productionMainTaskError').textContent=result.errors.join(' ');return;}
-    staged=result.state;
-  }
-  productionState=staged;
-  saveState();
-  document.getElementById('productionMainTaskModal').classList.remove('open');
-  renderProduction();
-}
-function updateProductionTaskValueLabel(){
-  const type=document.getElementById('productionTaskCalculation').value;
-  const label=document.getElementById('productionTaskValueLabel');
-  label.firstChild.textContent=type==='por_cantidad'?'Rendimiento (uds/h/persona)':'Horas-persona';
-}
-function openProductionTaskEditor(taskId=''){
-  const task=productionState.satelliteTasks.find(item=>item.id===taskId) || null;
-  document.getElementById('productionTaskModalTitle').textContent=task?'Editar tarea':'Añadir tarea satélite';
-  document.getElementById('productionTaskId').value=task?.id || '';
-  document.getElementById('productionTaskName').value=task?.name || '';
-  document.getElementById('productionTaskCode').value=task?.code || '';
-  document.getElementById('productionTaskCode').readOnly=!!task;
-  document.getElementById('productionTaskActive').value=String(task?.active !== false);
-  document.getElementById('productionTaskCalculation').value=task?.calculationType || 'por_cantidad';
-  document.getElementById('productionTaskValue').value=task?(task.calculationType==='por_cantidad'?task.performance ?? '':task.durationHours ?? ''):'';
-  document.getElementById('productionTaskFrequency').value=task?.frequency || '';
-  document.getElementById('productionTaskPriority').value=task?.priority || 'Media';
-  document.getElementById('productionTaskMobility').value=task?.mobility || 'Flexible';
-  document.getElementById('productionTaskComment').value='';
-  document.getElementById('productionTaskNotes').value=task?.notes || '';
-  document.getElementById('productionTaskError').textContent='';
-  updateProductionTaskValueLabel();
-  document.getElementById('productionTaskModal').classList.add('open');
-}
-function productionTaskFormData(){
-  const calculationType=document.getElementById('productionTaskCalculation').value;
-  const value=document.getElementById('productionTaskValue').value;
-  return {
-    name:document.getElementById('productionTaskName').value,
-    code:document.getElementById('productionTaskCode').value,
-    active:document.getElementById('productionTaskActive').value==='true',
-    calculationType,
-    performance:calculationType==='por_cantidad'?value:null,
-    durationHours:calculationType==='tiempo_fijo'?value:null,
-    frequency:document.getElementById('productionTaskFrequency').value,
-    priority:document.getElementById('productionTaskPriority').value,
-    mobility:document.getElementById('productionTaskMobility').value,
-    notes:document.getElementById('productionTaskNotes').value
-  };
-}
-function saveProductionTaskFromModal(){
-  const id=document.getElementById('productionTaskId').value;
-  const data=productionTaskFormData();
-  const comment=document.getElementById('productionTaskComment').value;
-  const result=id
-    ? AquarelleProduction.updateProductionTask(productionState,id,data,{comment})
-    : AquarelleProduction.addProductionTask(productionState,data);
-  if(!result.ok){ document.getElementById('productionTaskError').textContent=result.errors.join(' '); return; }
-  productionState=result.state;
-  saveState();
-  document.getElementById('productionTaskModal').classList.remove('open');
-  renderProduction();
-}
-document.querySelectorAll('[data-production-tab]').forEach(button=>button.addEventListener('click',()=>setProductionTab(button.dataset.productionTab)));
-document.getElementById('productionMainTasksTbody').addEventListener('click',event=>{const button=event.target.closest('[data-main-task-edit]');if(button)openProductionMainTaskEditor(button.dataset.mainTaskEdit);});
-document.getElementById('btnProductionMainTaskCancel').addEventListener('click',()=>document.getElementById('productionMainTaskModal').classList.remove('open'));
-document.getElementById('btnProductionMainTaskSave').addEventListener('click',saveProductionMainTask);
-document.getElementById('btnProductionManageManufacturing').addEventListener('click',()=>{document.getElementById('productionMainTaskModal').classList.remove('open');goToModule('nomenclaturas');setNomenclatureTab('products');});
-document.getElementById('btnAddProductionTask').addEventListener('click',()=>openProductionTaskEditor());
-document.getElementById('productionTaskCalculation').addEventListener('change',updateProductionTaskValueLabel);
-document.getElementById('btnProductionTaskCancel').addEventListener('click',()=>document.getElementById('productionTaskModal').classList.remove('open'));
-document.getElementById('btnProductionTaskSave').addEventListener('click',saveProductionTaskFromModal);
-document.getElementById('productionTasksTbody').addEventListener('click',event=>{
-  const button=event.target.closest('[data-production-action]');
-  if(!button) return;
-  const action=button.dataset.productionAction;
-  const taskId=button.dataset.taskId;
-  if(action==='edit'){ openProductionTaskEditor(taskId); return; }
-  if(action==='delete'){
-    const task=productionState.satelliteTasks.find(item=>item.id===taskId);
-    if(!confirm(`¿Eliminar la tarea ${task?.name || ''}? Solo se permite si nunca se ha utilizado.`)) return;
-    const result=AquarelleProduction.deleteProductionTask(productionState,taskId);
-    if(!result.ok){ alert(result.errors.join(' ')); return; }
-    productionState=result.state;
-    saveState();
-    renderProduction();
-  }
-});
 
-function productionDayOptions(selected,{blank=false,automatic=false}={}){
-  const options=[];
-  if(blank) options.push(`<option value="">Sin asignar</option>`);
-  if(automatic) options.push(`<option value="automatic">Automático</option>`);
-  AquarelleProduction.WEEK_DAYS.forEach(day=>options.push(`<option value="${day.code}" ${selected===day.code?'selected':''}>${day.label}</option>`));
-  return options.join('').replace(`value="${selected}"`,`value="${selected}" selected`);
+const productionDistributionLoading=new Set();
+let productionDayDetailCode='';
+
+function productionNumber(value){
+  return value==null||!Number.isFinite(Number(value))?'Pendiente':Number(value).toLocaleString('es-ES',{maximumFractionDigits:2});
 }
 function productionInputNumber(value,fallback=null){
   if(String(value).trim()==='') return fallback;
   const number=Number(String(value).replace(',','.'));
   return Number.isFinite(number)?number:fallback;
 }
+function productionDayOptions(selected,{blank=false,automatic=false}={}){
+  const options=[];
+  if(blank) options.push('<option value="">Sin asignar</option>');
+  if(automatic) options.push('<option value="automatic">Automático</option>');
+  AquarelleProduction.WEEK_DAYS.forEach(day=>options.push(`<option value="${day.code}" ${selected===day.code?'selected':''}>${day.label}</option>`));
+  return options.join('');
+}
+function setProductionTab(tab){
+  const allowed=new Set(['weekly','times','staff','capacity']);
+  productionTab=allowed.has(tab)?tab:'weekly';
+  document.querySelectorAll('[data-production-tab]').forEach(button=>button.classList.toggle('active',button.dataset.productionTab===productionTab));
+  document.querySelectorAll('[data-production-panel]').forEach(panel=>panel.hidden=panel.dataset.productionPanel!==productionTab);
+  if(productionTab==='times') renderProductionTimes();
+  if(productionTab==='weekly') renderProductionWeek();
+}
+function manufacturingRateSummary(){
+  const rates=[];let variants=0;
+  productSummaries().filter(summary=>summary.status!=='deleted').forEach(summary=>{
+    const model=collectProductModel(summary.key);variants+=model.priceCount;
+    AquarelleProduction.normalizeManufacturingRates(model.manufacturingRates,model.priceCount).forEach(value=>{if(value!=null)rates.push(value);});
+  });
+  return {variants,configured:rates.length};
+}
+function productionTaskTiming(task){
+  if(task.specialKind==='reception'||task.specialKind==='preassignment'){
+    const field=task.specialKind==='reception'?'reception':'preassignment';
+    const configured=AquarelleProduction.PRODUCT_CATEGORIES.filter(category=>productionState.categoryRates[category.code][field]!=null).length;
+    return `Por categoría · ${configured}/${AquarelleProduction.PRODUCT_CATEGORIES.length}`;
+  }
+  if(task.specialKind==='manufacturing'){
+    const summary=manufacturingRateSummary();return `Nomenclaturas · ${summary.configured}/${summary.variants} variantes`;
+  }
+  if(task.specialKind==='shipping') return productionState.shippingRate==null?'Pendiente':`${productionNumber(productionState.shippingRate)} exp/h/persona`;
+  return AquarelleProduction.taskTimingText(task)||'Pendiente';
+}
+function renderProduction(){
+  productionState=AquarelleProduction.createProductionState(productionState);
+  const updated=document.getElementById('productionUpdated');
+  if(updated) updated.textContent=`Actualizado: ${formatDateTime(productionState.updatedAt)}`;
+  setProductionTab(productionTab);
+}
+function renderProductionTimes(){
+  const body=document.getElementById('productionTasksTbody');if(!body)return;
+  body.innerHTML=productionState.tasks.map(task=>`<tr class="${task.active?'':'inactive'}"><td class="production-task-name" data-label="Tarea"><strong>${escapeHtml(task.name)}</strong>${task.frequency?`<small>${escapeHtml(task.frequency)}</small>`:''}</td><td data-label="Tipo"><span class="production-type-badge">${task.type==='principal'?'Principal':'Satélite'}</span></td><td data-label="Tiempo / rendimiento">${escapeHtml(productionTaskTiming(task))}</td><td data-label="Prioridad">${escapeHtml(task.priority)}</td><td data-label="Movilidad">${escapeHtml(task.mobility)}</td><td data-label="Estado"><span class="production-badge ${task.active?'':'inactive'}">${task.active?'Activa':'Inactiva'}</span></td><td data-label="Acción"><div class="production-row-actions"><button type="button" class="btn-mini" data-production-action="edit" data-task-id="${escapeHtml(task.id)}">Editar</button>${task.specialKind?'':`<button type="button" class="btn-mini warn" data-production-action="delete" data-task-id="${escapeHtml(task.id)}">Eliminar</button>`}</div></td></tr>`).join('');
+  renderProductionHistory();
+}
+function renderProductionHistory(){
+  const tasks=new Map(productionState.tasks.map(task=>[task.id,task]));
+  const body=document.getElementById('productionHistoryTbody');if(!body)return;
+  const sorted=productionState.changeHistory.slice().sort((a,b)=>b.changedAt.localeCompare(a.changedAt));
+  body.innerHTML=sorted.length?sorted.map(entry=>`<tr><td>${formatDateTime(entry.changedAt)}</td><td>${escapeHtml(tasks.get(entry.entityKey)?.name||entry.entityKey)}</td><td>${escapeHtml(entry.previousValue===null||entry.previousValue===''?'Sin valor':entry.previousValue)}</td><td>${escapeHtml(entry.newValue===null||entry.newValue===''?'Sin valor':entry.newValue)}</td><td>${escapeHtml(entry.comment||'—')}</td></tr>`).join(''):'<tr><td colspan="5"><div class="empty-state">Todavía no hay modificaciones registradas.</div></td></tr>';
+}
+function updateProductionTaskForm(){
+  const id=document.getElementById('productionTaskId').value,task=productionState.tasks.find(item=>item.id===id),special=task?.specialKind||'';
+  const calculation=document.getElementById('productionTaskCalculation'),valueLabel=document.getElementById('productionTaskValueLabel');
+  document.getElementById('productionTaskType').disabled=false;
+  document.getElementById('productionTaskCalculationLabel').hidden=!!special;
+  valueLabel.hidden=!!special;
+  document.getElementById('productionTaskFrequencyLabel').hidden=!!special;
+  document.getElementById('productionTaskCategoryBlock').hidden=!['reception','preassignment'].includes(special);
+  document.getElementById('productionTaskManufacturingBlock').hidden=special!=='manufacturing';
+  document.getElementById('productionTaskShippingBlock').hidden=special!=='shipping';
+  document.getElementById('productionTaskSpecificLogicWarning').hidden=!special;
+  valueLabel.firstChild.textContent=calculation.value==='por_cantidad'?'Rendimiento (uds/h/persona)':'Horas-persona';
+}
+function openProductionTaskEditor(taskId=''){
+  const task=productionState.tasks.find(item=>item.id===taskId)||null;
+  document.getElementById('productionTaskModalTitle').textContent=task?`Editar ${task.name}`:'Crear tarea';
+  document.getElementById('productionTaskId').value=task?.id||'';
+  document.getElementById('productionTaskName').value=task?.name||'';
+  document.getElementById('productionTaskType').value=task?.type||'satelite';
+  document.getElementById('productionTaskActive').value=String(task?.active!==false);
+  document.getElementById('productionTaskCalculation').value=task?.calculationType==='tiempo_fijo'?'tiempo_fijo':'por_cantidad';
+  document.getElementById('productionTaskValue').value=task?(task.calculationType==='por_cantidad'?task.performance??'':task.durationHours??''):'';
+  document.getElementById('productionTaskFrequency').value=task?.frequency||'';
+  document.getElementById('productionTaskPriority').value=task?.priority||'Media';
+  document.getElementById('productionTaskMobility').value=task?.mobility||'Flexible';
+  document.getElementById('productionTaskComment').value='';
+  document.getElementById('productionTaskNotes').value=task?.notes||'';
+  document.getElementById('productionTaskError').textContent='';
+  if(['reception','preassignment'].includes(task?.specialKind)){
+    const field=task.specialKind;
+    document.getElementById('productionTaskCategoryRates').innerHTML=AquarelleProduction.PRODUCT_CATEGORIES.map(category=>`<tr><td>${escapeHtml(category.label)}</td><td><input type="text" inputmode="decimal" data-task-category="${category.code}" data-task-operation="${field}" value="${productionState.categoryRates[category.code][field]??''}" placeholder="—"></td></tr>`).join('');
+  }
+  document.getElementById('productionTaskShippingRate').value=productionState.shippingRate??'';
+  updateProductionTaskForm();
+  document.getElementById('productionTaskModal').classList.add('open');
+}
+function productionTaskFormData(){
+  const calculationType=document.getElementById('productionTaskCalculation').value,value=document.getElementById('productionTaskValue').value;
+  return {name:document.getElementById('productionTaskName').value,type:document.getElementById('productionTaskType').value,active:document.getElementById('productionTaskActive').value==='true',calculationType,performance:calculationType==='por_cantidad'?value:null,durationHours:calculationType==='tiempo_fijo'?value:null,frequency:document.getElementById('productionTaskFrequency').value,priority:document.getElementById('productionTaskPriority').value,mobility:document.getElementById('productionTaskMobility').value,notes:document.getElementById('productionTaskNotes').value};
+}
+function saveProductionTaskFromModal(){
+  const id=document.getElementById('productionTaskId').value,task=productionState.tasks.find(item=>item.id===id),comment=document.getElementById('productionTaskComment').value;
+  const form=productionTaskFormData();
+  if(task?.specialKind&&form.type!==task.type&&!confirm('Esta tarea tiene una lógica de cálculo específica. Cambiar su clasificación no modifica su fuente de datos ni su fórmula.'))return;
+  let result=id?AquarelleProduction.updateProductionTask(productionState,id,form,{comment}):AquarelleProduction.addProductionTask(productionState,form);
+  if(!result.ok){document.getElementById('productionTaskError').textContent=result.errors.join(' ');return;}
+  let staged=result.state;
+  for(const input of document.querySelectorAll('#productionTaskCategoryRates [data-task-category]')){
+    result=AquarelleProduction.updateCategoryRate(staged,input.dataset.taskCategory,input.dataset.taskOperation,input.value,{comment});
+    if(!result.ok){document.getElementById('productionTaskError').textContent=result.errors.join(' ');return;}staged=result.state;
+  }
+  if(task?.specialKind==='shipping'){
+    result=AquarelleProduction.updateShippingRate(staged,document.getElementById('productionTaskShippingRate').value,{comment});
+    if(!result.ok){document.getElementById('productionTaskError').textContent=result.errors.join(' ');return;}staged=result.state;
+  }
+  productionState=staged;saveState();document.getElementById('productionTaskModal').classList.remove('open');renderProduction();
+}
+document.querySelectorAll('[data-production-tab]').forEach(button=>button.addEventListener('click',()=>setProductionTab(button.dataset.productionTab)));
+document.getElementById('btnAddProductionTask').addEventListener('click',()=>openProductionTaskEditor());
+document.getElementById('productionTaskCalculation').addEventListener('change',updateProductionTaskForm);
+document.getElementById('btnProductionTaskCancel').addEventListener('click',()=>document.getElementById('productionTaskModal').classList.remove('open'));
+document.getElementById('btnProductionTaskSave').addEventListener('click',saveProductionTaskFromModal);
+document.getElementById('btnProductionManageManufacturing').addEventListener('click',()=>{document.getElementById('productionTaskModal').classList.remove('open');goToModule('nomenclaturas');setNomenclatureTab('products');});
+document.getElementById('productionTasksTbody').addEventListener('click',event=>{
+  const button=event.target.closest('[data-production-action]');if(!button)return;
+  if(button.dataset.productionAction==='edit'){openProductionTaskEditor(button.dataset.taskId);return;}
+  const task=productionState.tasks.find(item=>item.id===button.dataset.taskId);
+  if(!confirm(`¿Eliminar la tarea ${task?.name||''}? Solo se permite si nunca se ha utilizado.`))return;
+  const result=AquarelleProduction.deleteProductionTask(productionState,button.dataset.taskId);
+  if(!result.ok){alert(result.errors.join(' '));return;}productionState=result.state;saveState();renderProduction();
+});
+
+function productionAnnualForecastFor(year,week){return annualWeek(year,week)?.currentForecast??null;}
 function ensureProductionWeeklyDraft(){
   const key=AquarelleProduction.weeklyPlanKey(productionWeekCursor.year,productionWeekCursor.week);
   if(!productionWeeklyDraft||productionWeeklyDraft.key!==key){
     productionWeeklyDraft=AquarelleProduction.weeklyPlanFor(productionState,productionWeekCursor.year,productionWeekCursor.week);
+    const annualValue=productionAnnualForecastFor(productionWeekCursor.year,productionWeekCursor.week);
+    if(productionWeeklyDraft.annualForecast!==annualValue){productionWeeklyDraft.annualForecast=annualValue;productionWeeklyDraft.status='draft';productionWeeklyDraft.validatedAt=null;}
+    const holidayContext=productionStructuredHolidayContext(productionWeekCursor.year,productionWeekCursor.week),holidayDetails=productionHolidayDetails(holidayContext),previousHolidaySignature=JSON.stringify([productionWeeklyDraft.distributionContext.holidayDays,productionWeeklyDraft.distributionContext.productionHolidayDays,productionWeeklyDraft.distributionContext.holidayDetails]),nextHolidaySignature=JSON.stringify([holidayContext.shippingDays,holidayContext.productionDays,holidayDetails]);
+    if(previousHolidaySignature!==nextHolidaySignature){productionWeeklyDraft.distributionContext={...productionWeeklyDraft.distributionContext,holidayDays:holidayContext.shippingDays,productionHolidayDays:holidayContext.productionDays,holidayDetails,references:[],excluded:[],calculatedAt:'',method:'Pendiente de recalcular tras actualizar el calendario de festivos'};productionWeeklyDraft.status='draft';productionWeeklyDraft.validatedAt=null;}
     productionWeeklyDirty=false;
   }
   return productionWeeklyDraft;
 }
-function markProductionWeekDirty(){
-  productionWeeklyDirty=true;
-  productionWeeklyDraft.status='draft';
-  productionWeeklyDraft.validatedAt=null;
-  renderProductionWeekStatus();
+function markProductionWeekDirty(){productionWeeklyDirty=true;productionWeeklyDraft.status='draft';productionWeeklyDraft.validatedAt=null;renderProductionWeekStatus();}
+function productionManufacturingRates(){const rates={};productSummaries().filter(summary=>summary.status!=='deleted').forEach(summary=>{const model=collectProductModel(summary.key);AquarelleProduction.normalizeManufacturingRates(model.manufacturingRates,model.priceCount).forEach((rate,index)=>{rates[`${summary.key}|${index+1}`]=rate;});});return rates;}
+function productionStructuredHolidayContext(year,week){return annualHolidayImpactForWeek(year,week);}
+function productionStructuredHolidayDays(year,week){return productionStructuredHolidayContext(year,week).shippingDays;}
+function productionHolidayDetails(context){return context.holidays.map(item=>({id:item.id,name:item.name,date:item.date,scope:item.scope,affectsShipping:item.affectsShipping,affectsProduction:item.affectsProduction}));}
+function productionPurchasesForWeek(year,week){
+  let snapshot=null;
+  if(Number(weekState?.year)===Number(year)&&Number(weekState?.week)===Number(week))snapshot={data,genericoData};
+  else snapshot=weekSnapshots[weekKey(year,week)]||null;
+  if(!snapshot)return [];
+  const categoryByGeneric=new Map();(snapshot.data||[]).forEach(row=>{if(row.generico&&!categoryByGeneric.has(row.generico))categoryByGeneric.set(row.generico,row.categoria);});
+  const fields=[['monday','compraL'],['tuesday','compraM'],['wednesday','compraX'],['thursday','compraJ'],['friday','compraV']],grouped=new Map();
+  Object.entries(snapshot.genericoData||{}).forEach(([generic,values])=>fields.forEach(([day,field])=>{const units=Math.max(0,Number(values?.[field])||0),category=categoryByGeneric.get(generic);if(!units||!category)return;const key=`${day}|${category}`;grouped.set(key,{day,category,units:(grouped.get(key)?.units||0)+units});}));
+  return [...grouped.values()];
 }
-function productionManufacturingRates(){
-  const rates={};
-  productSummaries().filter(summary=>summary.status!=='deleted').forEach(summary=>{
-    const model=collectProductModel(summary.key);
-    AquarelleProduction.normalizeManufacturingRates(model.manufacturingRates,model.priceCount).forEach((rate,index)=>{rates[`${summary.key}|${index+1}`]=rate;});
-  });
-  return rates;
+function productionHistoryWeekMetadata(year,week){
+  const row=annualWeek(year,week),notes=String(row?.notes||'');
+  return {status:annualWeekStatus(year,week),isComplete:annualImportWeek(year,week)?.isComplete===true,campaigns:annualCampaignsForWeek(year,week).map(item=>item.name),holidayDays:productionStructuredHolidayDays(year,week),hasIncident:!!row?.extraordinaryIncident||!!row?.incident||/incidencia|extraordin/i.test(notes)};
 }
-function renderProductionWeekStatus(){
-  const plan=ensureProductionWeeklyDraft();
-  document.getElementById('productionWeekLabel').textContent=`Semana ${plan.week} / ${plan.year}`;
-  const status=plan.status==='validated'?'Validada':'Borrador';
-  document.getElementById('productionWeekStatus').innerHTML=`<span class="production-badge ${plan.status==='validated'?'validated':''}">${status}</span> · ${formatDateTime(plan.updatedAt)}${productionWeeklyDirty?' · <span class="production-dirty">Cambios sin guardar</span>':''}`;
+function productionHistoryFromRecords(records){
+  const grouped=new Map();
+  (records||[]).forEach(record=>{const date=parseAnnualDate(record.shipment_date);if(!date)return;const year=isoYearForDate(date),week=getISOWeek(date),key=annualKey(year,week),day=AquarelleProduction.WEEK_DAYS[(date.getUTCDay()+6)%7].code;if(!grouped.has(key))grouped.set(key,{year,week,daily:Object.fromEntries(AquarelleProduction.WEEK_DAYS.map(item=>[item.code,0]))});grouped.get(key).daily[day]+=Math.max(0,Number(record.quantity)||0);});
+  return [...grouped.values()].map(item=>({...item,...productionHistoryWeekMetadata(item.year,item.week)}));
 }
-function renderProductionForecast(){
-  const plan=ensureProductionWeeklyDraft();
-  document.getElementById('productionForecastTbody').innerHTML=AquarelleProduction.WEEK_DAYS.map(day=>{
-    const forecast=plan.dailyForecast[day.code];
-    return `<tr><td>${day.label}</td><td><input type="text" inputmode="decimal" data-forecast-day="${day.code}" data-forecast-field="system" value="${forecast.system??''}" placeholder="0"></td><td><input type="text" inputmode="decimal" data-forecast-day="${day.code}" data-forecast-field="adjustment" value="${forecast.adjustment||0}"></td><td class="production-used-value" data-forecast-used="${day.code}">0</td></tr>`;
-  }).join('');
-  document.getElementById('productionBouquetSystem').value=plan.bouquetSystem??'';
-  document.getElementById('productionBouquetAdjustment').value=plan.bouquetAdjustment||0;
+function productionDistributionPeriods(year,week,campaigns,comparableYear){
+  const periods=[],target=getISOWeekRange(year,week),recentStart=new Date(target.start);recentStart.setUTCDate(recentStart.getUTCDate()-12*7);periods.push({from:dateIso(recentStart),to:dateIso(new Date(target.start.getTime()-86400000))});
+  if(comparableYear){const comparable=getISOWeekRange(comparableYear,week);periods.push({from:dateIso(comparable.start),to:dateIso(comparable.end)});}
+  if(campaigns.length)Object.keys(ensureAnnualPlanning().years||{}).map(Number).filter(value=>value<year).forEach(priorYear=>annualCampaignsForYear(priorYear).filter(item=>campaigns.some(name=>normalizedCampaignName(name)===normalizedCampaignName(item.name))).forEach(item=>{const campaignWeek=annualCampaignWeekNumber(item),range=getISOWeekRange(priorYear,campaignWeek);periods.push({from:dateIso(range.start),to:dateIso(range.end)});}));
+  return [...new Map(periods.filter(item=>item.from<=item.to).map(item=>[`${item.from}|${item.to}`,item])).values()];
 }
-function renderProductionCategoryMix(){
-  const plan=ensureProductionWeeklyDraft();
-  document.getElementById('productionCategoryMixGrid').innerHTML=AquarelleProduction.WEEK_DAYS.map(day=>`<div class="production-mix-day"><h4>${day.label}</h4>${AquarelleProduction.PRODUCT_CATEGORIES.map(category=>`<label class="production-mix-row"><span>${escapeHtml(category.label)}</span><input type="text" inputmode="decimal" data-mix-day="${day.code}" data-mix-category="${category.code}" value="${plan.categoryMix[day.code][category.code]||''}" placeholder="0"></label>`).join('')}</div>`).join('');
+async function refreshProductionDistribution(force=false){
+  const plan=ensureProductionWeeklyDraft(),key=plan.key;if(productionDistributionLoading.has(key))return;
+  const total=AquarelleProduction.weeklyTotalUsed(plan),campaigns=annualCampaignsForWeek(plan.year,plan.week).map(item=>item.name),holidayContext=productionStructuredHolidayContext(plan.year,plan.week),holidayDays=holidayContext.shippingDays,settings=annualYearSettings(plan.year),warnings=[];
+  if(holidayContext.productionDays.length)warnings.push(`Hay festivos que afectan a Producción (${holidayContext.productionDays.map(code=>AquarelleProduction.WEEK_DAYS.find(day=>day.code===code)?.label||code).join(', ')}). Las horas no se trasladan automáticamente sin una referencia histórica equivalente.`);
+  const enrichProposal=proposal=>Object.assign(proposal,{productionHolidayDays:holidayContext.productionDays,holidayDetails:productionHolidayDetails(holidayContext)});
+  productionDistributionLoading.add(key);document.getElementById('productionDistributionBalance').textContent='Consultando histórico diario…';
+  try{
+    const periods=productionDistributionPeriods(plan.year,plan.week,campaigns,settings.comparableYear),batches=await Promise.all(periods.map(period=>fetchBoDailyShipments({from:period.from,to:period.to,columns:'shipment_date,product_code,quantity'}))),records=[...new Map(batches.flat().map(row=>[`${row.shipment_date}|${row.product_code}`,row])).values()],historyWeeks=productionHistoryFromRecords(records);
+    const proposal=enrichProposal(AquarelleProduction.proposeDailyDistribution({year:plan.year,week:plan.week,total,campaigns,holidayDays,historyWeeks,comparableYear:settings.comparableYear,settings:productionState.distributionSettings}));proposal.warnings.push(...warnings);
+    if(force||!plan.dailyManual)productionWeeklyDraft=AquarelleProduction.applyDistributionProposal(plan,proposal);else productionWeeklyDraft.distributionContext=AquarelleProduction.applyDistributionProposal(plan,proposal).distributionContext;
+    markProductionWeekDirty();
+  }catch(error){
+    const proposal=enrichProposal(AquarelleProduction.proposeDailyDistribution({year:plan.year,week:plan.week,total,campaigns,holidayDays,historyWeeks:[],comparableYear:settings.comparableYear,settings:productionState.distributionSettings}));proposal.warnings.unshift(`No se pudo consultar el histórico diario: ${annualBoErrorMessage(error)}`);productionWeeklyDraft.distributionContext=AquarelleProduction.applyDistributionProposal(plan,proposal).distributionContext;
+  }finally{productionDistributionLoading.delete(key);if(productionWeeklyDraft?.key===key)renderProductionWeek();}
 }
-function renderProductionAssignments(){
-  const plan=ensureProductionWeeklyDraft();
-  document.getElementById('productionAssignmentsTbody').innerHTML=AquarelleProduction.WEEK_DAYS.map(day=>`<tr><td>${day.label}</td><td class="production-used-value" data-assignment-units="${day.code}">0</td><td><select data-assignment-day="${day.code}" data-assignment-field="preassignmentDays">${productionDayOptions(plan.preassignmentDays[day.code])}</select></td><td><select data-assignment-day="${day.code}" data-assignment-field="receptionDays">${productionDayOptions(plan.receptionDays[day.code],{blank:true})}</select></td></tr>`).join('');
+function renderProductionWeekStatus(){const plan=ensureProductionWeeklyDraft(),status=plan.status==='validated'?'Validada':'Borrador';document.getElementById('productionWeekLabel').textContent=`Semana ${plan.week} / ${plan.year}`;document.getElementById('productionWeekStatus').innerHTML=`<span class="production-badge ${plan.status==='validated'?'validated':''}">${status}</span> · ${formatDateTime(plan.updatedAt)}${productionWeeklyDirty?' · <span class="production-dirty">Cambios sin guardar</span>':''}`;}
+function renderProductionDistribution(){
+  const plan=ensureProductionWeeklyDraft(),balance=AquarelleProduction.distributionBalance(plan);
+  document.getElementById('productionAnnualForecast').textContent=productionNumber(plan.annualForecast);
+  document.getElementById('productionAdjustment').value=plan.productionAdjustment||0;
+  document.getElementById('productionTotalUsed').textContent=productionNumber(balance.used);
+  document.getElementById('productionDistributionTbody').innerHTML=AquarelleProduction.WEEK_DAYS.map(day=>`<tr><td>${day.label}</td><td><input type="text" inputmode="decimal" data-distribution-day="${day.code}" value="${plan.dailyExpeditions[day.code]||0}"></td><td>${productionNumber(balance.percentages[day.code])}%</td></tr>`).join('');
+  const balanceEl=document.getElementById('productionDistributionBalance');balanceEl.classList.toggle('warn',balance.difference!==0);balanceEl.textContent=balance.difference===0?`Total diario correcto: ${productionNumber(balance.daily)}`:`Diferencia pendiente: ${balance.difference>0?'+':''}${productionNumber(balance.difference)}`;
+  document.getElementById('btnProductionSpreadDifference').disabled=balance.difference===0;
+  const context=plan.distributionContext,references=context.references||[],warnings=context.warnings||[];
+  const dayLabels=codes=>(codes||[]).map(code=>AquarelleProduction.WEEK_DAYS.find(day=>day.code===code)?.label||code).join(', ')||'Ninguno';
+  document.getElementById('productionDistributionExplanation').innerHTML=`<dl><dt>Total semanal utilizado</dt><dd>${productionNumber(balance.used)}</dd><dt>Campaña</dt><dd>${context.campaigns?.length?escapeHtml(context.campaigns.join(' · ')):'No indicada'}</dd><dt>Festivos que afectan expediciones</dt><dd>${escapeHtml(dayLabels(context.holidayDays))}</dd><dt>Festivos que afectan producción</dt><dd>${escapeHtml(dayLabels(context.productionHolidayDays))}</dd><dt>Método</dt><dd>${escapeHtml(context.method||'Pendiente de cálculo')}</dd></dl>${context.holidayDetails?.length?`<ul class="production-reference-list">${context.holidayDetails.map(item=>`<li>${escapeHtml(item.name)} · ${escapeHtml(item.date)} · ${item.affectsShipping?'Expediciones':''}${item.affectsShipping&&item.affectsProduction?' y ':''}${item.affectsProduction?'Producción':''}</li>`).join('')}</ul>`:''}${references.length?`<ul class="production-reference-list">${references.map(ref=>`<li>S${ref.week}/${ref.year} · ${productionNumber(ref.weight)}% · ${escapeHtml(ref.reason)}</li>`).join('')}</ul>`:'<p>No hay semanas de referencia aplicadas.</p>'}${warnings.length?`<div class="production-plan-issues"><strong>Advertencias:</strong><ul>${warnings.map(message=>`<li>${escapeHtml(message)}</li>`).join('')}</ul></div>`:''}`;
 }
-function renderProductionWeekTasks(){
-  const plan=ensureProductionWeeklyDraft();
-  const selected=new Map(plan.satelliteAssignments.map(item=>[item.taskId,item]));
-  const tasks=productionState.satelliteTasks.filter(task=>task.active||selected.has(task.id));
-  document.getElementById('productionWeekTasks').innerHTML=tasks.length?tasks.map(task=>{
-    const assignment=selected.get(task.id);
-    const checked=!!assignment;
-    const automatic=task.mobility==='Flexible';
-    const selectedDay=assignment?.day||(automatic?'automatic':'');
-    const quantity=task.calculationType==='por_cantidad';
-    return `<label class="production-week-task"><input type="checkbox" data-week-task-select="${escapeHtml(task.id)}" ${checked?'checked':''}><span><strong>${escapeHtml(task.name)}</strong><small>${escapeHtml(productionTaskValue(task))}${task.frequency?` · ${escapeHtml(task.frequency)}`:''}</small></span><select data-week-task-day="${escapeHtml(task.id)}" ${checked?'':'disabled'}>${productionDayOptions(selectedDay,{blank:!automatic,automatic})}</select><input class="production-week-task-quantity" type="text" inputmode="decimal" data-week-task-quantity="${escapeHtml(task.id)}" value="${assignment?.quantity??''}" placeholder="Cantidad" ${quantity&&checked?'':'hidden'}></label>`;
-  }).join(''):'<div class="empty-state">No hay tareas satélite activas.</div>';
+function renderProductionCategoryMix(){const plan=ensureProductionWeeklyDraft();document.getElementById('productionCategoryMixGrid').innerHTML=AquarelleProduction.WEEK_DAYS.map(day=>`<div class="production-mix-day"><h4>${day.label}</h4>${AquarelleProduction.PRODUCT_CATEGORIES.map(category=>`<label class="production-mix-row"><span>${escapeHtml(category.label)}</span><input type="text" inputmode="decimal" data-mix-day="${day.code}" data-mix-category="${category.code}" value="${plan.categoryMix[day.code][category.code]||''}" placeholder="0"></label>`).join('')}</div>`).join('');}
+function renderProductionAssignments(){const plan=ensureProductionWeeklyDraft();document.getElementById('productionAssignmentsTbody').innerHTML=AquarelleProduction.WEEK_DAYS.map(day=>`<tr><td>${day.label}</td><td class="production-used-value">${productionNumber(plan.dailyExpeditions[day.code])}</td><td><select data-assignment-day="${day.code}">${productionDayOptions(plan.preassignmentDays[day.code])}</select></td></tr>`).join('');}
+function renderProductionTaskAssignments(type,containerId){
+  const plan=ensureProductionWeeklyDraft(),field=type==='principal'?'principalAssignments':'satelliteAssignments',selected=new Map(plan[field].map(item=>[item.taskId,item])),tasks=productionState.tasks.filter(task=>task.type===type&&task.active&&(type==='satelite'||!task.specialKind));
+  document.getElementById(containerId).innerHTML=tasks.length?tasks.map(task=>{const assignment=selected.get(task.id),checked=!!assignment,automatic=task.mobility==='Flexible',day=assignment?.day||(automatic?'automatic':'');if(task.specialKind)return `<label class="production-week-task"><input type="checkbox" data-plan-task-select="${escapeHtml(task.id)}" data-plan-task-type="${type}" ${checked?'checked':''}><span><strong>${escapeHtml(task.name)}</strong><small>${escapeHtml(productionTaskTiming(task))} · Fórmula específica conservada</small></span><span class="production-used-value">Distribución automática</span></label>`;return `<label class="production-week-task"><input type="checkbox" data-plan-task-select="${escapeHtml(task.id)}" data-plan-task-type="${type}" ${checked?'checked':''}><span><strong>${escapeHtml(task.name)}</strong><small>${escapeHtml(productionTaskTiming(task))}${task.frequency?` · ${escapeHtml(task.frequency)}`:''}</small></span><select data-plan-task-day="${escapeHtml(task.id)}" data-plan-task-type="${type}" ${checked?'':'disabled'}>${productionDayOptions(day,{blank:!automatic,automatic})}</select><input class="production-week-task-quantity" type="text" inputmode="decimal" data-plan-task-quantity="${escapeHtml(task.id)}" data-plan-task-type="${type}" value="${assignment?.quantity??''}" placeholder="Cantidad" ${task.calculationType==='por_cantidad'&&checked?'':'hidden'}></label>`;}).join(''):type==='principal'?'':'<div class="empty-state">No hay tareas satélite activas.</div>';
 }
 function renderProductionWeekResults(){
-  const plan=ensureProductionWeeklyDraft();
-  const calculated=AquarelleProduction.calculateWeeklyPlan(plan,productionState,{variantRates:productionManufacturingRates()});
-  AquarelleProduction.WEEK_DAYS.forEach(day=>{
-    const used=AquarelleProduction.forecastUsed(plan.dailyForecast[day.code]);
-    const forecastCell=document.querySelector(`[data-forecast-used="${day.code}"]`);
-    const assignmentCell=document.querySelector(`[data-assignment-units="${day.code}"]`);
-    if(forecastCell) forecastCell.textContent=productionNumber(used);
-    if(assignmentCell) assignmentCell.textContent=productionNumber(used);
-  });
-  document.getElementById('productionForecastTotal').textContent=productionNumber(calculated.forecastTotal);
-  document.getElementById('productionBouquetTotal').textContent=productionNumber(calculated.bouquetTotal);
-  document.getElementById('productionResultTbody').innerHTML=AquarelleProduction.WEEK_DAYS.map(day=>{const row=calculated.days[day.code];return `<tr><td>${day.short}</td><td>${productionNumber(row.reception)}</td><td>${productionNumber(row.preassignment)}</td><td>${productionNumber(row.manufacturing)}</td><td>${productionNumber(row.shipping)}</td><td>${productionNumber(row.satellite)}</td><td><strong>${productionNumber(row.total)}</strong></td></tr>`;}).join('');
-  const w=calculated.weekly;
-  document.getElementById('productionResultTfoot').innerHTML=`<tr><td>Semana</td><td>${productionNumber(w.reception)}</td><td>${productionNumber(w.preassignment)}</td><td>${productionNumber(w.manufacturing)}</td><td>${productionNumber(w.shipping)}</td><td>${productionNumber(w.satellite)}</td><td>${productionNumber(w.total)}</td></tr>`;
-  document.getElementById('productionWeekSummary').innerHTML=[['Recepción',w.reception],['Preasignación',w.preassignment],['Fabricación',w.manufacturing],['Expedición',w.shipping],['Tareas satélite',w.satellite],['TOTAL SEMANA',w.total,'total']].map(([label,value,className=''])=>`<div class="${className}"><span>${label}</span><strong>${productionNumber(value)} h-persona</strong></div>`).join('');
-  document.getElementById('productionPlanIssues').innerHTML=calculated.issues.length?`<strong>Datos pendientes:</strong><ul>${calculated.issues.map(issue=>`<li>${escapeHtml(issue.message)}</li>`).join('')}</ul>`:'';
-  return calculated;
+  const plan=ensureProductionWeeklyDraft(),purchases=productionPurchasesForWeek(plan.year,plan.week),calculated=AquarelleProduction.calculateWeeklyPlan(plan,productionState,{variantRates:productionManufacturingRates(),purchases}),taskMap=new Map(productionState.tasks.map(task=>[task.id,task]));
+  const receptionTask=productionState.tasks.find(task=>task.specialKind==='reception'),receptionSelected=receptionTask?.type==='principal'||plan.satelliteAssignments.some(item=>item.taskId===receptionTask?.id),receptionIssue=calculated.issues.find(issue=>issue.code==='RECEPTION_DATA_MISSING');document.getElementById('productionReceptionStatus').classList.toggle('warn',!!receptionIssue);document.getElementById('productionReceptionStatus').textContent=!receptionTask?.active?'Recepción inactiva.':!receptionSelected?'Recepción está clasificada como Satélite y no se ha seleccionado esta semana.':receptionIssue?receptionIssue.message:`Recepción calculada desde ${purchases.length} grupos de Compras por día y categoría.`;
+  const mainTasks=productionState.tasks.filter(task=>task.type==='principal'&&task.active);document.getElementById('productionMainSummaryTbody').innerHTML=mainTasks.map(task=>`<tr><td>${escapeHtml(task.name)}</td><td>${productionNumber(calculated.mainByTask[task.id]||0)}</td></tr>`).join('');document.getElementById('productionMainSummaryTfoot').innerHTML=`<tr><td>Subtotal actividades principales</td><td>${productionNumber(calculated.weekly.mainTotal)}</td></tr>`;
+  const satellites=Object.entries(calculated.satelliteByTask);document.getElementById('productionSatelliteSummaryTbody').innerHTML=satellites.length?satellites.map(([id,hours])=>`<tr><td>${escapeHtml(taskMap.get(id)?.name||'Tarea')}</td><td>${productionNumber(hours)}</td></tr>`).join(''):'<tr><td colspan="2">Ninguna tarea satélite seleccionada.</td></tr>';document.getElementById('productionSatelliteSummaryTfoot').innerHTML=`<tr><td>Subtotal satélite</td><td>${productionNumber(calculated.weekly.satelliteTotal)}</td></tr>`;
+  document.getElementById('productionGrandTotal').textContent=`${productionNumber(calculated.weekly.total)} h-persona`;
+  document.getElementById('productionResultTbody').innerHTML=AquarelleProduction.WEEK_DAYS.map(day=>{const row=calculated.days[day.code];return `<tr><td><button type="button" class="production-day-link" data-production-day-detail="${day.code}" aria-label="Ver detalle de ${day.label}">${day.short}</button></td><td>${productionNumber(row.reception)}</td><td>${productionNumber(row.preassignment)}</td><td>${productionNumber(row.manufacturing)}</td><td>${productionNumber(row.shipping)}</td><td>${productionNumber(row.otherMain)}</td><td>${productionNumber(row.satellite)}</td><td><strong>${productionNumber(row.total)}</strong></td></tr>`;}).join('');
+  const w=calculated.weekly;document.getElementById('productionResultTfoot').innerHTML=`<tr><td>Semana</td><td>${productionNumber(w.reception)}</td><td>${productionNumber(w.preassignment)}</td><td>${productionNumber(w.manufacturing)}</td><td>${productionNumber(w.shipping)}</td><td>${productionNumber(w.otherMain)}</td><td>${productionNumber(w.satellite)}</td><td>${productionNumber(w.total)}</td></tr>`;
+  renderProductionDayDetail(calculated,taskMap);
+  document.getElementById('productionPlanIssues').innerHTML=calculated.issues.length?`<strong>Datos pendientes:</strong><ul>${calculated.issues.map(issue=>`<li>${escapeHtml(issue.message)}</li>`).join('')}</ul>`:'';return calculated;
+}
+function renderProductionDayDetail(calculated,taskMap){
+  const panel=document.getElementById('productionDayDetail'),day=AquarelleProduction.WEEK_DAYS.find(item=>item.code===productionDayDetailCode);
+  if(!day){panel.hidden=true;panel.innerHTML='';return;}
+  const row=calculated.days[day.code],items=[];
+  [['reception','Recepción'],['preassignment','Preasignación'],['manufacturing','Fabricación'],['shipping','Expedición']].forEach(([key,fallback])=>{const task=productionState.tasks.find(item=>item.specialKind===key),selected=task?.type==='principal'||ensureProductionWeeklyDraft().satelliteAssignments.some(item=>item.taskId===task?.id);if(task?.active&&selected)items.push({name:task.name||fallback,type:task.type==='principal'?'Principal':'Satélite',hours:row[key]});});
+  [['principalAssignments','Principal'],['satelliteAssignments','Satélite']].forEach(([field,type])=>ensureProductionWeeklyDraft()[field].filter(assignment=>assignment.day===day.code).forEach(assignment=>{const task=taskMap.get(assignment.taskId);if(!task||task.specialKind)return;items.push({name:task.name,type,hours:AquarelleProduction.calculateTaskPersonHours(task,assignment.quantity)});}));
+  panel.hidden=false;panel.innerHTML=`<div class="production-day-detail-head"><h4>Detalle de ${day.label}</h4><button type="button" class="btn-mini" data-production-day-detail-close>Cerrar</button></div><div class="production-table-wrap"><table class="production-table"><thead><tr><th>Tarea</th><th>Tipo</th><th>Horas-persona</th></tr></thead><tbody>${items.length?items.map(item=>`<tr><td>${escapeHtml(item.name)}</td><td>${item.type}</td><td>${productionNumber(item.hours)}</td></tr>`).join(''):'<tr><td colspan="3">No hay tareas asignadas a este día.</td></tr>'}</tbody><tfoot><tr><td colspan="2">Total del día</td><td>${productionNumber(row.total)}</td></tr></tfoot></table></div>`;
 }
 function renderProductionWeek(){
-  ensureProductionWeeklyDraft();
-  renderProductionWeekStatus();
-  renderProductionForecast();
-  renderProductionCategoryMix();
-  renderProductionAssignments();
-  renderProductionWeekTasks();
-  renderProductionWeekResults();
+  const plan=ensureProductionWeeklyDraft();renderProductionWeekStatus();renderProductionDistribution();renderProductionCategoryMix();renderProductionAssignments();renderProductionTaskAssignments('principal','productionOtherMainTasks');renderProductionTaskAssignments('satelite','productionWeekTasks');renderProductionWeekResults();
+  if(AquarelleProduction.weeklyTotalUsed(plan)>0&&!plan.distributionContext.calculatedAt&&!productionDistributionLoading.has(plan.key))refreshProductionDistribution(false);
 }
-function changeProductionWeek(delta){
-  if(productionWeeklyDirty&&!confirm('Hay cambios semanales sin guardar. ¿Cambiar de semana y descartarlos?')) return;
-  productionWeekCursor=AquarelleProduction.shiftWeek(productionWeekCursor.year,productionWeekCursor.week,delta);
-  productionWeeklyDraft=null;
-  productionWeeklyDirty=false;
-  renderProductionWeek();
-}
-function saveProductionWeek(){
-  const result=AquarelleProduction.saveWeeklyPlan(productionState,productionWeeklyDraft);
-  productionState=result.state;
-  productionWeeklyDraft=result.plan;
-  productionWeeklyDirty=false;
-  saveState();
-  renderProduction();
-}
-function validateProductionWeek(){
-  const result=AquarelleProduction.validateWeeklyPlan(productionState,productionWeeklyDraft,{variantRates:productionManufacturingRates()});
-  if(!result.ok){renderProductionWeekResults();alert(result.errors.join(' '));return;}
-  productionState=result.state;
-  productionWeeklyDraft=result.plan;
-  productionWeeklyDirty=false;
-  saveState();
-  renderProduction();
-}
+function changeProductionWeek(delta){if(productionWeeklyDirty&&!confirm('Hay cambios semanales sin guardar. ¿Cambiar de semana y descartarlos?'))return;productionWeekCursor=AquarelleProduction.shiftWeek(productionWeekCursor.year,productionWeekCursor.week,delta);productionWeeklyDraft=null;productionWeeklyDirty=false;renderProductionWeek();}
+function saveProductionWeek(){const result=AquarelleProduction.saveWeeklyPlan(productionState,productionWeeklyDraft);productionState=result.state;productionWeeklyDraft=result.plan;productionWeeklyDirty=false;saveState();renderProduction();}
+function validateProductionWeek(){const result=AquarelleProduction.validateWeeklyPlan(productionState,productionWeeklyDraft,{variantRates:productionManufacturingRates(),purchases:productionPurchasesForWeek(productionWeeklyDraft.year,productionWeeklyDraft.week)});if(!result.ok){renderProductionWeekResults();alert(result.errors.join(' '));return;}productionState=result.state;productionWeeklyDraft=result.plan;productionWeeklyDirty=false;saveState();renderProduction();}
 document.getElementById('productionPreviousWeek').addEventListener('click',()=>changeProductionWeek(-1));
 document.getElementById('productionNextWeek').addEventListener('click',()=>changeProductionWeek(1));
 document.getElementById('btnProductionSaveWeek').addEventListener('click',saveProductionWeek);
 document.getElementById('btnProductionValidateWeek').addEventListener('click',validateProductionWeek);
-document.getElementById('productionForecastTbody').addEventListener('input',event=>{const input=event.target.closest('[data-forecast-field]');if(!input)return;const value=productionInputNumber(input.value,input.dataset.forecastField==='system'?null:0);productionWeeklyDraft.dailyForecast[input.dataset.forecastDay][input.dataset.forecastField]=value;markProductionWeekDirty();renderProductionWeekResults();});
-['productionBouquetSystem','productionBouquetAdjustment'].forEach(id=>document.getElementById(id).addEventListener('input',event=>{productionWeeklyDraft[id==='productionBouquetSystem'?'bouquetSystem':'bouquetAdjustment']=productionInputNumber(event.target.value,id==='productionBouquetSystem'?null:0);markProductionWeekDirty();renderProductionWeekResults();}));
+document.getElementById('btnProductionRefreshDistribution').addEventListener('click',()=>refreshProductionDistribution(true));
+document.getElementById('btnProductionSpreadDifference').addEventListener('click',()=>{productionWeeklyDraft=AquarelleProduction.spreadDailyDifference(productionWeeklyDraft);markProductionWeekDirty();renderProductionWeek();});
+document.getElementById('productionAdjustment').addEventListener('input',event=>{productionWeeklyDraft.productionAdjustment=productionInputNumber(event.target.value,0);if(!productionWeeklyDraft.dailyManual&&Object.values(productionWeeklyDraft.dailyDistributionAuto).some(Boolean))productionWeeklyDraft.dailyExpeditions=AquarelleProduction.applyDistributionProposal(productionWeeklyDraft,{percentages:productionWeeklyDraft.dailyDistributionAuto,dailyExpeditions:null,...productionWeeklyDraft.distributionContext}).dailyExpeditions;markProductionWeekDirty();renderProductionDistribution();renderProductionAssignments();renderProductionWeekResults();});
+document.getElementById('productionDistributionTbody').addEventListener('input',event=>{const input=event.target.closest('[data-distribution-day]');if(!input)return;productionWeeklyDraft.dailyExpeditions[input.dataset.distributionDay]=Math.max(0,Math.round(productionInputNumber(input.value,0)));productionWeeklyDraft.dailyManual=true;markProductionWeekDirty();renderProductionDistribution();renderProductionAssignments();renderProductionWeekResults();});
 document.getElementById('productionCategoryMixGrid').addEventListener('input',event=>{const input=event.target.closest('[data-mix-category]');if(!input)return;productionWeeklyDraft.categoryMix[input.dataset.mixDay][input.dataset.mixCategory]=Math.max(0,productionInputNumber(input.value,0));markProductionWeekDirty();renderProductionWeekResults();});
-document.getElementById('productionAssignmentsTbody').addEventListener('change',event=>{const select=event.target.closest('[data-assignment-field]');if(!select)return;productionWeeklyDraft[select.dataset.assignmentField][select.dataset.assignmentDay]=select.value;markProductionWeekDirty();renderProductionWeekResults();});
-document.getElementById('productionWeekTasks').addEventListener('change',event=>{
-  const checkbox=event.target.closest('[data-week-task-select]');
-  if(checkbox){
-    const task=productionState.satelliteTasks.find(item=>item.id===checkbox.dataset.weekTaskSelect);
-    productionWeeklyDraft.satelliteAssignments=productionWeeklyDraft.satelliteAssignments.filter(item=>item.taskId!==task.id);
-    if(checkbox.checked) productionWeeklyDraft.satelliteAssignments.push({taskId:task.id,day:task.mobility==='Flexible'?'automatic':'',quantity:null});
-    markProductionWeekDirty();renderProductionWeekTasks();renderProductionWeekResults();return;
-  }
-  const daySelect=event.target.closest('[data-week-task-day]');
-  if(daySelect){const assignment=productionWeeklyDraft.satelliteAssignments.find(item=>item.taskId===daySelect.dataset.weekTaskDay);if(assignment)assignment.day=daySelect.value;markProductionWeekDirty();renderProductionWeekResults();}
-});
-document.getElementById('productionWeekTasks').addEventListener('input',event=>{const input=event.target.closest('[data-week-task-quantity]');if(!input)return;const assignment=productionWeeklyDraft.satelliteAssignments.find(item=>item.taskId===input.dataset.weekTaskQuantity);if(assignment)assignment.quantity=Math.max(0,productionInputNumber(input.value,0));markProductionWeekDirty();renderProductionWeekResults();});
+document.getElementById('productionAssignmentsTbody').addEventListener('change',event=>{const select=event.target.closest('[data-assignment-day]');if(!select)return;productionWeeklyDraft.preassignmentDays[select.dataset.assignmentDay]=select.value;markProductionWeekDirty();renderProductionWeekResults();});
+document.getElementById('productionResultTbody').addEventListener('click',event=>{const button=event.target.closest('[data-production-day-detail]');if(!button)return;productionDayDetailCode=button.dataset.productionDayDetail;renderProductionWeekResults();});
+document.getElementById('productionDayDetail').addEventListener('click',event=>{if(!event.target.closest('[data-production-day-detail-close]'))return;productionDayDetailCode='';renderProductionWeekResults();});
+function productionAssignmentField(type){return type==='principal'?'principalAssignments':'satelliteAssignments';}
+function handleProductionTaskAssignment(event){
+  const select=event.target.closest('[data-plan-task-select]'),day=event.target.closest('[data-plan-task-day]'),quantity=event.target.closest('[data-plan-task-quantity]'),control=select||day||quantity;if(!control)return;
+  const type=control.dataset.planTaskType,field=productionAssignmentField(type),taskId=select?.dataset.planTaskSelect||day?.dataset.planTaskDay||quantity?.dataset.planTaskQuantity,task=productionState.tasks.find(item=>item.id===taskId);
+  if(select){productionWeeklyDraft[field]=productionWeeklyDraft[field].filter(item=>item.taskId!==taskId);if(select.checked)productionWeeklyDraft[field].push({taskId,day:task.mobility==='Flexible'?'automatic':'',quantity:null});markProductionWeekDirty();renderProductionTaskAssignments(type,type==='principal'?'productionOtherMainTasks':'productionWeekTasks');renderProductionWeekResults();return;}
+  const assignment=productionWeeklyDraft[field].find(item=>item.taskId===taskId);if(!assignment)return;if(day)assignment.day=day.value;if(quantity)assignment.quantity=Math.max(0,productionInputNumber(quantity.value,0));markProductionWeekDirty();renderProductionWeekResults();
+}
+['productionOtherMainTasks','productionWeekTasks'].forEach(id=>{document.getElementById(id).addEventListener('change',handleProductionTaskAssignment);document.getElementById(id).addEventListener('input',handleProductionTaskAssignment);});
+
 function openAnnualModal(id){ document.getElementById(id).classList.add('open'); }
 function resetAnnualImportCandidate(){ annualImportCandidate=null; document.getElementById('annualImportPreview').innerHTML=''; document.getElementById('annualImportStatus').textContent=''; const button=document.getElementById('btnAnnualImportConfirm'); button.disabled=false; button.textContent='Confirmar importación'; delete button.dataset.saving; }
 document.querySelectorAll('[data-close-annual]').forEach(button=>button.addEventListener('click',()=>{ if(button.dataset.closeAnnual==='annualImportModal') resetAnnualImportCandidate(); document.getElementById(button.dataset.closeAnnual).classList.remove('open'); }));
@@ -5522,6 +5444,38 @@ document.getElementById('annualCampaignListEditor').addEventListener('click',eve
   annualYearData(year).campaigns=campaigns.filter(entry=>entry.id!==id);
   addAnnualHistory({year,week:annualCampaignWeekNumber(item),type:'campaign-delete',origin:'annual-campaigns',oldValue:cloneData(item),newValue:null,reason:'Campaña eliminada del calendario anual'});
   refreshAnnualCampaignCalendar(`${item.name} eliminada del calendario de ${year}.`);
+});
+function annualHolidayScopeOptions(selected){ return AquarelleAnnualHolidays.SCOPES.map(scope=>`<option value="${scope.code}" ${scope.code===selected?'selected':''}>${escapeHtml(scope.label)}</option>`).join(''); }
+function renderAnnualHolidayEditor(){
+  const year=Number(ensureAnnualPlanning().selectedYear),data=annualYearData(year),editor=document.getElementById('annualHolidayListEditor');
+  document.getElementById('annualHolidayYearLabel').textContent=String(year);
+  const dateInput=document.getElementById('annualHolidayNewDate');dateInput.min=`${year}-01-01`;dateInput.max=`${year}-12-31`;
+  if(!data){editor.innerHTML='<div class="annual-campaign-empty">Crea primero la planificación de este ejercicio.</div>';document.getElementById('annualHolidayCount').textContent='0 festivos';return;}
+  const holidays=annualHolidaysForYear(year);document.getElementById('annualHolidayCount').textContent=`${holidays.length} festivo${holidays.length===1?'':'s'}`;
+  editor.innerHTML=holidays.length?holidays.map(item=>`<div class="annual-holiday-row" data-holiday-id="${escapeHtml(item.id)}"><input type="text" value="${escapeHtml(item.name)}" data-holiday-name aria-label="Nombre de festivo"><input type="date" min="${year}-01-01" max="${year}-12-31" value="${escapeHtml(item.date)}" data-holiday-date aria-label="Fecha de ${escapeHtml(item.name)}"><select data-holiday-scope aria-label="Ámbito de ${escapeHtml(item.name)}">${annualHolidayScopeOptions(item.scope)}</select><label class="annual-holiday-check"><input type="checkbox" data-holiday-shipping ${item.affectsShipping?'checked':''}> Sí</label><label class="annual-holiday-check"><input type="checkbox" data-holiday-production ${item.affectsProduction?'checked':''}> Sí</label><label class="annual-holiday-check"><input type="checkbox" data-holiday-active ${item.active?'checked':''}> Sí</label><input type="text" value="${escapeHtml(item.notes||'')}" data-holiday-notes aria-label="Observaciones de ${escapeHtml(item.name)}"><button type="button" class="btn btn-coral" data-holiday-delete>Eliminar</button></div>`).join(''):'<div class="annual-campaign-empty">Todavía no hay festivos en este ejercicio.</div>';
+}
+function setAnnualHolidayStatus(message,error=false){const status=document.getElementById('annualHolidayStatus');status.textContent=message||'';status.style.color=error?'var(--neg)':'var(--ink-soft)';}
+function refreshAnnualHolidayCalendar(message=''){saveState();renderAnnualPlanning();renderAnnualHolidayEditor();setAnnualHolidayStatus(message);}
+document.getElementById('btnAnnualHolidays').addEventListener('click',()=>{setAnnualHolidayStatus('');renderAnnualHolidayEditor();openAnnualModal('annualHolidayModal');});
+document.getElementById('btnAnnualHolidayAdd').addEventListener('click',()=>{
+  const year=Number(ensureAnnualPlanning().selectedYear),data=annualYearData(year),input={name:document.getElementById('annualHolidayNewName').value,date:document.getElementById('annualHolidayNewDate').value,scope:document.getElementById('annualHolidayNewScope').value,affectsShipping:document.getElementById('annualHolidayNewShipping').checked,affectsProduction:document.getElementById('annualHolidayNewProduction').checked,notes:document.getElementById('annualHolidayNewNotes').value};
+  if(!data){setAnnualHolidayStatus('Crea primero la planificación de este ejercicio.',true);return;}
+  const result=AquarelleAnnualHolidays.addHoliday(data,input);if(!result.ok){setAnnualHolidayStatus(result.errors.join(' '),true);return;}
+  ensureAnnualPlanning().years[String(year)]=result.yearData;addAnnualHistory({year,week:annualHolidayWeekNumber(result.holiday),type:'holiday-add',origin:'annual-holidays',oldValue:null,newValue:cloneData(result.holiday),reason:'Festivo añadido al calendario estructurado'});
+  ['annualHolidayNewName','annualHolidayNewDate','annualHolidayNewNotes'].forEach(id=>document.getElementById(id).value='');document.getElementById('annualHolidayNewShipping').checked=true;document.getElementById('annualHolidayNewProduction').checked=true;
+  refreshAnnualHolidayCalendar(`${result.holiday.name} añadido a la semana ${annualHolidayWeekNumber(result.holiday)}.`);
+});
+document.getElementById('annualHolidayListEditor').addEventListener('change',event=>{
+  const row=event.target.closest('[data-holiday-id]');if(!row)return;
+  const year=Number(ensureAnnualPlanning().selectedYear),data=annualYearData(year),id=row.dataset.holidayId,old=annualHolidaysForYear(year).find(item=>item.id===id);if(!old)return;
+  const patch={};if(event.target.matches('[data-holiday-name]'))patch.name=event.target.value;if(event.target.matches('[data-holiday-date]'))patch.date=event.target.value;if(event.target.matches('[data-holiday-scope]'))patch.scope=event.target.value;if(event.target.matches('[data-holiday-shipping]'))patch.affectsShipping=event.target.checked;if(event.target.matches('[data-holiday-production]'))patch.affectsProduction=event.target.checked;if(event.target.matches('[data-holiday-active]'))patch.active=event.target.checked;if(event.target.matches('[data-holiday-notes]'))patch.notes=event.target.value;
+  const result=AquarelleAnnualHolidays.updateHoliday(data,id,patch);if(!result.ok){setAnnualHolidayStatus(result.errors.join(' '),true);renderAnnualHolidayEditor();return;}
+  ensureAnnualPlanning().years[String(year)]=result.yearData;addAnnualHistory({year,week:annualHolidayWeekNumber(result.holiday),type:'holiday-update',origin:'annual-holidays',oldValue:cloneData(old),newValue:cloneData(result.holiday),reason:'Calendario de festivos modificado'});refreshAnnualHolidayCalendar(`${result.holiday.name} actualizado.`);
+});
+document.getElementById('annualHolidayListEditor').addEventListener('click',event=>{
+  const button=event.target.closest('[data-holiday-delete]');if(!button)return;
+  const year=Number(ensureAnnualPlanning().selectedYear),data=annualYearData(year),id=button.closest('[data-holiday-id]').dataset.holidayId,item=annualHolidaysForYear(year).find(entry=>entry.id===id);if(!item||!confirm(`¿Eliminar "${item.name}" del calendario de ${year}?`))return;
+  const result=AquarelleAnnualHolidays.removeHoliday(data,id);if(!result.ok){setAnnualHolidayStatus(result.errors.join(' '),true);return;}ensureAnnualPlanning().years[String(year)]=result.yearData;addAnnualHistory({year,week:annualHolidayWeekNumber(item),type:'holiday-delete',origin:'annual-holidays',oldValue:cloneData(item),newValue:null,reason:'Festivo eliminado del calendario estructurado'});refreshAnnualHolidayCalendar(`${item.name} eliminado del calendario de ${year}.`);
 });
 function showAnnualWeekFloatingTooltip(cell){
   const source=cell?.querySelector('.annual-week-tooltip'),tooltip=document.getElementById('annualWeekFloatingTooltip');

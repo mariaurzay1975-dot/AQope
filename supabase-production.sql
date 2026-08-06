@@ -51,6 +51,7 @@ create table if not exists public.production_tasks (
   priority text not null default 'Media' check (priority in ('Baja','Media','Alta')),
   mobility text not null default 'Flexible' check (mobility in ('Fija','Flexible')),
   notes text,
+  deleted_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   created_by uuid references auth.users(id) on delete set null,
@@ -107,6 +108,7 @@ create table if not exists public.production_weekly_plans (
   annual_forecast numeric(14,4) check (annual_forecast is null or annual_forecast>=0),
   production_adjustment numeric(14,4) not null default 0,
   automatic_distribution jsonb not null default '{}'::jsonb,
+  production_state_version integer not null default 5,
   distribution_references jsonb not null default '[]'::jsonb,
   distribution_context jsonb not null default '{}'::jsonb,
   validated_at timestamptz,
@@ -124,9 +126,9 @@ create table if not exists public.production_weekly_days (
   plan_id uuid not null references public.production_weekly_plans(id) on delete cascade,
   expedition_day smallint not null check (expedition_day between 1 and 7),
   proposed_percent numeric(7,4) not null default 0 check (proposed_percent between 0 and 100),
-  planned_expeditions numeric(14,4) not null default 0 check (planned_expeditions>=0),
+  calculated_expeditions numeric(14,4) not null default 0 check (calculated_expeditions>=0),
+  adjusted_expeditions numeric(14,4) not null default 0 check (adjusted_expeditions>=0),
   manually_adjusted boolean not null default false,
-  preassignment_day smallint not null check (preassignment_day between 1 and 7),
   unique (plan_id,expedition_day)
 );
 
@@ -156,12 +158,17 @@ create table if not exists public.production_weekly_task_assignments (
   id uuid primary key default gen_random_uuid(),
   plan_id uuid not null references public.production_weekly_plans(id) on delete cascade,
   task_id uuid not null references public.production_tasks(id),
-  assigned_day smallint check (assigned_day between 1 and 7),
-  automatic_assignment boolean not null default false,
+  assigned_day smallint not null check (assigned_day between 1 and 7),
+  selected boolean not null default true,
   planned_quantity numeric(14,4) check (planned_quantity is null or planned_quantity>=0),
-  unique (plan_id,task_id),
-  check ((automatic_assignment and assigned_day is null) or not automatic_assignment)
+  unique (plan_id,task_id,assigned_day)
 );
+
+-- Compatibilidad para instalaciones donde las tablas ya existían.
+alter table public.production_tasks add column if not exists deleted_at timestamptz;
+alter table public.production_weekly_plans add column if not exists production_state_version integer not null default 5;
+alter table public.production_weekly_days add column if not exists calculated_expeditions numeric(14,4) not null default 0;
+alter table public.production_weekly_days add column if not exists adjusted_expeditions numeric(14,4) not null default 0;
 
 -- Historial simple e informativo; nunca interviene en los cálculos.
 create table if not exists public.production_change_history (

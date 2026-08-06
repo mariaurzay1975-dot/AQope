@@ -7,6 +7,8 @@ const Production=require('./production.js');
 const NOW='2026-08-05T10:00:00.000Z';
 const days=(monday=0,tuesday=0,wednesday=0,thursday=0,friday=0,saturday=0,sunday=0)=>({monday,tuesday,wednesday,thursday,friday,saturday,sunday});
 const historyWeek=(year,week,daily,extra={})=>({year,week,daily,status:'closed',isComplete:true,campaigns:[],holidayDays:[],...extra});
+const balancedPlan=(year=2027,week=8,total=469)=>{const plan=Production.createWeeklyPlan(year,week);plan.annualForecast=total;plan.distribution.calculated=days(total);plan.distribution.adjusted=days(total);plan.dailyExpeditions=plan.distribution.adjusted;return plan;};
+const deleteSpecialTasks=state=>{let next=state;for(const task of [...next.tasks].filter(item=>item.specialKind))next=Production.deleteProductionTask(next,task.id).state;return next;};
 
 test('identifica S33/2026 con clave y rango ISO propios de Producción',()=>{
   assert.equal(Production.weeklyPlanKey(2026,33),'2026-W33');
@@ -86,46 +88,52 @@ test('una semana guarda previsión anual, ajuste separado y decisiones sin maest
   assert.equal(saved.plan.distributionContext.references.length,1);
 });
 
-test('semana normal combina cuatro semanas recientes 40/30/20/10 y año comparable',()=>{
+test('semana normal promedia cuatro semanas recientes y combina 60/40 con el año de referencia',()=>{
+  assert.equal(Production.RECENT_WEEKS_WEIGHT,0.60);assert.equal(Production.REFERENCE_WEEK_WEIGHT,0.40);assert.equal(Production.RECENT_VALID_WEEKS_COUNT,4);
   const proposal=Production.proposeDailyDistribution({year:2026,week:20,total:1000,comparableYear:2024,historyWeeks:[
     historyWeek(2026,19,days(40,30,20,10)),historyWeek(2026,18,days(30,30,20,20)),historyWeek(2026,17,days(20,30,30,20)),historyWeek(2026,16,days(10,20,30,40)),historyWeek(2024,20,days(25,25,25,25))
   ],now:NOW});
   assert.equal(Object.values(proposal.dailyExpeditions).reduce((a,b)=>a+b,0),1000);
   assert.equal(Math.round(Object.values(proposal.percentages).reduce((a,b)=>a+b,0)),100);
   assert.equal(proposal.references.length,5);
-  assert.equal(proposal.references.find(ref=>ref.year===2024).weight,30);
-  assert.equal(proposal.references[0].reason,'Semana reciente comparable');
+  assert.equal(proposal.references.find(ref=>ref.year===2024).weight,40);
+  assert.ok(proposal.references.filter(ref=>ref.source==='recent').every(ref=>ref.weight===15));
+  assert.deepEqual(proposal.dailyExpeditions,days(250,265,250,235));
+  assert.equal(proposal.sourceDetails.recent.weight,60);
+  assert.equal(proposal.sourceDetails.reference.weight,40);
 });
 
-test('una campaña utiliza prioritariamente la misma campaña aunque cambie de semana ISO',()=>{
+test('las semanas con campaña se descartan y no se mezclan con el histórico limpio',()=>{
   const proposal=Production.proposeDailyDistribution({year:2026,week:7,total:500,campaigns:['San Valentín'],comparableYear:2025,historyWeeks:[
     historyWeek(2025,7,days(50,100,150,100,100),{campaigns:['San Valentín']}),
     historyWeek(2024,6,days(100,100,100,100,100),{campaigns:['San Valentín']}),
     historyWeek(2026,6,days(10,10,10,10,10))
   ],now:NOW});
-  assert.equal(proposal.method,'Histórico de la misma campaña');
-  assert.equal(proposal.references.length,2);
-  assert.ok(proposal.references.every(ref=>/campaña|Misma semana/.test(ref.reason)));
+  assert.equal(proposal.references.length,1);
+  assert.equal(proposal.references[0].year,2026);
+  assert.equal(proposal.references[0].week,6);
+  assert.ok(proposal.excluded.some(item=>item.year===2025&&item.reason==='campaña'));
   assert.equal(proposal.dailyExpeditions.saturday,0);
 });
 
-test('una semana con festivo solo utiliza referencias con el mismo patrón de festivos',()=>{
+test('las referencias con festivo se descartan aunque coincidan con el patrón objetivo',()=>{
   const proposal=Production.proposeDailyDistribution({year:2026,week:33,total:400,holidayDays:['saturday'],comparableYear:2025,historyWeeks:[
     historyWeek(2025,33,days(80,80,80,80,80,0,0),{holidayDays:['saturday']}),
     historyWeek(2026,32,days(60,60,60,60,60,60,40))
   ],now:NOW});
   assert.equal(proposal.references.length,1);
-  assert.equal(proposal.references[0].year,2025);
+  assert.equal(proposal.references[0].year,2026);
+  assert.ok(proposal.excluded.some(item=>item.year===2025&&item.reason==='festivo'));
   assert.equal(proposal.dailyExpeditions.saturday,0);
-  assert.equal(proposal.dailyExpeditions.sunday,0);
+  assert.ok(proposal.dailyExpeditions.sunday>0);
 });
 
-test('sin referencias suficientes aplica el fallback estándar y explica la limitación',()=>{
-  const proposal=Production.proposeDailyDistribution({year:2026,week:33,total:400,holidayDays:['monday'],historyWeeks:[historyWeek(2026,32,days(80,80,80,80,80))],now:NOW});
+test('sin ninguna fuente válida aplica el fallback estándar y explica la limitación',()=>{
+  const proposal=Production.proposeDailyDistribution({year:2026,week:33,total:400,holidayDays:['monday'],historyWeeks:[historyWeek(2026,32,days(80,80,80,80,80),{isComplete:false})],now:NOW});
   assert.equal(proposal.references.length,0);
   assert.equal(Object.values(proposal.dailyExpeditions).reduce((a,b)=>a+b,0),400);
-  assert.ok(proposal.warnings.some(message=>/mismos festivos/.test(message)));
   assert.ok(proposal.warnings.some(message=>/distribución estándar/.test(message)));
+  assert.ok(proposal.excluded.some(item=>item.reason==='semana incompleta'));
 });
 
 test('la acción de repartir corrige la diferencia diaria sin cambiar el total semanal',()=>{
@@ -211,6 +219,42 @@ test('un fallo de histórico conserva una propuesta estándar válida',()=>{
   assert.equal(Object.values(proposal.dailyExpeditions).reduce((a,b)=>a+b,0),469);
 });
 
+test('el histórico reciente solo usa semanas completas, cerradas, anteriores y del mismo año',()=>{
+  const proposal=Production.proposeDailyDistribution({year:2026,week:20,total:469,comparableYear:2015,historyWeeks:[
+    historyWeek(2026,19,days(50,20,10,10,10)),historyWeek(2026,18,days(40,20,20,10,10)),historyWeek(2026,17,days(30,20,20,20,10)),historyWeek(2026,16,days(20,20,20,20,20)),historyWeek(2026,15,days(10,20,20,20,30)),
+    historyWeek(2026,14,days(20,20,20,20,20),{isComplete:false}),historyWeek(2026,13,days(20,20,20,20,20),{status:'current'}),historyWeek(2025,19,days(90,10)),historyWeek(2026,21,days(90,10))
+  ]});
+  assert.deepEqual(proposal.sourceDetails.recent.weeks.map(item=>item.week),[19,18,17,16]);
+  assert.equal(proposal.references.some(ref=>ref.week===15),false);
+  assert.ok(proposal.excluded.some(item=>item.week===14&&item.reason==='semana incompleta'));
+  assert.ok(proposal.excluded.some(item=>item.week===13&&item.reason==='semana pendiente de cierre'));
+  assert.equal(proposal.sourceDetails.recent.weight,100);
+  assert.equal(Object.values(proposal.days).reduce((sum,value)=>sum+value,0),469);
+});
+
+test('descarta cierres operativos y días anómalos',()=>{
+  const proposal=Production.proposeDailyDistribution({year:2026,week:20,total:200,historyWeeks:[historyWeek(2026,19,days(40,40,40,40,40),{hasOperationalClosure:true}),historyWeek(2026,18,days(40,40,40,40,40),{hasAnomaly:true})]});
+  assert.equal(proposal.source,'default');
+  assert.ok(proposal.excluded.some(item=>item.reason==='cierre operativo'));
+  assert.ok(proposal.excluded.some(item=>item.reason==='días anómalos o incompletos'));
+});
+
+test('si falta el histórico reciente usa el 100 % de la semana equivalente configurada',()=>{
+  const proposal=Production.proposeDailyDistribution({year:2026,week:34,total:100,comparableYear:2015,historyWeeks:[historyWeek(2015,34,days(50,20,10,10,10))]});
+  assert.equal(proposal.source,'reference-week');assert.equal(proposal.sourceDetails.reference.year,2015);assert.equal(proposal.sourceDetails.reference.weight,100);assert.deepEqual(proposal.days,days(50,20,10,10,10));
+});
+
+test('si falta la referencia usa el 100 % de la media reciente',()=>{
+  const proposal=Production.proposeDailyDistribution({year:2026,week:34,total:100,comparableYear:2015,historyWeeks:[historyWeek(2026,33,days(40,20,20,10,10)),historyWeek(2026,32,days(20,20,20,20,20))]});
+  assert.equal(proposal.source,'recent-average');assert.equal(proposal.sourceDetails.recent.weight,100);assert.equal(proposal.sourceDetails.reference.weight,0);assert.deepEqual(proposal.days,days(30,20,20,15,15));
+});
+
+test('la explicación conserva fuentes, descartes, porcentajes y redondeos al guardar el plan',()=>{
+  const proposal=Production.proposeDailyDistribution({year:2026,week:34,total:469,comparableYear:2015,historyWeeks:[historyWeek(2026,33,days(40,20,20,10,10)),historyWeek(2026,32,days(20,20,20,20,20),{campaigns:['Especial']}),historyWeek(2015,34,days(30,25,20,15,10))]});
+  const plan=Production.applyDistributionProposal(Production.createWeeklyPlan(2026,34),proposal,{replaceAdjusted:true});
+  assert.equal(plan.distributionContext.source,'recent-and-reference');assert.equal(plan.distributionContext.sourceDetails.reference.year,2015);assert.ok(plan.distributionContext.excluded.some(item=>item.reason==='campaña'));assert.equal(plan.distributionContext.roundingAdjustments.length,7);assert.equal(Object.values(plan.distribution.calculated).reduce((sum,value)=>sum+value,0),469);
+});
+
 test('propuesta calculada y ajuste manual se normalizan por separado',()=>{
   const plan=Production.normalizeWeeklyPlan({year:2027,week:8,distribution:{calculated:days(10,20),adjusted:days(12,18),calculationSource:'saved'}});
   assert.equal(plan.distribution.calculated.monday,10);
@@ -253,6 +297,30 @@ test('se pueden eliminar las cuatro tareas principales sin romper el resto',()=>
   const calc=Production.calculateWeeklyPlan(Production.createWeeklyPlan(2027,8),state,{purchases:[]});assert.ok(calc);
 });
 
+test('valida una semana sin tarea Recepción cuando el resto de tareas activas está calculado',()=>{
+  let state=Production.createProductionState(),reception=state.tasks.find(task=>task.specialKind==='reception');state=Production.deleteProductionTask(state,reception.id).state;state=Production.updateCategoryRate(state,'ROSAS','preassignment',100).state;state=Production.updateShippingRate(state,100).state;
+  const plan=balancedPlan();plan.categoryMix.monday.ROSAS=469;plan.variantMix=[{day:'monday',variantKey:'ROSAS|BASE',units:469}];
+  const result=Production.validateWeeklyPlan(state,plan,{purchases:[{day:'monday',category:'ROSAS',units:100}],variantRates:{'ROSAS|BASE':100}});
+  assert.equal(result.ok,true);assert.equal(result.plan.status,'validated');assert.equal(result.calculated.issues.some(issue=>issue.code.startsWith('RECEPTION_')),false);
+});
+
+test('una tarea principal eliminada queda fuera de los requisitos de validación',()=>{
+  let state=deleteSpecialTasks(Production.createProductionState()),added=Production.addProductionTask(state,{name:'Principal temporal',type:'principal',calculationType:'por_cantidad',performance:10});state=added.state;const deletedId=added.task.id;state=Production.deleteProductionTask(state,deletedId).state;
+  const plan=balancedPlan(),result=Production.validateWeeklyPlan(state,plan);
+  assert.equal(state.tasks.some(task=>task.id===deletedId),false);assert.equal(result.ok,true);assert.equal(result.calculated.blockingIssues.some(issue=>issue.taskId===deletedId),false);
+});
+
+test('solo las tareas existentes y activas pueden bloquear la validación',()=>{
+  let state=deleteSpecialTasks(Production.createProductionState()),added=Production.addProductionTask(state,{name:'Principal con cantidad',type:'principal',calculationType:'por_cantidad',performance:10});state=added.state;const taskId=added.task.id,plan=balancedPlan();plan.principalAssignments=[{taskId,days:{monday:{selected:true,quantity:null}}}];
+  const inactive=Production.updateProductionTask(state,taskId,{active:false}).state,inactiveResult=Production.validateWeeklyPlan(inactive,plan),activeResult=Production.validateWeeklyPlan(state,plan);
+  assert.equal(inactiveResult.ok,true);assert.ok(inactiveResult.calculated.issues.some(issue=>issue.code==='TASK_INACTIVE_SKIPPED'));assert.equal(activeResult.ok,false);assert.deepEqual(activeResult.errors,['Faltan datos para calcular Principal con cantidad el Lunes.']);assert.doesNotMatch(activeResult.errors.join(' '),/La semana tiene datos incompletos/);
+});
+
+test('469 calculadas y 469 ajustadas permiten validar sin diferencia',()=>{
+  const state=deleteSpecialTasks(Production.createProductionState()),plan=balancedPlan(),result=Production.validateWeeklyPlan(state,plan);
+  assert.equal(Production.distributionBalance(plan).difference,0);assert.equal(result.ok,true);assert.equal(result.plan.status,'validated');
+});
+
 test('una tarea eliminada conserva instantánea en un plan histórico usado',()=>{
   let state=Production.createProductionState(),task=state.tasks.find(item=>item.specialKind==='reception'),plan=Production.createWeeklyPlan(2027,8);plan.status='validated';state=Production.saveWeeklyPlan(state,plan).state;
   state=Production.deleteProductionTask(state,task.id).state;assert.equal(state.weeklyPlans[plan.key].taskSnapshots[task.id].name,task.name);
@@ -274,6 +342,11 @@ test('desglose dinámico crea una columna por tarea y totales coherentes',()=>{
 
 test('resultado central comparte totales con resumen y desglose',()=>{
   let state=Production.createProductionState();state=Production.updateShippingRate(state,50).state;const plan=Production.createWeeklyPlan(2027,8);plan.annualForecast=100;plan.dailyExpeditions=days(100);const calc=Production.calculateWeeklyPlan(plan,state,{purchases:[]});assert.equal(calc.totals.grandTotal,calc.dailyBreakdown.grandTotal);assert.equal(calc.totals.main,calc.weekly.mainTotal);
+});
+
+test('el desglose central ordena principales antes que satélites y mantiene totales por tarea, día y semana',()=>{
+  let state=Production.createProductionState(),added=Production.addProductionTask(state,{name:'Satélite Z',type:'satelite',calculationType:'tiempo_fijo',durationHours:2});state=added.state;const plan=Production.createWeeklyPlan(2027,8);plan.satelliteAssignments=[{taskId:added.task.id,days:{saturday:{selected:true}}}];const calc=Production.calculateWeeklyPlan(plan,state,{purchases:[]});const types=calc.dailyBreakdown.columns.map(item=>item.type),firstSatellite=types.indexOf('satelite');
+  assert.ok(types.slice(0,firstSatellite).every(type=>type==='principal'));assert.ok(types.slice(firstSatellite).every(type=>type==='satelite'));assert.equal(calc.dailyBreakdown.totalsByDay.saturday,2);assert.equal(calc.dailyBreakdown.totalsByTask[added.task.id],2);assert.equal(calc.dailyBreakdown.grandTotal,calc.totals.grandTotal);
 });
 
 test('migra day legado a days y la migración es idempotente',()=>{
@@ -315,4 +388,158 @@ test('la interfaz elimina Resumen y muestra la planificación semanal primero',(
   assert.match(html,/Esta tarea tiene una lógica de cálculo específica\. Cambiar su clasificación no modifica su fuente de datos ni su fórmula\./);
   assert.match(html,/productionTaskType'\)\.disabled=false/);
   assert.match(html,/let productionTab = 'weekly'/);
+});
+
+test('la distribución presenta días en columnas, calculada primero y ajuste manual después',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+  assert.match(html,/productionDistributionThead[^]*<th>Concepto<\/th>\$\{visibleDays\.map/);
+  const calculated=html.indexOf('data-distribution-row="calculated"'),manual=html.indexOf('data-distribution-row="manual"');
+  assert.ok(calculated>0&&manual>calculated);assert.match(html,/Expedición calculada/);assert.match(html,/Ajuste manual/);assert.match(html,/Total semana/);assert.match(html,/balance\.calculatedTotal/);assert.match(html,/balance\.adjustedTotal/);
+});
+
+test('sábado y domingo están ocultos por defecto y un único control actualiza ambas tablas sin tocar datos',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+  assert.match(html,/let productionShowWeekend=false/);assert.match(html,/id="productionShowWeekend" type="checkbox"/);assert.match(html,/Mostrar sábado y domingo/);
+  assert.ok((html.match(/productionShowWeekend\|\|!\['saturday','sunday'\]\.includes\(day\.code\)/g)||[]).length>=2);
+  const handler=html.match(/productionShowWeekend'\)\.addEventListener\('change',event=>\{([^}]*)\}/)?.[1]||'';assert.match(handler,/renderProductionDistribution/);assert.match(handler,/renderProductionWeekResults/);assert.doesNotMatch(handler,/distribution\.adjusted|dailyExpeditions/);
+});
+
+test('actividades satélite ocultan el fin de semana sin borrar asignaciones y reorganizan la rejilla',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+  assert.match(html,/let productionShowSatelliteWeekend=false/);assert.match(html,/id="productionShowSatelliteWeekend" type="checkbox"/);
+  assert.match(html,/type==='satelite'&&!productionShowSatelliteWeekend\?AquarelleProduction\.PRODUCTION_DAYS\.filter/);assert.match(html,/--production-day-count:\$\{visibleDays\.length\}/);assert.match(html,/repeat\(var\(--production-day-count,7\),minmax\(0,1fr\)\)/);
+  const handler=html.match(/productionShowSatelliteWeekend'\)\.addEventListener\('change',event=>\{([^}]*)\}/)?.[1]||'';assert.match(handler,/renderProductionTaskAssignments\('satelite','productionWeekTasks'\)/);assert.doesNotMatch(handler,/satelliteAssignments|dailyExpeditions|saveState/);
+});
+
+test('el layout semanal compacto limita inputs y evita mínimos horizontales en escritorio',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+  assert.match(html,/production-total-grid\{display:grid;grid-template-columns:minmax\(150px,1fr\) minmax\(170px,220px\)/);assert.match(html,/production-total-grid input\{width:78px/);assert.match(html,/production-distribution-table input\{display:block;width:60px/);assert.match(html,/production-distribution-table\{width:100%;min-width:0;table-layout:fixed\}/);assert.match(html,/production-dynamic-breakdown\{width:100%;min-width:0;table-layout:fixed\}/);assert.match(html,/production-distribution-table,\.production-dynamic-breakdown\{min-width:720px\}/);
+});
+
+test('el ajuste manual conserva texto durante input y solo confirma número en change',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),inputHandler=html.match(/productionDistributionTbody'\)\.addEventListener\('input',event=>\{([^}]*)\}/)?.[1]||'',changeHandler=html.match(/productionDistributionTbody'\)\.addEventListener\('change',event=>\{([^}]*)\}/)?.[1]||'';
+  let editing='';editing+='1';editing+='2';assert.equal(editing,'12');editing+='0';assert.equal(editing,'120');editing='';assert.equal(editing,'');
+  assert.match(inputHandler,/editingValue=input\.value/);assert.doesNotMatch(inputHandler,/renderProduction|productionInputNumber|distribution\.adjusted/);assert.match(changeHandler,/text===''\?0/);assert.match(changeHandler,/distribution\.adjusted/);assert.match(changeHandler,/renderProductionDistribution/);
+});
+
+test('la tabla visual de Preasignación desaparece y su cálculo interno permanece',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),logic=fs.readFileSync(path.join(__dirname,'production.js'),'utf8');
+  assert.doesNotMatch(html,/id="productionAssignmentsTbody"/);assert.doesNotMatch(html,/function renderProductionAssignments/);assert.match(logic,/calculateDailyPreassignmentHours/);assert.match(logic,/PREASSIGNMENT_DATA_MISSING/);
+});
+
+test('el desglose visual presenta actividades en filas, días en columnas y totales finales',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+  assert.match(html,/<th>Actividad<\/th>\$\{visibleDays\.map/);assert.match(html,/breakdown\.columns\.map\(column=>`<tr>/);assert.match(html,/<th>Total semana<\/th>/);assert.match(html,/<td>Total día<\/td>/);assert.match(html,/breakdown\.totalsByDay\[day\.code\]/);assert.match(html,/breakdown\.grandTotal/);assert.match(html,/production-dynamic-breakdown th:first-child[^}]*position:sticky/);
+});
+
+test('la interfaz oculta Recepción eliminada y representa menos cero como cero',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),source=html.match(/function productionNumber\(value\)\{[\s\S]*?\n\}/)?.[0];assert.ok(source);
+  const format=Function(`${source};return productionNumber;`)();assert.equal(format(-0),'0');assert.match(html,/receptionStatus\.hidden=!receptionTask/);assert.match(html,/receptionStatus\.textContent=!receptionTask\?'':/);
+});
+
+const manufacturingProduct=(forecastUnits=100,variants=[])=>({productId:'P1',productCode:'P1',name:'Ramo prueba',category:'ROSAS',forecastUnits,variants});
+const manufacturingWeek=(year,week,variants,extra={})=>({year,week,status:'closed',isComplete:true,campaigns:[],holidayDays:[],products:[manufacturingProduct(100,variants)],...extra});
+const manufacturingInput=extra=>({weeklyTotal:100,productForecast:[manufacturingProduct(100,[{variantKey:'1',variantIndex:1,quantity:60},{variantKey:'2',variantIndex:2,quantity:40}])],nomenclatures:[{productId:'P1',category:'ROSAS',manufacturingRates:[10,20]}],adjustedDailyExpeditions:days(50,50),purchases:[{day:'monday',category:'ROSAS',units:100}],...extra});
+
+test('Fabricación calcula productos, variantes, rendimientos exactos y horas-persona',()=>{
+  const result=Production.calculateManufacturingPlan(manufacturingInput());
+  assert.equal(result.status,'calculated');assert.equal(result.weeklyHours,8);assert.equal(result.products[0].variants[0].hours,6);assert.equal(result.products[0].variants[1].hours,2);assert.equal(result.calculationMeta.exactPercentage,100);
+});
+
+test('la previsión explícita por variante tiene prioridad sobre cualquier histórico',()=>{
+  const result=Production.calculateManufacturingPlan(manufacturingInput({recentHistory:[manufacturingWeek(2026,31,[{variantIndex:1,quantity:1},{variantIndex:2,quantity:99}])],referenceWeek:manufacturingWeek(2025,33,[{variantIndex:1,quantity:1},{variantIndex:2,quantity:99}])}));
+  assert.equal(result.products[0].variantSource,'explicit-forecast');assert.deepEqual(result.products[0].variants.map(item=>item.quantity),[60,40]);assert.deepEqual(result.calculationMeta.recentWeeksUsed,[]);assert.equal(result.calculationMeta.referenceWeekUsed,null);
+});
+
+test('sin variantes explícitas usa la distribución del histórico reciente válido',()=>{
+  const result=Production.calculateManufacturingPlan(manufacturingInput({productForecast:[manufacturingProduct(100)],recentHistory:[manufacturingWeek(2026,31,[{variantIndex:1,quantity:75},{variantIndex:2,quantity:25}])]}));
+  assert.equal(result.products[0].variantSource,'recent-history');assert.deepEqual(result.products[0].variants.map(item=>item.quantity),[75,25]);assert.deepEqual(result.calculationMeta.recentWeeksUsed,[{year:2026,week:31}]);
+});
+
+test('ordena varias semanas recientes sin depender de comparableKey global',()=>{
+  const recentHistory=[manufacturingWeek(2026,29,[{variantIndex:1,quantity:50},{variantIndex:2,quantity:50}]),manufacturingWeek(2026,31,[{variantIndex:1,quantity:70},{variantIndex:2,quantity:30}]),manufacturingWeek(2025,52,[{variantIndex:1,quantity:90},{variantIndex:2,quantity:10}])];
+  const result=Production.calculateManufacturingPlan(manufacturingInput({productForecast:[manufacturingProduct(100)],recentHistory}));assert.equal(result.products[0].variantSource,'recent-history');assert.deepEqual(result.calculationMeta.recentWeeksUsed,[{year:2026,week:31},{year:2026,week:29},{year:2025,week:52}]);
+});
+
+test('ordena correctamente semanas ISO 1, 52 y 53 al cambiar de año',()=>{
+  const recentHistory=[manufacturingWeek(2025,53,[{variantIndex:1,quantity:53},{variantIndex:2,quantity:47}]),manufacturingWeek(2026,1,[{variantIndex:1,quantity:1},{variantIndex:2,quantity:99}]),manufacturingWeek(2025,52,[{variantIndex:1,quantity:52},{variantIndex:2,quantity:48}])];
+  const result=Production.calculateManufacturingPlan(manufacturingInput({productForecast:[manufacturingProduct(100)],recentHistory}));
+  assert.deepEqual(result.calculationMeta.recentWeeksUsed,[{year:2026,week:1},{year:2025,week:53},{year:2025,week:52}]);
+});
+
+test('sin previsión explícita ni histórico reciente usa la semana de referencia',()=>{
+  const result=Production.calculateManufacturingPlan(manufacturingInput({productForecast:[manufacturingProduct(100)],referenceWeek:manufacturingWeek(2025,33,[{variantIndex:1,quantity:20},{variantIndex:2,quantity:80}])}));
+  assert.equal(result.products[0].variantSource,'reference-week');assert.deepEqual(result.products[0].variants.map(item=>item.quantity),[20,80]);assert.deepEqual(result.calculationMeta.referenceWeekUsed,{year:2025,week:33});
+});
+
+test('combina histórico reciente y referencia con pesos 60/40',()=>{
+  const result=Production.calculateManufacturingPlan(manufacturingInput({productForecast:[manufacturingProduct(100)],recentHistory:[manufacturingWeek(2026,31,[{variantIndex:1,quantity:80},{variantIndex:2,quantity:20}])],referenceWeek:manufacturingWeek(2025,33,[{variantIndex:1,quantity:30},{variantIndex:2,quantity:70}])}));
+  assert.equal(result.products[0].variantSource,'recent-reference-blend');assert.deepEqual(result.products[0].variants.map(item=>item.quantity),[60,40]);
+});
+
+test('si falta una de las fuentes históricas la disponible pesa el 100 %',()=>{
+  const recentOnly=Production.calculateManufacturingPlan(manufacturingInput({productForecast:[manufacturingProduct(100)],recentHistory:[manufacturingWeek(2026,31,[{variantIndex:1,quantity:65},{variantIndex:2,quantity:35}])]}));
+  const referenceOnly=Production.calculateManufacturingPlan(manufacturingInput({productForecast:[manufacturingProduct(100)],referenceWeek:manufacturingWeek(2025,33,[{variantIndex:1,quantity:35},{variantIndex:2,quantity:65}])}));
+  assert.deepEqual(recentOnly.products[0].variants.map(item=>item.quantity),[65,35]);assert.deepEqual(referenceOnly.products[0].variants.map(item=>item.quantity),[35,65]);
+});
+
+test('Compras solo contrasta categorías y nunca sustituye la previsión de Fabricación',()=>{
+  const result=Production.calculateManufacturingPlan(manufacturingInput({purchases:[{day:'monday',category:'ROSAS',units:9999}]}));
+  assert.equal(result.calculationMeta.normalizedTotal,100);assert.equal(result.products[0].forecastUnits,100);assert.equal(result.weeklyHours,8);assert.ok(result.warnings.some(message=>message.includes('superiores')));
+});
+
+test('una categoría prevista sin compras genera un aviso informativo no bloqueante',()=>{
+  const result=Production.calculateManufacturingPlan(manufacturingInput({purchases:[]}));
+  assert.ok(result.warnings.some(message=>message.includes('no hay compras previstas')));assert.deepEqual(result.blockingErrors,[]);assert.equal(result.status,'calculated');
+});
+
+test('la composición manual por categoría no es requisito del cálculo automático',()=>{
+  let state=Production.createProductionState();for(const kind of ['reception','preassignment','shipping']){const task=state.tasks.find(item=>item.specialKind===kind);state=Production.deleteProductionTask(state,task.id).state;}const plan=balancedPlan(2027,8,100);
+  const calc=Production.calculateWeeklyPlan(plan,state,manufacturingInput({productForecast:[manufacturingProduct(100,[{variantKey:'1',variantIndex:1,quantity:100}])],nomenclatures:[{productId:'P1',category:'ROSAS',manufacturingRates:[10]}]}));
+  assert.equal(calc.incomplete,false);assert.equal(calc.manufacturingPlan.status,'calculated');assert.ok(!calc.issues.some(item=>item.code==='CATEGORY_MIX_MISSING'));
+});
+
+test('la falta de composición manual tampoco bloquea la validación semanal',()=>{
+  let state=Production.createProductionState();for(const kind of ['reception','preassignment','shipping']){const task=state.tasks.find(item=>item.specialKind===kind);state=Production.deleteProductionTask(state,task.id).state;}const plan=balancedPlan(2027,8,100);
+  const result=Production.validateWeeklyPlan(state,plan,manufacturingInput({productForecast:[manufacturingProduct(100,[{variantKey:'1',variantIndex:1,quantity:100}])],nomenclatures:[{productId:'P1',category:'ROSAS',manufacturingRates:[10]}]}));
+  assert.equal(result.ok,true);assert.equal(result.plan.status,'validated');assert.ok(!result.calculated.blockingIssues.some(item=>item.code==='CATEGORY_MIX_MISSING'));
+});
+
+test('una variante sin rendimiento exacto usa la media configurada del producto',()=>{
+  const result=Production.calculateManufacturingPlan(manufacturingInput({productForecast:[manufacturingProduct(100,[{variantKey:'3',variantIndex:3,quantity:100}])]}));
+  assert.equal(result.products[0].variants[0].rate,15);assert.equal(result.products[0].variants[0].rateSource,'product-average');assert.equal(result.status,'estimated');
+});
+
+test('si el producto no tiene rendimientos usa la media disponible de su categoría',()=>{
+  const result=Production.calculateManufacturingPlan(manufacturingInput({productForecast:[{...manufacturingProduct(100,[{variantKey:'1',variantIndex:1,quantity:100}]),productId:'P2',productCode:'P2'}],nomenclatures:[{productId:'P1',category:'ROSAS',manufacturingRates:[10,20]}]}));
+  assert.equal(result.products[0].variants[0].rate,15);assert.equal(result.products[0].variants[0].rateSource,'category-average');assert.equal(result.status,'estimated');
+});
+
+test('un producto sin rendimiento no anula las horas calculables de los demás',()=>{
+  const result=Production.calculateManufacturingPlan(manufacturingInput({weeklyTotal:100,productForecast:[manufacturingProduct(96,[{variantKey:'1',variantIndex:1,quantity:96}]),{...manufacturingProduct(4,[{variantKey:'1',variantIndex:1,quantity:4}]),productId:'P2',productCode:'P2',name:'Sin rendimiento',category:'PLANTAS'}],nomenclatures:[{productId:'P1',category:'ROSAS',manufacturingRates:[12]}]}));
+  assert.equal(result.weeklyHours,8);assert.equal(result.status,'partial');assert.equal(result.calculationMeta.unresolvedPercentage,4);assert.deepEqual(result.blockingErrors,[]);
+});
+
+test('las horas de Fabricación se distribuyen según las expediciones diarias ajustadas',()=>{
+  const result=Production.calculateManufacturingPlan(manufacturingInput({adjustedDailyExpeditions:days(25,75)}));
+  assert.equal(result.dailyHours.monday,2);assert.equal(result.dailyHours.tuesday,6);assert.equal(Object.values(result.dailyHours).reduce((a,b)=>a+b,0),8);
+});
+
+test('una Fabricación estimada sigue permitiendo validar la semana',()=>{
+  let state=Production.createProductionState();for(const kind of ['reception','preassignment','shipping']){const task=state.tasks.find(item=>item.specialKind===kind);state=Production.deleteProductionTask(state,task.id).state;}const plan=balancedPlan(2027,8,100),options=manufacturingInput({productForecast:[manufacturingProduct(100,[{variantKey:'3',variantIndex:3,quantity:100}])]});
+  const result=Production.validateWeeklyPlan(state,plan,options);assert.equal(result.ok,true);assert.equal(result.calculated.manufacturingPlan.status,'estimated');
+});
+
+test('la ausencia material de rendimientos aplicables sí bloquea la validación',()=>{
+  const result=Production.calculateManufacturingPlan(manufacturingInput({nomenclatures:[]}));
+  assert.equal(result.status,'pending');assert.ok(result.blockingErrors.some(message=>message.includes('ningún rendimiento aplicable')));assert.equal(result.calculationMeta.unresolvedPercentage,100);
+});
+
+test('el detalle visible de Fabricación incluye producto, variante, origen, rendimiento y estado',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');assert.match(html,/id="productionManufacturingDetails"/);assert.match(html,/Detalle de Fabricación/);assert.match(html,/Rendimiento aplicado/);assert.match(html,/variantSourceLabel/);assert.match(html,/Avisos no bloqueantes/);assert.match(html,/manufacturingStatuses/);
+});
+
+test('el cálculo automático nunca propaga NaN ni convierte pendientes en horas válidas',()=>{
+  const result=Production.calculateManufacturingPlan(manufacturingInput({productForecast:[manufacturingProduct(100,[{variantKey:'1',variantIndex:1,quantity:50},{variantKey:'2',variantIndex:2,quantity:Number.NaN}])],nomenclatures:[]}));
+  assert.ok(Number.isFinite(result.weeklyHours));assert.ok(Object.values(result.dailyHours).every(Number.isFinite));assert.equal(result.products[0].variants[0].hours,null);assert.equal(result.products[0].variants[0].rate,null);
 });

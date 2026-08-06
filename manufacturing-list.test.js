@@ -1,0 +1,132 @@
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const M=require('./manufacturing-list.js');
+
+const recapText=['17.127\t3\tA-Rosas-Colores-50_3\t10\t4\t12\t-8\t1\t17127-3','17.127\t4\tA-Rosas-Colores-60_4\t3\t1\t1\t-3\t\t17127-4','50.971\t3\tC-BLEU-PARFUME-3\t4\t2\t3\t-1\t\t50971-3','18.397\t2\tS-Lilium-Rosa-2\t0\t0\t1\t-1\t\t18397-2','9.031\t1\tP-Bonsai\t2\t0\t0\t0\t\t9031-1'].join('\n');
+const salesText=['Produits de production - Commandes par niveau de prix du 01082026 au 06082026','code\ttype\treference\tTotal\t001\t002\t003\t004','17127\tRose\tA-Rosas-Colores-30-40-50-60\t149\t14\t2\t115\t18','50971\tBouquet\tC-BLEU-PARFUME\t12\t1\t5\t6\t0','18397\tBouquet\tS-Lilium-Rosa\t7\t0\t7\t0\t0','9031\tPlante\tP-Bonsai\t2\t2\t0\t0\t0','TOTAL\t\t\t170'].join('\n');
+const nomenclatures=[{productCode:'17127',category:'ROSAS',manufacturingRates:[14,12,10,10],sizes:['30 cm','40 cm','50 cm','60 cm']},{productCode:'50971',category:'COMPUESTOS',manufacturingRates:[10,9,8]},{productCode:'18397',category:'SIMPLES',manufacturingRates:[14,12]},{productCode:'9031',category:'PLANTAS',manufacturingRates:[5]},{productCode:'35641',category:'COMPUESTOS',manufacturingRates:[10,9,8]}];
+const florists=[{id:'ana',name:'Ana',hours:3},{id:'marta',name:'Marta',hours:4},{id:'lucia',name:'Lucía',hours:2.5}];
+const parsed=()=>({recap:M.parseManufacturingRecap(recapText),sales:M.parseSalesByPrice(salesText)});
+const generated=()=>{const p=parsed();return M.generateManufacturingLists({recapRows:p.recap.rows,salesRows:p.sales.rows,salesPeriodDays:p.sales.period.days,florists,nomenclatures});};
+
+test('01 códigos con puntos se normalizan',()=>assert.equal(M.parseManufacturingRecap('17.127\t3\tRamo\t10').rows[0].productCode,'17127'));
+test('02 celdas vacías conservan las columnas del Recap',()=>{const row=M.parseManufacturingRecap('17.127\t1\tRamo\t3\t1\t1\t\t\t17127-1').rows[0];assert.equal(row.solde,0);assert.equal(row.productPriceId,'17127-1');});
+test('03 solde negativo se conserva',()=>assert.equal(parsed().recap.rows[0].solde,-8));
+test('04 Prepa cero se conserva como cero',()=>assert.equal(parsed().recap.rows.find(row=>row.key==='18397-2').prepa,0));
+test('05 ventas P1 a P4 se leen por nivel',()=>assert.deepEqual(parsed().sales.rows[0].salesByPrice,{1:14,2:2,3:115,4:18}));
+test('06 periodo de ventas se detecta inclusivo',()=>assert.deepEqual(parsed().sales.period,{start:'2026-08-01',end:'2026-08-06',days:6}));
+test('07 el cruce usa código y nivel',()=>{const p=parsed(),n=M.normalizeManufacturingInputs({recapRows:p.recap.rows,salesRows:p.sales.rows,salesPeriodDays:6,nomenclatures});assert.equal(n.rows.find(row=>row.key==='17127-3').levelSales,115);});
+test('08 guiones y guiones bajos no impiden el cruce',()=>{const r=M.parseManufacturingRecap('17.127\t3\tA_Rosas-Colores_3\t2\t0\t0\t-1').rows[0];assert.equal(r.key,'17127-3');});
+test('09 TOTAL se ignora en ventas',()=>assert.equal(parsed().sales.rows.length,4));
+
+const filterCase=(name,type,reference,category,included)=>test(name,()=>{const result=M.filterManufacturableProducts([{type,reference,category}]);assert.equal(result.included.length,included?1:0);});
+filterCase('10 incluye Bouquet','Bouquet','C-Test','COMPUESTOS',true);
+filterCase('11 incluye Rose','Rose','A-Test','ROSAS',true);
+filterCase('12 incluye compuestos internos','','C-Test','COMPUESTOS',true);
+filterCase('13 excluye Plante','Plante','P-Test','PLANTAS',false);
+filterCase('14 excluye Service','Service','X','',false);
+filterCase('15 excluye Cadeau','Cadeau','Regalo','',false);
+filterCase('16 excluye Deuil','Deuil','Corona','',false);
+filterCase('17 excluye TF-','Bouquet','TF-Rosa','COMPUESTOS',false);
+filterCase('18 excluye X-Foto','Service','X-Foto','',false);
+
+test('19 solde -8 tiene prioridad sobre solde -1',()=>{const a=M.calculateManufacturingPriority({solde:-8,dailySales:1,productCode:'2',priceLevel:1}),b=M.calculateManufacturingPriority({solde:-1,dailySales:100,productCode:'1',priceLevel:1});assert.ok(a.severity>b.severity);});
+test('20 un solde negativo se asigna antes que prevención',()=>{const result=M.assignManufacturingBlocks([{key:'A-1',productCode:'A',priceLevel:1,reference:'A',type:'Rose',category:'ROSAS',prepa:1,solde:0,dailySales:100,theoreticalNeed:1,rate:1},{key:'B-1',productCode:'B',priceLevel:1,reference:'B',type:'Rose',category:'ROSAS',prepa:1,solde:-1,dailySales:1,theoreticalNeed:2,rate:1}],[{name:'Ana',hours:1}]);assert.equal(result.lists[0].lines[0].key,'B-1');});
+test('21 mayor venta diaria gana con el mismo solde',()=>{const rows=[{key:'A-1',productCode:'A',priceLevel:1,reference:'A',type:'Rose',category:'ROSAS',prepa:1,solde:0,dailySales:1,theoreticalNeed:1,rate:1},{key:'B-1',productCode:'B',priceLevel:1,reference:'B',type:'Rose',category:'ROSAS',prepa:1,solde:0,dailySales:2,theoreticalNeed:1,rate:1}],result=M.assignManufacturingBlocks(rows,[{name:'Ana',hours:1}]);assert.equal(result.lists[0].lines[0].key,'B-1');});
+test('22 sin ventas y sin solde negativo no entra',()=>{const result=M.assignManufacturingBlocks([{key:'A-1',productCode:'A',reference:'A',type:'Rose',category:'ROSAS',prepa:2,solde:0,dailySales:0,theoreticalNeed:0,rate:1}],[{hours:3}]);assert.equal(result.lists[0].lines.length,0);});
+
+test('23 nunca supera Prepa',()=>{const line=generated().lists.flatMap(list=>list.lines).find(row=>row.key==='17127-3');assert.ok(line.assignedQuantity<=10);});
+test('24 Prepa cero no se asigna',()=>assert.ok(!generated().lists.flatMap(list=>list.lines).some(row=>row.key==='18397-2')));
+test('25 varias floristas comparten un único saldo Prepa',()=>{const result=generated(),sum=result.lists.flatMap(list=>list.lines).filter(row=>row.key==='17127-3').reduce((a,b)=>a+b.assignedQuantity,0);assert.ok(sum<=10);});
+test('26 una referencia no reutiliza Prepa',()=>{const keys=generated().lists.flatMap(list=>list.lines).map(row=>row.key);assert.equal(keys.length,new Set(keys).size);});
+test('27 falta de Prepa genera aviso',()=>assert.equal(generated().unassigned.find(row=>row.key==='18397-2').reasonCode,'NO_PREPA'));
+test('28 separa necesidad, asignado y pendiente',()=>{const line=generated().lists.flatMap(list=>list.lines).find(row=>row.key==='17127-3');assert.ok(line.theoreticalNeed>=line.assignedQuantity);assert.equal(line.pendingQuantity,line.theoreticalNeed-line.assignedQuantity);});
+
+test('29 nunca supera horas disponibles',()=>generated().lists.forEach(list=>assert.ok(list.assignedHours<=list.availableHours+1e-9)));
+test('30 unidades por tiempo usan floor',()=>assert.equal(M.calculateAssignableQuantity({theoreticalPending:10,prepaAvailable:10,hoursRemaining:.99,rate:3}),2));
+test('31 no añade una unidad que excede las horas',()=>assert.equal(M.calculateAssignableQuantity({theoreticalPending:10,prepaAvailable:10,hoursRemaining:.333,rate:3}),0));
+test('32 aplica rendimiento exacto',()=>{const p=parsed(),n=M.normalizeManufacturingInputs({recapRows:p.recap.rows,salesRows:p.sales.rows,salesPeriodDays:6,nomenclatures});assert.equal(n.rows.find(row=>row.key==='17127-3').rate,10);assert.equal(n.rows.find(row=>row.key==='17127-3').source,'exact');});
+test('33 usa media de producto',()=>{const n=M.normalizeManufacturingInputs({recapRows:[{productCode:'17127',priceLevel:5,reference:'Rose',type:'Rose',category:'ROSAS',prepa:1,solde:-1}],salesRows:[],nomenclatures});assert.equal(n.rows[0].source,'product-average');assert.equal(n.rows[0].rate,11.5);});
+test('33b pondera la media del producto con las ventas por nivel disponibles',()=>{const n=M.normalizeManufacturingInputs({recapRows:[{productCode:'17127',priceLevel:5,reference:'Rose',type:'Rose',category:'ROSAS',prepa:1,solde:-1}],salesRows:[{productCode:'17127',salesByPrice:{1:1,2:1,3:8,4:0}}],nomenclatures});assert.equal(n.rows[0].source,'product-average');assert.equal(n.rows[0].rate,10.6);});
+test('34 usa media de categoría',()=>{const n=M.normalizeManufacturingInputs({recapRows:[{productCode:'999',priceLevel:1,reference:'Compuesto',type:'Bouquet',category:'COMPUESTOS',prepa:1,solde:-1}],salesRows:[],nomenclatures});assert.equal(n.rows[0].source,'category-average');assert.ok(n.rows[0].rate>0);});
+test('35 sin rendimiento no asigna',()=>{const result=M.generateManufacturingLists({recapRows:[{productCode:'999',priceLevel:1,reference:'Rose',type:'Rose',category:'ROSAS',prepa:2,solde:-1}],florists:[{hours:2}],nomenclatures:[]});assert.equal(result.lists[0].lines.length,0);assert.equal(result.unassigned[0].reasonCode,'NO_RATE');});
+
+test('36 una referencia aparece en una sola florista',()=>{const matches=generated().lists.filter(list=>list.lines.some(row=>row.key==='17127-3'));assert.equal(matches.length,1);});
+test('37 una referencia grande se reduce pero no se divide',()=>{const result=M.assignManufacturingBlocks([{key:'A-1',productCode:'A',reference:'A',type:'Rose',category:'ROSAS',prepa:10,solde:-10,dailySales:1,theoreticalNeed:20,rate:2}],[{name:'A',hours:2},{name:'B',hours:2}]);assert.equal(result.lists.flatMap(list=>list.lines).length,1);assert.equal(result.lists.flatMap(list=>list.lines)[0].assignedQuantity,4);});
+test('38 agrupa niveles del mismo código cuando caben',()=>{const rows=[1,2].map(level=>({key:`A-${level}`,productCode:'A',priceLevel:level,reference:'A',type:'Rose',category:'ROSAS',prepa:1,solde:-1,dailySales:1,theoreticalNeed:2,rate:1})),result=M.assignManufacturingBlocks(rows,[{name:'A',hours:2},{name:'B',hours:2}]);assert.equal(result.lists.find(list=>list.lines.some(row=>row.key==='A-1')).id,result.lists.find(list=>list.lines.some(row=>row.key==='A-2')).id);});
+test('39 prioridad urgente prevalece sobre agrupación',()=>{const result=M.assignManufacturingBlocks([{key:'A-1',productCode:'A',priceLevel:1,reference:'A',type:'Rose',category:'ROSAS',prepa:1,solde:0,dailySales:10,theoreticalNeed:1,rate:1},{key:'B-1',productCode:'B',priceLevel:1,reference:'B',type:'Rose',category:'ROSAS',prepa:1,solde:-1,dailySales:1,theoreticalNeed:2,rate:1}],[{hours:1}]);assert.equal(result.lists[0].lines[0].key,'B-1');});
+test('40 el resultado es determinista',()=>assert.deepEqual(generated(),generated()));
+test('41 respeta horas por florista',()=>generated().lists.forEach(list=>assert.ok(list.remainingHours>=0)));
+test('42 nombres y horas son independientes',()=>assert.deepEqual(generated().lists.map(list=>[list.name,list.availableHours]),[['Ana',3],['Marta',4],['Lucía',2.5]]));
+test('42b equilibra la ocupación cuando no existe afinidad de familia o categoría',()=>{const result=generated(),rose=result.lists.find(list=>list.lines.some(row=>row.key==='17127-3')),compound=result.lists.find(list=>list.lines.some(row=>row.key==='50971-3'));assert.notEqual(rose.id,compound.id);});
+
+test('43 mover referencia cambia la florista completa',()=>{const result=generated(),line=result.lists.flatMap(list=>list.lines)[0],target=result.lists.find(list=>list.id!==line.floristId),edited=M.editManufacturingLists(result,{type:'move',key:line.key,floristId:target.id});assert.equal(edited.lists.find(list=>list.id===target.id).lines.filter(row=>row.key===line.key).length,1);});
+test('44 añadir una referencia duplicada se rechaza',()=>{const result=generated(),line=result.lists.flatMap(list=>list.lines)[0];assert.throws(()=>M.editManufacturingLists(result,{type:'add',key:line.key,floristId:result.lists[0].id,quantity:1}),/ya está asignada/);});
+test('45 exceso de Prepa se rechaza en validación',()=>{const result=generated(),line=result.lists.flatMap(list=>list.lines)[0];line.assignedQuantity=line.prepa+1;assert.equal(M.validateManufacturingLists(result).ok,false);});
+test('46 exceso de horas se rechaza en validación',()=>{const result=generated(),line=result.lists.flatMap(list=>list.lines)[0],list=result.lists.find(item=>item.id===line.floristId);line.assignedQuantity=Math.ceil(list.availableHours*line.rate)+1;assert.ok(M.validateManufacturingLists(result).errors.some(error=>error.includes('horas')));});
+test('47 eliminar devuelve Prepa al saldo disponible',()=>{const result=generated(),line=result.lists.flatMap(list=>list.lines)[0],before=result.availablePrepa[line.key],edited=M.editManufacturingLists(result,{type:'remove',key:line.key});assert.equal(edited.availablePrepa[line.key],before+line.assignedQuantity);});
+
+test('48 modelo de impresión individual contiene una lista',()=>{const result=generated(),model=M.buildManufacturingPrintModel(result,{floristId:result.lists[0].id});assert.equal(model.pages.length,1);});
+test('49 modelo conjunto omite listas vacías',()=>assert.equal(M.buildManufacturingPrintModel(generated()).pages.length,2));
+test('50 modelo conjunto crea una página por florista con trabajo',()=>assert.deepEqual(M.buildManufacturingPrintModel(generated()).pages.map(page=>page.name),['Ana','Lucía']));
+test('51 impresión no repite pendientes en cada página',()=>assert.ok(M.buildManufacturingPrintModel(generated()).pages.every(page=>!Object.hasOwn(page,'unassigned'))));
+test('52 modelo de impresión no contiene controles',()=>assert.equal(M.buildManufacturingPrintModel(generated()).containsControls,false));
+
+test('53 guardar borrador conserva propuesta',()=>{const proposal=generated(),draft=M.createManufacturingDraft({proposal});assert.equal(draft.status,'draft');assert.deepEqual(draft.proposal,proposal);});
+test('54 recargar borrador conserva modificaciones',()=>{const draft=M.createManufacturingDraft({modifications:[{type:'move',key:'17127-3'}]}),reload=JSON.parse(JSON.stringify(draft));assert.deepEqual(reload.modifications,draft.modifications);});
+test('55 generar no altera el stock de entrada',()=>{const p=parsed(),before=JSON.stringify(p.recap.rows);M.generateManufacturingLists({recapRows:p.recap.rows,salesRows:p.sales.rows,salesPeriodDays:6,florists,nomenclatures});assert.equal(JSON.stringify(p.recap.rows),before);});
+test('56 el módulo puro no escribe automáticamente en Supabase',()=>{const source=fs.readFileSync(path.join(__dirname,'manufacturing-list.js'),'utf8');assert.doesNotMatch(source,/supabaseClient|\.from\('app_states'\)|saveState\(/);});
+
+test('datos reales solicitados respetan máximos y exclusiones',()=>{const result=generated(),lines=result.lists.flatMap(list=>list.lines),byKey=new Map(lines.map(line=>[line.key,line]));assert.ok(byKey.get('17127-3').assignedQuantity<=10);assert.ok(byKey.get('17127-4').assignedQuantity<=3);assert.ok(byKey.get('50971-3').assignedQuantity<=4);assert.ok(!byKey.has('18397-2'));assert.ok(result.unassigned.some(row=>row.key==='9031-1'&&row.reasonCode==='EXCLUDED'));});
+test('el resultado resume las exclusiones por motivo',()=>assert.equal(generated().exclusionSummary.Planta,1));
+test('los fixtures Bonsái, Orquídeas, Anthurium, X-Foto y TF quedan excluidos',()=>{const rows=[['P-Bonsai','Plante'],['P-Orqui-BLANCA','Plante'],['P-Orqui-ROSA','Plante'],['P-Anthurium','Plante'],['X-Foto','Service'],['TF-Rosa-AQ004','Bouquet']].map(([reference,type],index)=>({productCode:String(index+1),priceLevel:1,reference,type,category:type==='Plante'?'PLANTAS':'',prepa:1,rate:1})),filtered=M.filterManufacturableProducts(rows);assert.equal(filtered.included.length,0);assert.equal(filtered.excluded.length,6);assert.ok(filtered.excluded.every(row=>row.reason));});
+
+test('la edición recalcula resumen y saldo Prepa',()=>{const result=generated(),line=result.lists.flatMap(list=>list.lines)[0],edited=M.editManufacturingLists(result,{type:'quantity',key:line.key,quantity:1});assert.equal(edited.availablePrepa[line.key],line.prepa-1);assert.equal(edited.summary.assignedUnits,edited.lists.reduce((sum,list)=>sum+list.units,0));});
+test('la edición manual no permite añadir un producto excluido',()=>{const result=generated(),target=result.lists[0];assert.throws(()=>M.editManufacturingLists(result,{type:'add',key:'9031-1',floristId:target.id,quantity:1}),/excluido/);});
+test('la interfaz solo persiste la propuesta al pulsar Guardar borrador',()=>{const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),generate=html.match(/function generateManufacturingListProposal\(\)\{[^\n]+/)?.[0]||'',save=html.match(/btnSaveManufacturingDraft'\)\.addEventListener\('click',[^\n]+/)?.[0]||'';assert.doesNotMatch(generate,/saveState\(/);assert.match(save,/saveState\(\)/);});
+
+const htmlSource=()=>fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+const productionSideMenu=()=>htmlSource().match(/<div class="side-nav-actions" data-actions-for="production">([\s\S]*?)<\/div>/)?.[1]||'';
+const urgentCase=({solde=-3,prepa=10,rate=1,hours=1,category='ROSAS',type='Rose'}={})=>M.generateManufacturingLists({recapRows:[{key:'900-1',productCode:'900',priceLevel:1,reference:'A-Rosas-Urgente',prepa,solde,type,category}],salesRows:[],salesPeriodDays:1,florists:[{id:'ana',name:'Ana',hours}],nomenclatures:rate?[{productCode:'900',category,manufacturingRates:[rate]}]:[]});
+
+test('ajuste 01 Lista de fabricación aparece en el menú lateral',()=>assert.match(productionSideMenu(),/data-production-nav="manufacturing-list">Lista de fabricación/));
+test('ajuste 02 está debajo de Planificación semanal',()=>{const menu=productionSideMenu();assert.ok(menu.indexOf('data-production-nav="weekly"')<menu.indexOf('data-production-nav="manufacturing-list"'));});
+test('ajuste 03 el acceso lateral abre la pestaña correcta',()=>assert.match(htmlSource(),/setProductionTab\(button\.dataset\.productionNav\)/));
+test('ajuste 04 el acceso lateral se marca activo',()=>assert.match(htmlSource(),/data-production-nav[^\n]+classList\.toggle\('active'/));
+
+test('ajuste 05 no hay controles de archivo en Lista de fabricación',()=>{const panel=htmlSource().match(/data-production-panel="manufacturing-list"([\s\S]*?)data-production-panel="times"/)?.[1]||'';assert.doesNotMatch(panel,/type="file"|Cargar archivo|seleccionar archivo|importar fichero/i);});
+test('ajuste 06 Recap se valida desde textarea',()=>{const html=htmlSource();assert.match(html,/id="manufacturingRecapInput"/);assert.match(html,/id="btnValidateManufacturingRecap"/);});
+test('ajuste 07 ventas se validan desde textarea',()=>{const html=htmlSource();assert.match(html,/id="manufacturingSalesInput"/);assert.match(html,/id="btnValidateManufacturingSales"/);});
+test('ajuste 08 editar texto invalida validación anterior',()=>assert.match(htmlSource(),/manufacturingRecapInput'\)\.addEventListener\('input'[^\n]+invalidateManufacturingInput\('recap'\)/));
+test('ajuste 09 no se genera sin validar ambos bloques',()=>{const source=htmlSource().match(/function generateManufacturingListProposal\(\)\{[^\n]+/)?.[0]||'';assert.match(source,/validation\.recap!=='validated'\|\|manufacturingListState\.validation\.sales!=='validated'/);});
+
+test('ajuste 10 solde negativo sin Prepa aparece',()=>{const urgency=M.manufacturingUrgencies(urgentCase({prepa:0,hours:2}))[0];assert.equal(urgency.reasonCode,'NO_PREPA');assert.equal(urgency.pendingQuantity,3);});
+test('ajuste 11 solde negativo sin tiempo aparece',()=>{const urgency=M.manufacturingUrgencies(urgentCase())[0];assert.equal(urgency.reasonCode,'NO_TIME');assert.equal(urgency.pendingQuantity,2);});
+test('ajuste 12 solde negativo sin rendimiento aparece',()=>{const urgency=M.manufacturingUrgencies(urgentCase({rate:0,hours:3}))[0];assert.equal(urgency.reasonCode,'NO_RATE');});
+test('ajuste 13 reposición preventiva no asignada no aparece',()=>assert.deepEqual(M.manufacturingUrgencies(urgentCase({solde:0,prepa:5,hours:0})),[]));
+test('ajuste 14 producto con solde positivo no aparece',()=>assert.deepEqual(M.manufacturingUrgencies(urgentCase({solde:2,prepa:5,hours:0})),[]));
+test('ajuste 15 exclusión sin solde negativo no aparece',()=>assert.deepEqual(M.manufacturingUrgencies(urgentCase({solde:0,category:'PLANTAS',type:'Plante'})),[]));
+
+test('ajuste 16 total general de ramos se expone siempre en el resultado',()=>assert.match(htmlSource(),/id="manufacturingGrandTotals"[\s\S]*?Total a fabricar/));
+test('ajuste 17 total por florista es correcto',()=>{const result=generated(),totals=M.summarizeManufacturingLists(result);totals.lists.forEach(total=>assert.equal(total.units,result.lists.find(list=>list.id===total.id).lines.reduce((sum,line)=>sum+line.assignedQuantity,0)));});
+test('ajuste 18 cambiar cantidad actualiza total',()=>{const result=generated(),line=result.lists.flatMap(list=>list.lines)[0],edited=M.editManufacturingLists(result,{type:'quantity',key:line.key,quantity:1});assert.equal(M.summarizeManufacturingLists(edited).units,M.summarizeManufacturingLists(result).units-line.assignedQuantity+1);});
+test('ajuste 19 eliminar línea actualiza total',()=>{const result=generated(),line=result.lists.flatMap(list=>list.lines)[0],edited=M.editManufacturingLists(result,{type:'remove',key:line.key});assert.equal(M.summarizeManufacturingLists(edited).units,M.summarizeManufacturingLists(result).units-line.assignedQuantity);});
+test('ajuste 20 mover referencia actualiza ambos subtotales',()=>{const result=generated(),line=result.lists.flatMap(list=>list.lines)[0],origin=line.floristId,target=result.lists.find(list=>list.id!==origin).id,edited=M.editManufacturingLists(result,{type:'move',key:line.key,floristId:target}),totals=M.summarizeManufacturingLists(edited);assert.equal(totals.lists.find(list=>list.id===origin).units,0);assert.ok(totals.lists.find(list=>list.id===target).units>=line.assignedQuantity);});
+test('ajuste 21 total del PDF coincide con la tabla',()=>{const result=generated(),model=M.buildManufacturingPrintModel(result);assert.equal(model.totalUnits,M.summarizeManufacturingLists(result).units);});
+
+test('ajuste 22 PDF no incluye Prepa',()=>assert.ok(M.buildManufacturingPrintModel(generated()).pages.every(page=>!JSON.stringify(page).includes('prepa'))));
+test('ajuste 23 PDF no incluye solde',()=>assert.ok(M.buildManufacturingPrintModel(generated()).pages.every(page=>!JSON.stringify(page).includes('solde'))));
+test('ajuste 24 PDF no incluye ventas',()=>assert.ok(M.buildManufacturingPrintModel(generated()).pages.every(page=>!JSON.stringify(page).includes('levelSales'))));
+test('ajuste 25 PDF no incluye rendimiento',()=>assert.ok(M.buildManufacturingPrintModel(generated()).pages.every(page=>!JSON.stringify(page).includes('rate'))));
+test('ajuste 26 PDF no incluye tiempo por línea',()=>assert.ok(M.buildManufacturingPrintModel(generated()).pages.every(page=>!JSON.stringify(page).includes('hours'))));
+test('ajuste 27 PDF contiene orden, ramo, nivel y cantidad',()=>{const line=M.buildManufacturingPrintModel(generated()).pages[0].groups[0].lines[0];assert.deepEqual(Object.keys(line),['order','reference','level','quantity','group','isUrgent']);});
+test('ajuste 28 PDF agrupa Rosas',()=>assert.equal(M.classifyManufacturingPrintGroup({category:'ROSAS',type:'Rose',reference:'A-Rosas'}),'roses'));
+test('ajuste 29 PDF agrupa Compuestos',()=>assert.equal(M.classifyManufacturingPrintGroup({category:'COMPUESTOS',type:'Bouquet',reference:'C-Toscana'}),'composed'));
+test('ajuste 30 PDF agrupa Ramos',()=>assert.equal(M.classifyManufacturingPrintGroup({category:'SIMPLES',type:'Bouquet',reference:'S-Lilium'}),'bouquets'));
+test('ajuste 31 urgentes aparecen primero',()=>{const result=generated(),model=M.buildManufacturingPrintModel(result);model.pages.forEach(page=>{const lines=page.groups.flatMap(group=>group.lines),firstRegular=lines.findIndex(line=>!line.isUrgent);if(firstRegular>=0)assert.ok(lines.slice(firstRegular).every(line=>!line.isUrgent));assert.deepEqual(lines.map(line=>line.order),Array.from({length:lines.length},(_,index)=>index+1));});});
+test('ajuste 32 hay una página por florista con trabajo',()=>{const result=generated(),model=M.buildManufacturingPrintModel(result);assert.equal(model.pages.length,result.lists.filter(list=>list.lines.length).length);});
+test('ajuste 33 cada página muestra total de ramos',()=>M.buildManufacturingPrintModel(generated()).pages.forEach(page=>assert.ok(Number.isFinite(page.totalUnits))));
+test('ajuste 34 total final coincide con suma de líneas',()=>M.buildManufacturingPrintModel(generated()).pages.forEach(page=>assert.equal(page.totalUnits,page.groups.flatMap(group=>group.lines).reduce((sum,line)=>sum+line.quantity,0))));
+test('ajuste 35 no aparecen controles en impresión',()=>assert.equal(M.buildManufacturingPrintModel(generated()).containsControls,false));

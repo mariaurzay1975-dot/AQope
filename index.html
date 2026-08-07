@@ -588,6 +588,17 @@
   .print-recap-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;}
   .print-recap-tag.in{background:#dcece0;color:var(--moss-deep);}
   .print-recap-tag.out{background:#f0efe8;color:var(--ink-soft);}
+  .stock-planning-panel:empty{display:none;}
+  .stock-planning-panel{border:1px solid var(--line);border-radius:4px;margin-bottom:22px;background:#fbfaf6;padding:14px 16px;}
+  .stock-planning-weeks{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+  .stock-planning-week-btn{font-family:var(--mono);font-size:11px;padding:6px 10px;border-radius:3px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;}
+  .stock-planning-week-btn.active{background:var(--moss-deep);color:#fff;border-color:var(--moss-deep);}
+  .stock-planning-week-btn.has-draft{box-shadow:inset 0 0 0 1px #b08a2e;}
+  .stock-planning-initial-balance{display:flex;gap:14px;align-items:center;font-size:12px;flex-wrap:wrap;}
+  .stock-planning-add-product{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap;}
+  .stock-planning-add-product select{font-size:12px;padding:6px 8px;border:1px solid var(--line);border-radius:3px;min-width:260px;}
+  .stock-plan-added-badge{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.04em;color:#8a6d1f;background:#fbeecb;border-radius:2px;padding:1px 5px;margin-left:4px;}
+  .stock-plan-remove-row{margin-left:6px;color:#b3261e;border-color:#e7c6c1;}
   .forecast-adjustments{
     border:1px solid var(--line);border-radius:4px;margin-top:14px;background:#fbfaf6;
   }
@@ -919,6 +930,7 @@
 
   <div class="stock-view">
   <div class="week-panel" id="weekPanel"></div>
+  <div class="stock-planning-panel" id="stockPlanningPanel"></div>
   <div class="week-rollover-banner" id="weekRolloverBanner" style="display:none;">
     <span data-rollover-text></span>
     <div class="week-rollover-actions">
@@ -2008,6 +2020,7 @@
 <script src="annual-holidays.js"></script>
 <script src="initial-migration.js"></script>
 <script src="production.js"></script>
+<script src="stock-planning.js"></script>
 <script src="manufacturing-list.js"></script>
 <script src="staff.js"></script>
 <script src="staff-ui.js"></script>
@@ -2516,6 +2529,12 @@ let productionWeeklyDraft = null;
 let productionWeeklyDirty = false;
 let productionAnnualForecastLookup = {status:'loading',value:null,key:null,expectedKey:null};
 let forecastAdjustments = {};
+// Planificación multi-semana (Stock/Compras): modo de saldo inicial de la semana actualmente cargada.
+// Se persiste por semana dentro de weekSnapshots (ver captureWeekSnapshot/applyWeekSnapshot).
+let stockInitialBalanceMode = AquarelleStockPlanning.DEFAULT_INITIAL_BALANCE_MODE;
+// Semana futura actualmente seleccionada en el selector de 8 semanas (null = todavía no se ha elegido
+// ninguna desde que se abrió el módulo "Planificación semanal"; navegar aquí nunca llama a promoteWeekToCurrent).
+let stockPlanningSelectedKey = null;
 
 let weekState = {
   year: new Date().getFullYear(),
@@ -2552,9 +2571,15 @@ function isoWeeksInYear(year){ return getISOWeek(new Date(year, 11, 28)); }
 function nextISOWeek(year, week){ const max = isoWeeksInYear(year); return week >= max ? {year:year+1, week:1} : {year, week:week+1}; }
 function cloneData(value){ return JSON.parse(JSON.stringify(value ?? null)); }
 function ensureActiveWeekKey(){ if(!activeWeekKey) activeWeekKey = weekKey(weekState.year, weekState.week); return activeWeekKey; }
-function captureWeekSnapshot(){ const key = ensureActiveWeekKey(); return {key, year:weekState.year, week:weekState.week, mode:planningMode?'planificacion':'actual', planningMode, baseWeekKey:weekState.baseWeekKey||null, objetivo:weekState.objetivo||0, acumulado:weekState.acumulado||0, data:cloneData(data), genericoData:cloneData(genericoData), prevExpedicionProducto:cloneData(prevExpedicionProducto), simplesPrea:cloneData(simplesPrea), forecastAdjustments:cloneData(forecastAdjustments), recapLoaded, groupView}; }
+function captureWeekSnapshot(){ const key = ensureActiveWeekKey(); return {key, year:weekState.year, week:weekState.week, mode:planningMode?'planificacion':'actual', planningMode, initialBalanceMode:stockInitialBalanceMode, baseWeekKey:weekState.baseWeekKey||null, objetivo:weekState.objetivo||0, acumulado:weekState.acumulado||0, data:cloneData(data), genericoData:cloneData(genericoData), prevExpedicionProducto:cloneData(prevExpedicionProducto), simplesPrea:cloneData(simplesPrea), forecastAdjustments:cloneData(forecastAdjustments), recapLoaded, groupView}; }
 function storeActiveSnapshot(){ weekSnapshots[ensureActiveWeekKey()] = captureWeekSnapshot(); }
-function applyWeekSnapshot(snapshot){ if(!snapshot || !Array.isArray(snapshot.data)) return false; data=cloneData(snapshot.data)||[]; genericoData=cloneData(snapshot.genericoData)||{}; prevExpedicionProducto=cloneData(snapshot.prevExpedicionProducto)||{}; simplesPrea=cloneData(snapshot.simplesPrea)||{}; forecastAdjustments=cloneData(snapshot.forecastAdjustments)||{}; weekState={year:snapshot.year, week:snapshot.week, objetivo:snapshot.objetivo||0, acumulado:snapshot.acumulado||0, baseWeekKey:snapshot.baseWeekKey||null}; activeWeekKey=snapshot.key||weekKey(weekState.year, weekState.week); planningMode=!!snapshot.planningMode || snapshot.mode==='planificacion'; recapLoaded=!!snapshot.recapLoaded; groupView=snapshot.groupView!==undefined?!!snapshot.groupView:groupView; data.forEach(d=>{ genericoFor(d.generico); prevExpedicionFor(d.producto); }); return true; }
+function applyWeekSnapshot(snapshot){
+  if(!snapshot || !Array.isArray(snapshot.data)) return false;
+  const normalized=AquarelleStockPlanning.normalizeStockWeekPlan(snapshot);
+  data=cloneData(normalized.data)||[]; genericoData=cloneData(normalized.genericoData)||{}; prevExpedicionProducto=cloneData(normalized.prevExpedicionProducto)||{}; simplesPrea=cloneData(normalized.simplesPrea)||{}; forecastAdjustments=cloneData(normalized.forecastAdjustments)||{};
+  stockInitialBalanceMode=normalized.initialBalanceMode;
+  weekState={year:normalized.year, week:normalized.week, objetivo:normalized.objetivo||0, acumulado:normalized.acumulado||0, baseWeekKey:normalized.baseWeekKey||null}; activeWeekKey=normalized.key||weekKey(weekState.year, weekState.week); planningMode=!!normalized.planningMode || normalized.mode==='planificacion'; recapLoaded=!!normalized.recapLoaded; groupView=normalized.groupView!==undefined?!!normalized.groupView:groupView; data.forEach(d=>{ genericoFor(d.generico); prevExpedicionFor(d.producto); }); return true;
+}
 function openWeekSnapshot(key){ const snapshot=weekSnapshots[key]; if(!snapshot) return false; applyWeekSnapshot({...snapshot,key}); populateFilter(); document.getElementById('toggleGroup').checked=groupView; clearForecastAdjustmentInputs(); render(); saveState(); return true; }
 function switchToWeek(year, week){
   saveState();
@@ -2575,7 +2600,10 @@ function switchToWeek(year, week){
 function promoteWeekToCurrent(year, week){
   // Convierte una semana que estaba como "planificacion" (o cualquier semana con snapshot
   // guardado) en la nueva semana actual de Stock semanal, conservando sus compras y saldo.
+  // Esta es la ÚNICA función que puede escribir mode:'actual'/'historico' — el selector de
+  // semanas futuras (openStockPlanningWeek) nunca la invoca ni cambia esos estados.
   const key = weekKey(year, week);
+  const previousCurrentKey = currentWeekKey;
   storeActiveSnapshot();
   if(key !== activeWeekKey){
     const snap = weekSnapshots[key];
@@ -2589,7 +2617,14 @@ function promoteWeekToCurrent(year, week){
   weekState.baseWeekKey = null;
   currentWeekKey = key;
   activeWeekKey = key;
+  stockPlanningSelectedKey = null;
   storeActiveSnapshot();
+  if(previousCurrentKey && previousCurrentKey !== key && weekSnapshots[previousCurrentKey]){
+    weekSnapshots[previousCurrentKey] = AquarelleStockPlanning.promoteWeekPlans({
+      currentActualPlan: AquarelleStockPlanning.normalizeStockWeekPlan(weekSnapshots[previousCurrentKey]),
+      targetPlan: AquarelleStockPlanning.normalizeStockWeekPlan(weekSnapshots[key] || {year, week})
+    }).previous;
+  }
   populateFilter();
   document.getElementById('toggleGroup').checked = groupView;
   clearForecastAdjustmentInputs();
@@ -2599,6 +2634,119 @@ function promoteWeekToCurrent(year, week){
   render();
   saveState();
   return true;
+}
+
+// ---------- Selector de próximas 8 semanas (Planificación semanal de Stock) ----------
+// Navegar aquí SOLO abre/edita esa semana: nunca llama a promoteWeekToCurrent ni escribe
+// mode:'actual'/'historico'. Todo lo que se abre desde este selector queda en mode:'planificacion'.
+function stockPlanningGetStoredPlan(year, week){
+  const snap = weekSnapshots[weekKey(year, week)];
+  return snap ? AquarelleStockPlanning.normalizeStockWeekPlan(snap) : null;
+}
+// Previsión automática (Planificación anual) para una semana sin borrador propio: se usa como total a
+// repartir en projectOpeningBalance en vez de tratar la semana como si tuviera 0 expediciones. Si no
+// hay previsión anual encontrada para esa semana, devuelve null (no se inventa ninguna cifra).
+function stockPlanningAutomaticForecastTotal(year, week){
+  const lookup = AquarelleAnnualHolidays.getAnnualForecastForWeek(annualPlanning, year, week);
+  return lookup.status === 'found' ? lookup.value : null;
+}
+function stockPlanningAnchorPlan(){
+  const snap = weekSnapshots[currentWeekKey];
+  if(snap) return AquarelleStockPlanning.normalizeStockWeekPlan(snap);
+  if(activeWeekKey === currentWeekKey) return AquarelleStockPlanning.normalizeStockWeekPlan(captureWeekSnapshot());
+  const parsed = parseWeekKey(currentWeekKey);
+  return AquarelleStockPlanning.normalizeStockWeekPlan({year:parsed.year, week:parsed.week, data:[], genericoData:{}, prevExpedicionProducto:{}});
+}
+function stockPlanningHorizon(){
+  const anchor = parseWeekKey(currentWeekKey);
+  return AquarelleStockPlanning.getPlanningHorizon(anchor.year, anchor.week);
+}
+// Rol de una semana dentro del horizonte: 'actual' (mode:'actual', operativa real), 's1' (la única
+// semana siguiente real, hereda saldo obligatoriamente y mantiene la IA existente) o 'future' (S+2 en
+// adelante: manual, vista agrupada obligatoria, sin IA, con selector de saldo inicial y + Añadir producto).
+function stockPlanningWeekRole(year, week){
+  const key = weekKey(year, week);
+  if(key === currentWeekKey) return 'actual';
+  const parsedCurrent = parseWeekKey(currentWeekKey);
+  const next = AquarelleStockPlanning.shiftWeek(parsedCurrent.year, parsedCurrent.week, 1);
+  return key === next.key ? 's1' : 'future';
+}
+function activeStockPlanningWeekRole(){
+  return stockPlanningWeekRole(weekState.year, weekState.week);
+}
+function openStockPlanningWeek(year, week){
+  const key = weekKey(year, week);
+  saveState(); // persiste lo que hubiera en pantalla (incluida la semana actual, si es la que estaba activa)
+  if(key === currentWeekKey){
+    stockPlanningSelectedKey = null;
+    if(!openWeekSnapshot(key)){ planningMode=false; activeWeekKey=key; weekState={...weekState,year,week,baseWeekKey:null}; render(); saveState(); }
+    return;
+  }
+  let snap = weekSnapshots[key];
+  if(!snap){
+    const anchorPlan = stockPlanningAnchorPlan();
+    const projection = AquarelleStockPlanning.projectOpeningBalance({
+      anchorPlan, anchorYear:anchorPlan.year, anchorWeek:anchorPlan.week,
+      targetYear:year, targetWeek:week,
+      getStoredPlan: stockPlanningGetStoredPlan,
+      getAutomaticForecastTotal: stockPlanningAutomaticForecastTotal
+    });
+    snap = AquarelleStockPlanning.buildDraftWeekPlan({
+      year, week, rows:anchorPlan.data, openingBalances:projection.balances,
+      initialBalanceMode:projection.initialBalanceMode, now:new Date().toISOString()
+    });
+    weekSnapshots[key] = snap; // se persiste SOLO la semana que el usuario decide abrir; nunca las intermedias
+  }
+  applyWeekSnapshot({...AquarelleStockPlanning.normalizeStockWeekPlan(snap), key, mode:'planificacion', planningMode:true});
+  weekState.baseWeekKey = currentWeekKey;
+  stockPlanningSelectedKey = key;
+  if(stockPlanningWeekRole(year,week)==='future') groupView = true; // vista agrupada obligatoria desde S+2: aquí no se trabaja por talla
+  populateFilter();
+  document.getElementById('toggleGroup').checked = groupView;
+  clearForecastAdjustmentInputs();
+  render();
+  saveState();
+}
+function setStockWeekInitialBalanceMode(mode){
+  const safeMode = AquarelleStockPlanning.normalizeInitialBalanceMode(mode);
+  if(activeStockPlanningWeekRole() !== 'future') return; // S+1 respecto a la semana real siempre hereda; no aplica aquí
+  const anchorPlan = stockPlanningAnchorPlan();
+  const projection = AquarelleStockPlanning.projectOpeningBalance({
+    anchorPlan, anchorYear:anchorPlan.year, anchorWeek:anchorPlan.week,
+    targetYear:weekState.year, targetWeek:weekState.week,
+    getStoredPlan:(y,w)=>(y===weekState.year&&w===weekState.week)?null:stockPlanningGetStoredPlan(y,w),
+    getAutomaticForecastTotal: stockPlanningAutomaticForecastTotal
+  });
+  const openingBalances = safeMode==='zero' ? AquarelleStockPlanning.zeroBalances(data) : projection.balances;
+  data = data.map(row=>({...row, saldo:Math.round(openingBalances[row.producto]??0)}));
+  stockInitialBalanceMode = safeMode;
+  render();
+  saveState();
+}
+
+// ---------- Productos añadidos a la planificación de una semana futura (S+2 en adelante) ----------
+// El producto añadido es una fila normal de `data` de ESA semana, con categoría/genérico/codeBase
+// reales tomados del catálogo de nomenclaturas (nunca inventados, ver stockPlanningCatalogSummaries).
+// No modifica el catálogo ni ninguna otra semana. Su previsión (PREV.) se escribe después directamente
+// en la tabla, igual que cualquier otro producto.
+function addStockPlannedProduct(input){
+  const result = AquarelleStockPlanning.addPlannedProduct({data}, input, {now:new Date().toISOString()});
+  if(!result.ok){ alert(result.errors.join(' ')); return false; }
+  data = result.plan.data;
+  genericoFor(result.row.generico);
+  populateFilter();
+  render();
+  saveState();
+  return true;
+}
+function removeStockPlannedProduct(producto){
+  const result = AquarelleStockPlanning.removePlannedProduct({data, prevExpedicionProducto, genericoData}, producto);
+  data = result.data;
+  prevExpedicionProducto = result.prevExpedicionProducto;
+  genericoData = result.genericoData;
+  populateFilter();
+  render();
+  saveState();
 }
 
 function checkWeekRollover(){
@@ -2636,6 +2784,7 @@ function openCurrentWeekAfterLoad(){
 
 function loadSeed(){
   planningMode = false;
+  stockPlanningSelectedKey = null;
   weekState = {year:new Date().getFullYear(), week:getISOWeek(new Date()), objetivo:580, acumulado:302, baseWeekKey:null};
   currentWeekKey = weekKey(weekState.year, weekState.week);
   activeWeekKey = currentWeekKey;
@@ -2651,14 +2800,24 @@ function loadSeed(){
   prevExpedicionProducto = {};
   data.forEach(d=>{ prevExpedicionProducto[d.producto] = 0; });
   forecastAdjustments = {};
+  stockInitialBalanceMode = AquarelleStockPlanning.DEFAULT_INITIAL_BALANCE_MODE;
   dirty = {};
   recapLoaded = false;
 }
 
 function resetStockToZero(){
+  // Protección: "Restaurar datos" solo puede aplicarse a la semana real actual (mode:'actual'). El
+  // botón ya está oculto por CSS mientras planningMode esté activo (body.planning-mode #btnReset), pero
+  // esta comprobación evita que se ejecute igualmente sobre una semana de planificación futura.
+  if(activeWeekKey !== currentWeekKey){
+    alert('Esta acción solo está disponible para la semana actual. No se puede usar sobre una semana de planificación futura.');
+    return;
+  }
   // Pone a 0 todos los datos editables de la semana activa (saldos, compras previstas,
   // prevision de expedicion, pendiente de preasignar), manteniendo la lista de productos
-  // (categoria/generico/producto) y sin cargar datos de ejemplo ficticios.
+  // (categoria/generico/producto) y sin cargar datos de ejemplo ficticios. El guard de arriba ya
+  // impide ejecutar esto sobre una semana de planificación futura (mode:'planificacion'), así que no
+  // puede borrar silenciosamente PREV. manual ni productos añadidos de otra semana.
   data = data.map(row => ({...row, saldo: 0}));
   const genericos = [...new Set(data.map(d=>d.generico))];
   const newGenericoData = {};
@@ -2694,7 +2853,7 @@ function storageAvailable(){
   }
 }
 
-function buildAppState(){ storeActiveSnapshot(); return {app:'aquarelle-control-stock', version:6, savedAt:new Date().toISOString(), data, genericoData, prevExpedicionProducto, simplesPrea, forecastAdjustments, recapLoaded, weekState, groupView, activeWeekKey, currentWeekKey, planningMode, weekSnapshots, nomenclatures, nomenclatureMeta, productPriceCatalog, flowers, flowerMeta, flowerFamilyCatalog, flowerColorCatalog, preasignDia, comprasTallosOverrides, annualPlanning:ensureAnnualPlanning(), productionState:AquarelleProduction.createProductionState(productionState),manufacturingLists:cloneData(manufacturingListState),staffState:AquarelleStaff.normalizeStaffState(staffState)}; }
+function buildAppState(){ storeActiveSnapshot(); return {app:'aquarelle-control-stock', version:6, savedAt:new Date().toISOString(), data, genericoData, prevExpedicionProducto, simplesPrea, forecastAdjustments, stockInitialBalanceMode, recapLoaded, weekState, groupView, activeWeekKey, currentWeekKey, planningMode, weekSnapshots, nomenclatures, nomenclatureMeta, productPriceCatalog, flowers, flowerMeta, flowerFamilyCatalog, flowerColorCatalog, preasignDia, comprasTallosOverrides, annualPlanning:ensureAnnualPlanning(), productionState:AquarelleProduction.createProductionState(productionState),manufacturingLists:cloneData(manufacturingListState),staffState:AquarelleStaff.normalizeStaffState(staffState)}; }
 
 function openHandleDb(){
   return new Promise((resolve, reject)=>{
@@ -2844,7 +3003,7 @@ function applyAppState(state){
   annualShipmentYearsLoaded.clear();
   weekSnapshots=state.weekSnapshots||{}; currentWeekKey=state.currentWeekKey||weekKey(new Date().getFullYear(), getISOWeek(new Date())); activeWeekKey=state.activeWeekKey||weekKey((state.weekState||weekState).year,(state.weekState||weekState).week);
   if(weekSnapshots[activeWeekKey]){ applyWeekSnapshot({...weekSnapshots[activeWeekKey], key:activeWeekKey}); openCurrentWeekAfterLoad(); }
-  else { data=state.data; genericoData=state.genericoData||{}; prevExpedicionProducto=state.prevExpedicionProducto||{}; simplesPrea=state.simplesPrea||{}; forecastAdjustments=state.forecastAdjustments||{}; weekState={...weekState,...(state.weekState||{})}; groupView=state.groupView!==undefined?!!state.groupView:groupView; recapLoaded=!!state.recapLoaded; planningMode=!!state.planningMode; activeWeekKey=weekKey(weekState.year,weekState.week); data.forEach(d=>{ genericoFor(d.generico); prevExpedicionFor(d.producto); }); weekSnapshots[activeWeekKey]=captureWeekSnapshot(); }
+  else { data=state.data; genericoData=state.genericoData||{}; prevExpedicionProducto=state.prevExpedicionProducto||{}; simplesPrea=state.simplesPrea||{}; forecastAdjustments=state.forecastAdjustments||{}; stockInitialBalanceMode=AquarelleStockPlanning.normalizeInitialBalanceMode(state.stockInitialBalanceMode); weekState={...weekState,...(state.weekState||{})}; groupView=state.groupView!==undefined?!!state.groupView:groupView; recapLoaded=!!state.recapLoaded; planningMode=!!state.planningMode; activeWeekKey=weekKey(weekState.year,weekState.week); data.forEach(d=>{ genericoFor(d.generico); prevExpedicionFor(d.producto); }); weekSnapshots[activeWeekKey]=captureWeekSnapshot(); }
 }
 
 function saveState(){
@@ -2935,7 +3094,9 @@ function genericoFor(generico){
 }
 
 function aplicaPreasignacion(categoria){
-  return categoria === 'ROSAS' || categoria === 'SIMPLES';
+  // Única fuente de verdad de esta regla: AquarelleStockPlanning.aplicaPreasignacion. Así
+  // buildPlanningInitialData() (aquí) y projectOpeningBalance() (stock-planning.js) nunca divergen.
+  return AquarelleStockPlanning.aplicaPreasignacion(categoria);
 }
 
 function prevExpedicionFor(producto){
@@ -2943,7 +3104,11 @@ function prevExpedicionFor(producto){
   return prevExpedicionProducto[producto];
 }
 
-function computed(row){ const g=genericoFor(row.generico); const compras=(g.compraL||0)+(g.compraM||0)+(g.compraX||0)+(g.compraJ||0)+(g.compraV||0); const pendientePrea=planningMode?0:(aplicaPreasignacion(row.categoria)?(g.pendientePreasignar||0):0); let prevExp; if(row._variants){ prevExp=row._variants.reduce((s,v)=>s+prevExpedicionFor(v.producto),0); } else { prevExp=prevExpedicionFor(row.producto); } const saldoFinal=row.saldo+compras+pendientePrea-prevExp; return {compras,saldoFinal,prevExp}; }
+// prevExp de una fila agrupada usa forecastForGenerico (misma función que applyWeekMovement y el
+// puente a Producción): si hay una previsión manual escrita directamente a nivel de genérico
+// (semanas S+2 en adelante), esa es la fuente de verdad; si no, se suma la previsión por talla como
+// siempre (semana actual/S+1, que nunca escriben esa clave). La fila sin agrupar no cambia.
+function computed(row){ const g=genericoFor(row.generico); const compras=(g.compraL||0)+(g.compraM||0)+(g.compraX||0)+(g.compraJ||0)+(g.compraV||0); const pendientePrea=planningMode?0:(aplicaPreasignacion(row.categoria)?(g.pendientePreasignar||0):0); let prevExp; if(row._variants){ prevExp=AquarelleStockPlanning.forecastForGenerico({prevExpedicionProducto},row.generico,row._variants.map(v=>v.producto)); } else { prevExp=prevExpedicionFor(row.producto); } const saldoFinal=row.saldo+compras+pendientePrea-prevExp; return {compras,saldoFinal,prevExp}; }
 
 function fmtNum(n){
   if(n===0) return '0';
@@ -2996,13 +3161,25 @@ function categoryFilterLabel(cats,selected){
 }
 
 function renderWeekPanel(){
-  const {start,end}=getISOWeekRange(weekState.year,weekState.week); const pendiente=weekState.objetivo-weekState.acumulado; const weekOptions=[]; for(let w=1;w<=53;w++) weekOptions.push(w);
+  const {start,end}=getISOWeekRange(weekState.year,weekState.week); const weekOptions=[]; for(let w=1;w<=53;w++) weekOptions.push(w);
   const panel=document.getElementById('weekPanel'); panel.className='week-panel'+(planningMode?' planning-panel':'');
   const modeBanner=planningMode?'<div class="planning-banner"><strong>Modo planificacion - Semana siguiente</strong> Estas planificando la semana siguiente. Los datos no modifican la semana actual.</div>':'';
-  panel.innerHTML=`${modeBanner}<div class="week-block"><div class="label">${planningMode?'Semana planificada':'Semana de produccion'}</div><div class="week-select-row"><select id="weekSelect">${weekOptions.map(w=>`<option value="${w}" ${w===weekState.week?'selected':''}>Semana ${w}</option>`).join('')}</select><select id="yearSelect">${[weekState.year-1,weekState.year,weekState.year+1].map(y=>`<option value="${y}" ${y===weekState.year?'selected':''}>${y}</option>`).join('')}</select></div><div class="week-dates" style="margin-top:8px;">${fmtDateShort(start)} - ${fmtDateShort(end)}</div></div><div class="divider"></div><div class="week-block"><div class="label">Objetivo expediciones</div><input type="number" class="week-input" id="objetivoInput" value="${weekState.objetivo||0}"></div><div class="week-block"><div class="label">Acumuladas hoy</div><input type="number" class="week-input" id="acumuladoInput" value="${weekState.acumulado||0}"></div><div class="week-block"><div class="label">${planningMode?'Pendiente por prever':'Pendiente por salir'}</div><div class="week-val accent" id="weekPendingValue">${fmtNum(pendiente)}</div><div class="week-sub">objetivo - acumulado</div></div><div class="week-block"><div class="label">% completado</div><div class="week-val ${pendiente<0?'warn':''}" id="weekPercentValue">${weekState.objetivo>0?Math.round(weekState.acumulado/weekState.objetivo*100):0}%</div><div class="week-sub" id="weekPercentSub">${pendiente<0?'objetivo superado':'de la semana'}</div></div>`;
+  // OBJETIVO EXPEDICIONES se lee siempre en vivo de Planificación anual por año+semana ISO, en
+  // cualquier render, para cualquier semana del horizonte — no depende de weekSnapshots ni de haber
+  // visitado la semana antes. Si Planificación anual todavía no tiene nada para esa semana, se usa el
+  // valor guardado (compatibilidad con el flujo de edición manual existente en semana actual/S+1).
+  const role = activeStockPlanningWeekRole();
+  const liveObjetivo = stockPlanningAutomaticForecastTotal(weekState.year, weekState.week);
+  const effectiveObjetivo = liveObjetivo!=null ? liveObjetivo : (weekState.objetivo||0);
+  const pendiente = effectiveObjetivo-weekState.acumulado;
+  const objetivoCell = role==='future'
+    ? `<div class="week-val" id="objetivoDisplay" title="Objetivo de Planificación anual para S${weekState.week}/${weekState.year}. Editar PREV. no lo modifica.">${liveObjetivo!=null?fmtNum(liveObjetivo):'Pendiente'}</div>`
+    : `<input type="number" class="week-input" id="objetivoInput" value="${effectiveObjetivo}">`;
+  panel.innerHTML=`${modeBanner}<div class="week-block"><div class="label">${planningMode?'Semana planificada':'Semana de produccion'}</div><div class="week-select-row"><select id="weekSelect">${weekOptions.map(w=>`<option value="${w}" ${w===weekState.week?'selected':''}>Semana ${w}</option>`).join('')}</select><select id="yearSelect">${[weekState.year-1,weekState.year,weekState.year+1].map(y=>`<option value="${y}" ${y===weekState.year?'selected':''}>${y}</option>`).join('')}</select></div><div class="week-dates" style="margin-top:8px;">${fmtDateShort(start)} - ${fmtDateShort(end)}</div></div><div class="divider"></div><div class="week-block"><div class="label">Objetivo expediciones</div>${objetivoCell}</div><div class="week-block"><div class="label">Acumuladas hoy</div><input type="number" class="week-input" id="acumuladoInput" value="${weekState.acumulado||0}"></div><div class="week-block"><div class="label">${planningMode?'Pendiente por prever':'Pendiente por salir'}</div><div class="week-val accent" id="weekPendingValue">${fmtNum(pendiente)}</div><div class="week-sub">objetivo - acumulado</div></div><div class="week-block"><div class="label">% completado</div><div class="week-val ${pendiente<0?'warn':''}" id="weekPercentValue">${effectiveObjetivo>0?Math.round(weekState.acumulado/effectiveObjetivo*100):0}%</div><div class="week-sub" id="weekPercentSub">${pendiente<0?'objetivo superado':'de la semana'}</div></div>`;
   document.getElementById('weekSelect').addEventListener('change', e=>switchToWeek(parseInt(document.getElementById('yearSelect').value,10),parseInt(e.target.value,10)));
   document.getElementById('yearSelect').addEventListener('change', e=>switchToWeek(parseInt(e.target.value,10),parseInt(document.getElementById('weekSelect').value,10)));
-  document.getElementById('objetivoInput').addEventListener('change', e=>{
+  const objetivoInput=document.getElementById('objetivoInput');
+  if(objetivoInput) objetivoInput.addEventListener('change', e=>{
     const old=weekState.objetivo;
     if(!changeWeeklyObjective(e.target.value,planningMode?'weekly-planning':'weekly-stock')) e.target.value=old;
   });
@@ -3010,8 +3187,10 @@ function renderWeekPanel(){
 }
 
 function updateWeekSummary(){
-  const pendiente = weekState.objetivo - weekState.acumulado;
-  const percent = weekState.objetivo > 0 ? Math.round(weekState.acumulado / weekState.objetivo * 100) : 0;
+  const liveObjetivo = stockPlanningAutomaticForecastTotal(weekState.year, weekState.week);
+  const effectiveObjetivo = liveObjetivo!=null ? liveObjetivo : (weekState.objetivo||0);
+  const pendiente = effectiveObjetivo - weekState.acumulado;
+  const percent = effectiveObjetivo > 0 ? Math.round(weekState.acumulado / effectiveObjetivo * 100) : 0;
   const pendingEl = document.getElementById('weekPendingValue');
   const percentEl = document.getElementById('weekPercentValue');
   const subEl = document.getElementById('weekPercentSub');
@@ -3021,6 +3200,66 @@ function updateWeekSummary(){
     percentEl.classList.toggle('warn', pendiente < 0);
   }
   if(subEl) subEl.textContent = pendiente < 0 ? 'objetivo superado' : 'de la semana';
+}
+
+// Interfaz mínima por rol de semana:
+// - actual: solo el selector (navegación), nada más — la tabla sube a su posición habitual.
+// - s1 (la única semana siguiente real): selector + indicación de saldo heredado. IA/compras/
+//   preasignación siguen exactamente igual que antes, fuera de este panel.
+// - future (S+2 en adelante): selector + saldo inicial heredar/cero + "+ Añadir producto". Sin IA,
+//   sin tallas, sin reparto diario: la previsión se escribe directamente en la columna PREV. de la tabla.
+function renderStockPlanningPanel(){
+  const panel = document.getElementById('stockPlanningPanel');
+  if(!panel) return;
+  if(activeModule !== 'stock' && activeModule !== 'planning'){ panel.innerHTML=''; return; }
+  const currentParsed = parseWeekKey(currentWeekKey);
+  const horizon = stockPlanningHorizon();
+  const currentBtn = `<button type="button" class="stock-planning-week-btn${activeWeekKey===currentWeekKey?' active':''}" data-stock-plan-week="${currentWeekKey}">Semana actual (S${currentParsed.week}/${currentParsed.year})</button>`;
+  const horizonBtns = horizon.map(w=>`<button type="button" class="stock-planning-week-btn${activeWeekKey===w.key?' active':''}${weekSnapshots[w.key]?' has-draft':''}" data-stock-plan-week="${w.key}">S${w.week}/${w.year}</button>`).join('');
+  const role = activeStockPlanningWeekRole();
+  const previsionBtn = document.getElementById('btnPrevision'), previsionPlanningBtn = document.getElementById('btnPrevisionPlanning');
+  if(previsionBtn) previsionBtn.style.display = role==='future' ? 'none' : '';
+  if(previsionPlanningBtn) previsionPlanningBtn.style.display = role==='future' ? 'none' : '';
+  const toggleGroupInput = document.getElementById('toggleGroup');
+  if(toggleGroupInput){ toggleGroupInput.disabled = role==='future'; toggleGroupInput.title = role==='future' ? 'Desde S+2 la vista agrupada es obligatoria: aquí no se trabaja por talla.' : ''; }
+  let extra = '';
+  if(role === 's1'){
+    extra = `<div class="stock-planning-initial-balance"><strong>Saldo inicial:</strong> <span>Heredado de la semana actual</span></div>`;
+  } else if(role === 'future'){
+    const alreadyPlanned = new Set(data.map(row=>row.producto));
+    const productOptionsCatalog = productSummaries().filter(s=>s.lines&&s.lines.length&&!alreadyPlanned.has(s.productCode)).map(s=>`<option value="${escapeHtml(s.productCode)}">${escapeHtml(s.productName)} (${escapeHtml(s.category)})</option>`).join('');
+    extra = `
+      <div class="stock-planning-initial-balance">
+        <strong>Saldo inicial:</strong>
+        <label><input type="radio" name="stockPlanInitialBalanceMode" value="inherit" ${stockInitialBalanceMode==='inherit'?'checked':''}> Heredar saldo previsto</label>
+        <label><input type="radio" name="stockPlanInitialBalanceMode" value="zero" ${stockInitialBalanceMode==='zero'?'checked':''}> Partir de 0</label>
+      </div>
+      <div class="stock-planning-add-product">
+        <select id="stockPlanAddProductSelect"><option value="">Selecciona producto del catálogo…</option>${productOptionsCatalog}</select>
+        <button type="button" class="btn btn-ghost" id="btnStockPlanAddProduct">+ Añadir producto</button>
+      </div>
+    `;
+  }
+  panel.innerHTML = `<div class="stock-planning-weeks">${currentBtn}${horizonBtns}</div>${extra}`;
+  panel.querySelectorAll('[data-stock-plan-week]').forEach(btn=>btn.addEventListener('click', ()=>{
+    const parsed = parseWeekKey(btn.dataset.stockPlanWeek);
+    openStockPlanningWeek(parsed.year, parsed.week);
+  }));
+  panel.querySelectorAll('input[name="stockPlanInitialBalanceMode"]').forEach(radio=>radio.addEventListener('change', e=>setStockWeekInitialBalanceMode(e.target.value)));
+  const addProductBtn = document.getElementById('btnStockPlanAddProduct');
+  if(addProductBtn) addProductBtn.addEventListener('click', ()=>{
+    const select = document.getElementById('stockPlanAddProductSelect');
+    const productCode = select.value;
+    if(!productCode){ alert('Selecciona un producto del catálogo.'); return; }
+    const summary = productSummaries().find(s=>s.productCode===productCode);
+    if(!summary){ alert('No se ha encontrado ese producto en el catálogo.'); return; }
+    addStockPlannedProduct({
+      categoria: summary.category,
+      generico: summary.productName || summary.productCode,
+      producto: summary.productCode,
+      codeBase: summary.productCode
+    });
+  });
 }
 
 function populateFilter(){
@@ -3128,9 +3367,19 @@ function render(){
       const variantCount = row._variants.length;
       // total de fPrev se acumula a nivel de producto, no de genérico, así que se suma aquí siempre (no solo una vez)
       fPrev += prevExp;
+      // Desde S+2 la celda PREV. es editable directamente sobre el genérico (misma clave que ya usa la
+      // tabla agrupada: row.producto===row.generico aquí) — es la previsión manual de la familia
+      // completa, sin tallas. En semana actual/S+1 sigue siendo de solo lectura, como siempre.
+      const isFutureRole = activeStockPlanningWeekRole() === 'future';
+      const prevCell = isFutureRole
+        ? `<td class="num"><input class="qty-edit" data-producto="${escapeHtml(row.generico)}" data-field="prevExpedicionProducto" type="number" value="${prevExp}"></td>`
+        : `<td class="num" style="color:var(--ink-soft);" title="Suma de la previsión de las ${variantCount} tallas">${fmtNum(prevExp)}</td>`;
+      const isAddedManually = variantCount===1 && row._variants[0].addedManually;
+      const addedBadge = isAddedManually ? ' <span class="stock-plan-added-badge" title="Añadido solo para esta semana">Añadido</span>' : '';
+      const removeBtn = isAddedManually ? `<button type="button" class="btn-mini stock-plan-remove-row" data-remove-planned-producto="${escapeHtml(row._variants[0].producto)}" title="Quitar de la planificación de esta semana">✕</button>` : '';
       tr.innerHTML = `
         <td><span class="${badgeClass(row.categoria)}">${row.categoria}</span></td>
-        <td class="generico">${row.generico} <span style="color:var(--ink-soft);font-weight:400;font-size:11px;">(${variantCount}T)</span></td>
+        <td class="generico">${row.generico}${addedBadge} <span style="color:var(--ink-soft);font-weight:400;font-size:11px;">(${variantCount}T)</span>${removeBtn}</td>
         <td class="num cell-saldo ${row.saldo<0?'neg':''}">${fmtNum(row.saldo)}</td>
         ${preasignarCell}
         ${editCellClass('compraL', g.compraL, 'cell-day')}
@@ -3138,7 +3387,7 @@ function render(){
         ${editCellClass('compraX', g.compraX, 'cell-day')}
         ${editCellClass('compraJ', g.compraJ, 'cell-day')}
         ${editCellClass('compraV', g.compraV, 'cell-day')}
-        <td class="num" style="color:var(--ink-soft);" title="Suma de la previsión de las ${variantCount} tallas">${fmtNum(prevExp)}</td>
+        ${prevCell}
         <td class="num ${saldoFinal<0?'neg neg-final':''}">${fmtNum(saldoFinal)}</td>
       `;
     } else {
@@ -3171,10 +3420,17 @@ function render(){
   document.getElementById('fSaldoFinal').textContent = fmtNum(fSaldoFinal);
 
   renderWeekPanel();
+  renderStockPlanningPanel();
   renderSimplesSection();
 
   tbody.querySelectorAll('input.qty-edit').forEach(inp=>{
     inp.addEventListener('input', onEditCell);
+  });
+  tbody.querySelectorAll('.stock-plan-remove-row').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      if(confirm('¿Quitar este producto de la planificación de esta semana?')) removeStockPlannedProduct(btn.dataset.removePlannedProducto);
+    });
   });
 }
 
@@ -3364,6 +3620,7 @@ document.getElementById('filterCatButton').addEventListener('keydown',e=>{
 });
 document.getElementById('filterNeg').addEventListener('change', render);
 document.getElementById('toggleGroup').addEventListener('change', e=>{
+  if(activeStockPlanningWeekRole()==='future'){ e.target.checked=true; return; } // vista agrupada obligatoria desde S+2: aquí no se trabaja por talla
   groupView = e.target.checked;
   saveState();
   render();
@@ -5055,7 +5312,10 @@ function goToModule(mod){
     } else if(mod === 'stock' && planningMode){
       backToCurrentWeek();
     } else if(mod === 'planning' && !planningMode){
-      buildPlanningFromCurrent();
+      // Abre la última semana futura seleccionada en el selector de 8 semanas, o S+1 por defecto la
+      // primera vez. Nunca promociona: openStockPlanningWeek solo abre/edita, igual que el selector.
+      const target = stockPlanningSelectedKey ? parseWeekKey(stockPlanningSelectedKey) : AquarelleStockPlanning.shiftWeek(weekState.year, weekState.week, 1);
+      openStockPlanningWeek(target.year, target.week);
     }
     // 'compras' no cambia planningMode: se puede comprar tanto en semana actual como en planificacion.
     activeModule = mod;
@@ -5285,15 +5545,39 @@ function ensureProductionWeeklyDraft(){
 }
 function markProductionWeekDirty(){productionWeeklyDirty=true;productionWeeklyDraft.status='draft';productionWeeklyDraft.validatedAt=null;renderProductionWeekStatus();}
 function productionManufacturingRates(){const rates={};productSummaries().filter(summary=>summary.status!=='deleted').forEach(summary=>{const model=collectProductModel(summary.key);AquarelleProduction.normalizeManufacturingRates(model.manufacturingRates,model.priceCount).forEach((rate,index)=>{rates[`${summary.key}|${index+1}`]=rate;});});return rates;}
-function productionSnapshotForWeek(year,week){return Number(weekState?.year)===Number(year)&&Number(weekState?.week)===Number(week)?{year:Number(year),week:Number(week),data,genericoData,prevExpedicionProducto}:weekSnapshots[weekKey(year,week)]||null;}
+function productionSnapshotForWeek(year,week){return Number(weekState?.year)===Number(year)&&Number(weekState?.week)===Number(week)?{year:Number(year),week:Number(week),mode:planningMode?'planificacion':'actual',data,genericoData,prevExpedicionProducto}:weekSnapshots[weekKey(year,week)]||null;}
+// Stock sigue siendo la única fuente de verdad: Producción no duplica ni recalcula estos datos, solo
+// los lee. Un producto añadido manualmente a una semana futura (addPlannedProduct) es una fila normal
+// de `data`, así que ya lo recoge esta misma iteración sin ningún merge especial. La previsión de cada
+// fila se resuelve con la MISMA función central (forecastForGenerico) que usan la tabla y
+// applyWeekMovement: si hay una previsión manual a nivel de genérico (S+2+), se reparte entre las
+// tallas reales de ese genérico (mismo reparto proporcional que el saldo) solo para poder asignarla a
+// las variantes P1..Pn que espera Producción — no se pasa reparto diario ni variantes propias de Stock.
 function productionProductForecastFromSnapshot(snapshot){
   if(!snapshot)return [];
-  const rows=[...new Map((snapshot.data||[]).filter(row=>row&&row.producto).map(row=>[String(row.producto),row])).values()],variantOrdinals=new Map(),products=new Map(),forecast=snapshot.prevExpedicionProducto||{};
+  const rows=[...new Map((snapshot.data||[]).filter(row=>row&&row.producto).map(row=>[String(row.producto),row])).values()];
+  const plan={prevExpedicionProducto:snapshot.prevExpedicionProducto||{}};
+  const rowsByGenerico=new Map();
+  rows.forEach(row=>{ const list=rowsByGenerico.get(row.generico)||[]; list.push(row); rowsByGenerico.set(row.generico,list); });
+  const quantityByProducto={};
+  rowsByGenerico.forEach((groupRows,generico)=>{
+    if(AquarelleStockPlanning.hasGenericoForecastOverride(plan,generico)){
+      const total=AquarelleStockPlanning.forecastForGenerico(plan,generico,groupRows.map(r=>r.producto));
+      const partes=AquarelleStockPlanning.distributeAcrossRows(groupRows,total);
+      groupRows.forEach((row,index)=>{ quantityByProducto[row.producto]=partes[index]; });
+    } else {
+      groupRows.forEach(row=>{ quantityByProducto[row.producto]=Math.max(0,Number(plan.prevExpedicionProducto[row.producto])||0); });
+    }
+  });
+  const variantOrdinals=new Map(),products=new Map();
   rows.forEach(row=>{
     const productCode=String(row.codeBase||row.recapCode||row.codigo||row.code||row.producto).trim(),ordinal=(variantOrdinals.get(productCode)||0)+1;variantOrdinals.set(productCode,ordinal);
-    const quantity=Math.max(0,Number(forecast[row.producto])||0);if(!quantity)return;
+    const quantity=quantityByProducto[row.producto]||0;
+    if(!quantity)return;
     if(!products.has(productCode))products.set(productCode,{productId:productCode,productCode,name:String(row.generico||row.producto||productCode),category:String(row.categoria||''),forecastUnits:0,variants:[]});
-    const product=products.get(productCode);product.forecastUnits+=quantity;product.variants.push({variantKey:String(ordinal),variantName:`P${ordinal}`,variantIndex:ordinal,quantity});
+    const product=products.get(productCode);
+    product.forecastUnits+=quantity;
+    product.variants.push({variantKey:String(ordinal),variantName:`P${ordinal}`,variantIndex:ordinal,quantity});
   });
   return [...products.values()];
 }
@@ -5303,7 +5587,21 @@ function productionManufacturingNomenclatures(){
   (data||[]).forEach(addCategory);Object.values(weekSnapshots||{}).forEach(snapshot=>(snapshot?.data||[]).forEach(addCategory));(nomenclatures||[]).forEach(addCategory);
   return Object.entries(productPriceCatalog||{}).map(([code,item])=>({productId:String(code),productCode:String(code),category:categoryByCode.get(String(code))||'',manufacturingRates:AquarelleProduction.normalizeManufacturingRates(item?.manufacturingRates,item?.priceCount)}));
 }
-function productionManufacturingHistory(year,week){return Object.values(weekSnapshots||{}).map(snapshot=>{const snapshotYear=Number(snapshot?.year),snapshotWeek=Number(snapshot?.week);if(!snapshotYear||!snapshotWeek||snapshotYear>Number(year)||(snapshotYear===Number(year)&&snapshotWeek>=Number(week)))return null;const products=productionProductForecastFromSnapshot(snapshot);if(!products.length)return null;return {year:snapshotYear,week:snapshotWeek,products,...productionHistoryWeekMetadata(snapshotYear,snapshotWeek),isComplete:true};}).filter(Boolean);}
+// Un borrador mode:'planificacion' NUNCA cuenta como histórico, aunque su semana sea anterior a la
+// que se está calculando (ej.: estando en S32 con borradores S33-S35, planificar S36 no puede usarlos).
+// Como las semanas anteriores a esta funcionalidad nunca se marcaron mode:'historico' al promocionarse,
+// se aceptan también si son estrictamente anteriores tanto a la semana objetivo como a la semana ISO
+// real de hoy y ya no son la semana actual — ese es el único uso de la fecha, como segunda barrera.
+function productionSnapshotIsHistorical(snapshot,targetYear,targetWeek){
+  if(!snapshot||!snapshot.year||!snapshot.week)return false;
+  if(AquarelleStockPlanning.isEligibleHistoryWeek(snapshot,targetYear,targetWeek))return true;
+  if(snapshot.mode==='planificacion')return false;
+  if(weekKey(snapshot.year,snapshot.week)===currentWeekKey)return false;
+  if(AquarelleStockPlanning.compareWeek(snapshot.year,snapshot.week,targetYear,targetWeek)>=0)return false;
+  const today=AquarelleProduction.isoWeekInfo(new Date());
+  return AquarelleStockPlanning.compareWeek(snapshot.year,snapshot.week,today.year,today.week)<0;
+}
+function productionManufacturingHistory(year,week){return Object.values(weekSnapshots||{}).map(snapshot=>{if(!productionSnapshotIsHistorical(snapshot,Number(year),Number(week)))return null;const snapshotYear=Number(snapshot.year),snapshotWeek=Number(snapshot.week);const products=productionProductForecastFromSnapshot(snapshot);if(!products.length)return null;return {year:snapshotYear,week:snapshotWeek,products,...productionHistoryWeekMetadata(snapshotYear,snapshotWeek),isComplete:true};}).filter(Boolean);}
 function productionManufacturingOptions(plan){
   const snapshot=productionSnapshotForWeek(plan.year,plan.week),settings=annualYearSettings(plan.year),history=productionManufacturingHistory(plan.year,plan.week),referenceSnapshot=productionSnapshotForWeek(settings.comparableYear,plan.week),referenceWeek=referenceSnapshot?{year:Number(settings.comparableYear),week:Number(plan.week),products:productionProductForecastFromSnapshot(referenceSnapshot),...productionHistoryWeekMetadata(settings.comparableYear,plan.week),isComplete:true,status:'closed'}:null;
   return {productForecast:productionProductForecastFromSnapshot(snapshot),nomenclatures:productionManufacturingNomenclatures(),recentHistory:history,referenceWeek,generalHistory:history};
@@ -8275,6 +8573,9 @@ function updateForecastAdjustmentStatus(){
 }
 
 function openPrevisionModal(){
+  // La previsión con IA solo aplica a la semana actual y a S+1 (mismo flujo de siempre). Desde S+2 la
+  // previsión se escribe directamente en la columna PREV. de la tabla, sin IA ni ajustes por ramo.
+  if(activeStockPlanningWeekRole()==='future'){ alert('El cálculo de previsión con IA no está disponible en semanas de planificación futura (S+2 en adelante). Escribe la previsión directamente en la columna PREV. de la tabla.'); return; }
   const pendiente = weekState.objetivo - weekState.acumulado;
   document.getElementById('pendienteLabel').textContent = `${planningMode ? 'pendiente por prever' : 'pendiente por salir'} (${fmtNum(pendiente)} expediciones)`;
   document.getElementById('previsionStatus').textContent = '';

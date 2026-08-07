@@ -3,6 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const Holidays=require('./annual-holidays.js');
+const Stock=require('./stock-planning.js');
 
 const yearData=()=>({year:2026,weeks:{},holidays:[]});
 const holiday={name:'Fiesta local',date:'2026-08-05',scope:'local',affectsShipping:true,affectsProduction:false,notes:'Calendario municipal'};
@@ -84,4 +85,60 @@ test('la carga compartida vuelve a renderizar Planificación anual y Producción
   assert.match(refresh,/renderAnnualPlanning\(\)/);assert.match(refresh,/renderProduction\(\)/);assert.match(refresh,/renderProductionWeek\(\)/);
   assert.match(html,/getAnnualForecastForWeek\(annualPlanning,year,week\)/);
   assert.match(html,/annualForecastStatusLabel/);
+});
+
+// ---------- OBJETIVO DE EXPEDICIONES en todo el horizonte futuro de Planificación semanal ----------
+// getAnnualForecastForWeek ya es una lectura pura por año+semana ISO, sin ningún concepto de snapshot:
+// estos tests confirman explícitamente que funciona igual para cualquier offset del horizonte de 8
+// semanas (S+1..S+8), al cruzar de año, y que es totalmente independiente de la previsión manual por
+// producto (PREV.) que vive en Stock — consultarlo nunca crea ni modifica Planificación anual.
+
+test('el objetivo de expediciones se recupera igual para S+1, S+2, S+4 y S+8 (mismo mecanismo para cualquier offset)',()=>{
+  const base=Holidays.isoWeekInfo('2026-08-07'); // semana real de referencia (viernes, S32/2026)
+  const offsets=[1,2,4,8];
+  const targets=offsets.map(offset=>Stock.shiftWeek(base.year,base.week,offset));
+  const weeks={};
+  targets.forEach((t,index)=>{ weeks[Holidays.annualWeekKey(t.year,t.week)]={year:t.year,week:t.week,currentForecast:(index+1)*100}; });
+  const planning={years:{[String(base.year)]:{year:base.year,weeks}}};
+  targets.forEach((t,index)=>{
+    const result=Holidays.getAnnualForecastForWeek(planning,t.year,t.week);
+    assert.equal(result.status,'found',`S+${offsets[index]} debería encontrar su objetivo`);
+    assert.equal(result.value,(index+1)*100,`S+${offsets[index]} debería devolver exactamente su propio objetivo`);
+  });
+});
+
+test('el objetivo de expediciones funciona correctamente al cruzar de año dentro del horizonte de 8 semanas',()=>{
+  const base={year:2026,week:50};
+  const target=Stock.shiftWeek(base.year,base.week,8);
+  assert.notEqual(target.year,base.year,'S+8 desde la semana 50 debe cruzar a 2027');
+  const planning={years:{[String(target.year)]:{year:target.year,weeks:{[Holidays.annualWeekKey(target.year,target.week)]:{year:target.year,week:target.week,currentForecast:610}}}}};
+  const result=Holidays.getAnnualForecastForWeek(planning,target.year,target.week);
+  assert.equal(result.status,'found');
+  assert.equal(result.value,610);
+});
+
+test('una semana futura sin ningún snapshot de Stock sigue devolviendo su objetivo (no depende de weekSnapshots)',()=>{
+  const planning={years:{'2026':{year:2026,weeks:{'2026-36':{year:2026,week:36,currentForecast:600}}}}};
+  const result=Holidays.getAnnualForecastForWeek(planning,2026,36);
+  assert.equal(result.status,'found');
+  assert.equal(result.value,600);
+});
+
+test('el objetivo anual es independiente de la previsión manual por producto (PREV.) de esa semana: pueden no coincidir',()=>{
+  const planning={years:{'2026':{year:2026,weeks:{'2026-36':{year:2026,week:36,currentForecast:600}}}}};
+  const stockPlan={data:[{producto:'X',generico:'X',categoria:'ROSAS',saldo:0}],prevExpedicionProducto:{X:550}};
+  const objetivo=Holidays.getAnnualForecastForWeek(planning,2026,36).value;
+  const previsionDistribuida=Object.values(stockPlan.prevExpedicionProducto).reduce((a,b)=>a+b,0);
+  assert.equal(objetivo,600);
+  assert.equal(previsionDistribuida,550);
+  assert.notEqual(objetivo,previsionDistribuida,'objetivo y PREV. manual pueden coexistir sin forzarse a coincidir');
+});
+
+test('consultar el objetivo de una o varias semanas futuras no crea ni altera Planificación anual',()=>{
+  const planning={years:{'2026':{year:2026,weeks:{'2026-36':{year:2026,week:36,currentForecast:600}}}}};
+  const before=JSON.stringify(planning);
+  Holidays.getAnnualForecastForWeek(planning,2026,36);
+  Holidays.getAnnualForecastForWeek(planning,2026,37); // semana sin previsión: tampoco debe crear nada
+  Holidays.getAnnualForecastForWeek(planning,2027,1); // año inexistente: tampoco debe crear nada
+  assert.equal(JSON.stringify(planning),before);
 });

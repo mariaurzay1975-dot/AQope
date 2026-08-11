@@ -9065,6 +9065,11 @@ document.getElementById('btnPrevisionCalcular').addEventListener('click', async 
     asignado = pendiente;
   }
 
+  // El clic IA sustituye la previsión completa de esta semana: elimina primero cualquier override
+  // manual antiguo a nivel de genérico (posible si la semana antes era S+2+) y después limpia tallas.
+  // Fuera de este handler los overrides manuales se conservan intactos.
+  prevExpedicionProducto = AquarelleStockPlanning.clearGenericoForecastOverridesForWeek(prevExpedicionProducto, data);
+
   // Limpiar previsión anterior de todos los productos antes de aplicar la nueva.
   data.forEach(d=>{ prevExpedicionProducto[d.producto] = 0; });
 
@@ -9089,18 +9094,26 @@ document.getElementById('btnPrevisionCalcular').addEventListener('click', async 
   });
 
   const sumaRealTotal = data.reduce((s,d)=> s + (prevExpedicionProducto[d.producto]||0), 0);
+  const productosPorGenerico = new Map();
+  data.forEach(d=>{
+    if(!productosPorGenerico.has(d.generico)) productosPorGenerico.set(d.generico, []);
+    productosPorGenerico.get(d.generico).push(d.producto);
+  });
+  const sumaRenderizadaTotal = [...productosPorGenerico.entries()].reduce((s,[generico,productos])=>
+    s + AquarelleStockPlanning.forecastForGenerico({prevExpedicionProducto}, generico, productos), 0);
+  const totalVerificado = sumaRealTotal === pendiente && sumaRenderizadaTotal === pendiente;
 
   saveState();
   render();
-  statusEl.style.color = sumaRealTotal === pendiente ? 'var(--pos)' : 'var(--neg)';
+  statusEl.style.color = totalVerificado ? 'var(--pos)' : 'var(--neg)';
   const ajustesCount = Object.keys(unidades).length + Object.keys(porcentajes).length;
   const ajusteTxt = ajustesCount ? ` Ajustes aplicados: ${ajustesCount}.` : '';
   const noEncontradosTxt = noEncontrados.length ? ` No encontrados: ${noEncontrados.join(', ')}.` : '';
-  if(sumaRealTotal === pendiente){
+  if(totalVerificado){
     statusEl.textContent = `Previsión calculada para ${entradas.filter(([g,w])=>w>0).length} familias con ventas. Suma total verificada: ${fmtNum(sumaRealTotal)} de ${fmtNum(pendiente)} pendientes. Correcto.${ajusteTxt}${noEncontradosTxt}`;
     setTimeout(()=> previsionModal.classList.remove('open'), 1600);
   } else {
-    statusEl.textContent = `Aviso: la suma total es ${fmtNum(sumaRealTotal)}, no coincide con el pendiente (${fmtNum(pendiente)}).${ajusteTxt}${noEncontradosTxt}`;
+    statusEl.textContent = `Aviso: la suma por tallas es ${fmtNum(sumaRealTotal)} y la suma renderizada es ${fmtNum(sumaRenderizadaTotal)}; el pendiente es ${fmtNum(pendiente)}.${ajusteTxt}${noEncontradosTxt}`;
   }
 });
 

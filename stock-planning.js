@@ -116,6 +116,12 @@
     if(hasGenericoForecastOverride(plan,generico)) return Math.max(0,nonNegativeNumber(plan.prevExpedicionProducto[generico],0));
     return (productos||[]).reduce((sum,producto)=>sum+Math.max(0,nonNegativeNumber(plan?.prevExpedicionProducto?.[producto],0)),0);
   }
+  function clearGenericoForecastOverridesForWeek(prevExpedicionProducto,rows){
+    const next={...(prevExpedicionProducto&&typeof prevExpedicionProducto==='object'?prevExpedicionProducto:{})};
+    const genericos=new Set((Array.isArray(rows)?rows:[]).map(row=>cleanText(row?.generico)).filter(Boolean));
+    genericos.forEach(generico=>{ delete next[generico]; });
+    return next;
+  }
 
   // ---------- Productos añadidos a la planificación de UNA semana concreta ----------
   // No crea ninguna estructura paralela: el producto añadido es una fila normal de `data`, con sus
@@ -573,7 +579,7 @@
     MODES,INITIAL_BALANCE_MODES,DEFAULT_MODE,DEFAULT_INITIAL_BALANCE_MODE,PLANNING_HORIZON_WEEKS,
     getISOWeek,getISOWeekRange,isoWeeksInYear,weekKey,parseWeekKey,isoWeekInfo,shiftWeek,compareWeek,getPlanningHorizon,
     normalizeMode,normalizeInitialBalanceMode,normalizeStockWeekPlan,
-    hasGenericoForecastOverride,forecastForGenerico,addPlannedProduct,removePlannedProduct,
+    hasGenericoForecastOverride,forecastForGenerico,clearGenericoForecastOverridesForWeek,addPlannedProduct,removePlannedProduct,
     aplicaPreasignacion,distributeAcrossRows,applyWeekMovement,endingBalanceForPlan,zeroBalances,buildAutomaticForecastPlan,projectOpeningBalance,
     projectOpeningBalanceChain,
     buildDraftWeekPlan,refreshInheritedBalance,reconcileMissingInheritedProducts,

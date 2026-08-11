@@ -82,6 +82,39 @@ test('forecastForGenerico con override explícito a 0 sigue siendo un override (
   assert.equal(StockPlanning.forecastForGenerico(plan,'G',['T1','T2','T3']),0);
 });
 
+test('S+2 manual -> S+1 con clic IA elimina solo el override de la semana activa y usa las tallas nuevas',()=>{
+  const rowsS34=[
+    {generico:'A-Rosas-Colores',producto:'A-Rosas-Colores-30_1'},
+    {generico:'A-Rosas-Colores',producto:'A-Rosas-Colores-40_2'},
+    {generico:'C-TOURNESOL',producto:'C-TOURNESOL_1'}
+  ];
+  const prevS34={
+    'A-Rosas-Colores':22,
+    'A-Rosas-Colores-30_1':0,
+    'A-Rosas-Colores-40_2':0,
+    'C-TOURNESOL_1':0
+  };
+  const prevOtraSemana={'A-Rosas-Colores':31,'A-Rosas-Colores-30_1':31};
+
+  // Abrir/renderizar/guardar sin pulsar IA no llama al helper: el estado manual permanece intacto.
+  assert.equal(prevS34['A-Rosas-Colores'],22);
+  const recalculada=StockPlanning.clearGenericoForecastOverridesForWeek(prevS34,rowsS34);
+  assert.equal(Object.hasOwn(recalculada,'A-Rosas-Colores'),false);
+  assert.equal(Object.hasOwn(recalculada,'C-TOURNESOL'),false);
+  assert.equal(prevS34['A-Rosas-Colores'],22,'el helper puro no modifica el snapshot original');
+  assert.deepEqual(prevOtraSemana,{'A-Rosas-Colores':31,'A-Rosas-Colores-30_1':31});
+
+  // Equivalente al reparto posterior del clic IA: 167 en Rosas + 377 en el resto = pendiente 544.
+  recalculada['A-Rosas-Colores-30_1']=100;
+  recalculada['A-Rosas-Colores-40_2']=67;
+  recalculada['C-TOURNESOL_1']=377;
+  const rosas=StockPlanning.forecastForGenerico({prevExpedicionProducto:recalculada},'A-Rosas-Colores',rowsS34.slice(0,2).map(r=>r.producto));
+  const resto=StockPlanning.forecastForGenerico({prevExpedicionProducto:recalculada},'C-TOURNESOL',[rowsS34[2].producto]);
+  assert.equal(rosas,167);
+  assert.notEqual(rosas,22);
+  assert.equal(rosas+resto,544);
+});
+
 test('applyWeekMovement reparte las compras de un generico proporcionalmente al saldo de cada talla (sin override de previsión)',()=>{
   const plan={genericoData:{G:{compraL:100,compraM:0,compraX:0,compraJ:0,compraV:0}},prevExpedicionProducto:{T1:5,T2:2,T3:0}};
   const opening={T1:30,T2:10,T3:0};

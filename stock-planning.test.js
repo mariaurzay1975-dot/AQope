@@ -197,6 +197,37 @@ test('projectOpeningBalance de un solo salto (S32->S33) sin borrador de S33 usa 
   assert.equal(result.initialBalanceMode,'inherit');
 });
 
+// TEST A (fix S+1): saldo inicial de S+1 con saldo/compras/PREV./pendientePreasignar conocidos, replicando
+// a mano la fórmula del antiguo buildPlanningInitialData() (index.html): por cada generico,
+// entradaFamilia = compras + pendientePreasignar (solo si aplicaPreasignacion, aquí ROSAS sí aplica),
+// repartida proporcionalmente al peso de saldo de cada talla (resto en la última fila), y luego
+// saldo_final_talla = saldo_apertura + entrada_repartida - PREV_talla. projectOpeningBalance de S(actual)
+// a S+1 debe dar exactamente ese resultado, sin exigir borrador de S+1 ni previsión automática.
+test('projectOpeningBalance (S+1) reproduce exactamente la fórmula del antiguo buildPlanningInitialData',()=>{
+  const rows=[
+    {producto:'T1',generico:'G',categoria:'ROSAS',saldo:30},
+    {producto:'T2',generico:'G',categoria:'ROSAS',saldo:10},
+    {producto:'T3',generico:'G',categoria:'ROSAS',saldo:0}
+  ];
+  const anchorPlan={
+    data:rows,
+    genericoData:{G:{compraL:12,compraM:0,compraX:0,compraJ:0,compraV:0,pendientePreasignar:40}},
+    prevExpedicionProducto:{T1:8,T2:5,T3:0}
+  };
+  // entradaFamilia = 12 (compras) + 40 (pendientePreasignar, ROSAS aplica) = 52
+  // pesoTotal = 30+10+0 = 40; parteT1=round(52*30/40)=39; parteT2=round(52*10/40)=13; parteT3(resto)=52-39-13=0
+  // T1 = 30+39-8 = 61 ; T2 = 10+13-5 = 18 ; T3 = 0+0-0 = 0
+  const result=StockPlanning.projectOpeningBalance({
+    anchorPlan,anchorYear:2026,anchorWeek:40,targetYear:2026,targetWeek:41,getStoredPlan:()=>null
+  });
+  assert.deepEqual(result.balances,{T1:61,T2:18,T3:0});
+  assert.equal(result.initialBalanceMode,'inherit');
+  // buildDraftWeekPlan (la función que crea el borrador real de S+1) debe partir exactamente de ese saldo.
+  const draft=StockPlanning.buildDraftWeekPlan({year:2026,week:41,rows,openingBalances:result.balances,initialBalanceMode:result.initialBalanceMode,now:'2026-10-01T00:00:00.000Z'});
+  assert.equal(draft.initialBalanceMode,'inherit');
+  assert.deepEqual(draft.data.map(r=>[r.producto,r.saldo]),[['T1',61],['T2',18],['T3',0]]);
+});
+
 test('projectOpeningBalance con offset<=0 devuelve el saldo de apertura del ancla sin proyectar',()=>{
   const anchorPlan={data:[{producto:'A',generico:'G',saldo:7}]};
   const result=StockPlanning.projectOpeningBalance({anchorPlan,anchorYear:2026,anchorWeek:32,targetYear:2026,targetWeek:32,getStoredPlan:()=>null});
@@ -391,6 +422,376 @@ test('buildDraftWeekPlan crea un borrador en modo planificacion con el saldo pro
   assert.equal(draft.data[0].saldo,58);
   assert.deepEqual(draft.prevExpedicionProducto,{});
   assert.equal(draft.groupView,true);
+});
+
+test('refreshInheritedBalance solo reescribe data[].saldo por producto, deja todo lo demás intacto',()=>{
+  const plan={
+    key:'2026-34',year:2026,week:34,mode:'planificacion',initialBalanceMode:'inherit',baseWeekKey:'2026-33',
+    data:[{producto:'T1',generico:'G',categoria:'ROSAS',saldo:0},{producto:'T2',generico:'G',categoria:'ROSAS',saldo:0,addedManually:true}],
+    genericoData:{G:{compraL:5,compraM:0,compraX:0,compraJ:0,compraV:0,pendientePreasignar:12}},
+    prevExpedicionProducto:{T1:9,T2:3},
+    forecastAdjustments:{G:{percent:'20'}},
+    simplesPrea:{G:7},
+    groupView:true
+  };
+  const refreshed=StockPlanning.refreshInheritedBalance(plan,{T1:61,T2:18});
+  assert.deepEqual(refreshed.data.map(r=>[r.producto,r.saldo]),[['T1',61],['T2',18]]);
+  assert.equal(refreshed.data[1].addedManually,true); // metadatos de la fila preservados
+  assert.deepEqual(refreshed.genericoData,plan.genericoData);
+  assert.deepEqual(refreshed.prevExpedicionProducto,plan.prevExpedicionProducto);
+  assert.deepEqual(refreshed.forecastAdjustments,plan.forecastAdjustments);
+  assert.deepEqual(refreshed.simplesPrea,plan.simplesPrea);
+  assert.equal(refreshed.initialBalanceMode,'inherit');
+  assert.equal(refreshed.baseWeekKey,'2026-33');
+  // el plan original no se muta
+  assert.equal(plan.data[0].saldo,0);
+});
+
+test('refreshInheritedBalance conserva el saldo de una fila cuyo producto no aparece en openingBalances (nunca inventa un 0)',()=>{
+  const plan={data:[{producto:'T1',saldo:5},{producto:'T2',saldo:8}]};
+  const refreshed=StockPlanning.refreshInheritedBalance(plan,{T1:20});
+  assert.deepEqual(refreshed.data.map(r=>[r.producto,r.saldo]),[['T1',20],['T2',8]]);
+});
+
+// TEST DE REGRESIÓN (S+1 congelada): reproduce exactamente el bug real reportado — un snapshot S+1 ya
+// existente con saldo 0 (creado antes de que la semana actual tuviera compras/PREV), la semana actual
+// con saldo final proyectado distinto de 0, y S+1 con compras/PREV manuales YA introducidos. Al
+// recalcular (como hace ahora openStockPlanningWeek en el rol 's1') debe actualizarse solo el saldo.
+test('refreshInheritedBalance corrige un snapshot S+1 congelado en 0 sin tocar sus compras/PREV manuales',()=>{
+  const anchorPlan={
+    data:[{producto:'T1',generico:'G',categoria:'ROSAS',saldo:30},{producto:'T2',generico:'G',categoria:'ROSAS',saldo:10}],
+    genericoData:{G:{compraL:20,compraM:0,compraX:0,compraJ:0,compraV:0,pendientePreasignar:0}},
+    prevExpedicionProducto:{T1:5,T2:5}
+  };
+  const projection=StockPlanning.projectOpeningBalance({anchorPlan,anchorYear:2026,anchorWeek:33,targetYear:2026,targetWeek:34,getStoredPlan:()=>null});
+  assert.notDeepEqual(projection.balances,{T1:0,T2:0}); // la semana actual SÍ tiene saldo final != 0
+  const staleS1Snap={
+    key:'2026-34',year:2026,week:34,mode:'planificacion',initialBalanceMode:'inherit',baseWeekKey:'2026-33',
+    data:[{producto:'T1',generico:'G',categoria:'ROSAS',saldo:0},{producto:'T2',generico:'G',categoria:'ROSAS',saldo:0}],
+    genericoData:{G:{compraL:8,compraM:0,compraX:0,compraJ:0,compraV:0,pendientePreasignar:0}}, // compras manuales ya metidas en S+1
+    prevExpedicionProducto:{T1:11,T2:4} // PREV manual ya metida en S+1
+  };
+  const refreshed=StockPlanning.refreshInheritedBalance(staleS1Snap,projection.balances);
+  assert.deepEqual(refreshed.data.map(r=>[r.producto,r.saldo]),[['T1',projection.balances.T1],['T2',projection.balances.T2]]);
+  assert.notDeepEqual(refreshed.data.map(r=>r.saldo),[0,0]); // ya no está congelado en 0
+  assert.deepEqual(refreshed.genericoData,staleS1Snap.genericoData); // compras manuales de S+1 intactas
+  assert.deepEqual(refreshed.prevExpedicionProducto,staleS1Snap.prevExpedicionProducto); // PREV manual de S+1 intacta
+});
+
+test('refreshInheritedBalance es idempotente: aplicarla dos veces con la misma proyección da exactamente el mismo estado',()=>{
+  const staleS1Snap={
+    key:'2026-34',year:2026,week:34,mode:'planificacion',initialBalanceMode:'inherit',baseWeekKey:'2026-33',
+    data:[{producto:'T1',generico:'G',categoria:'ROSAS',saldo:0},{producto:'T2',generico:'G',categoria:'ROSAS',saldo:0}],
+    genericoData:{G:{compraL:8,compraM:0,compraX:0,compraJ:0,compraV:0,pendientePreasignar:0}},
+    prevExpedicionProducto:{T1:11,T2:4}
+  };
+  const openingBalances={T1:61,T2:18};
+  const once=StockPlanning.refreshInheritedBalance(staleS1Snap,openingBalances);
+  const twice=StockPlanning.refreshInheritedBalance(once,openingBalances);
+  assert.deepEqual(once,twice);
+});
+
+// TEST DE REGRESIÓN (bug real confirmado en sesión con datos de Supabase): el snapshot de S+1 puede
+// conservar un initialBalanceMode:"zero" histórico (p.ej. de un ciclo de semanas anterior en el que ese
+// mismo slot fue S+2+ con "Partir de 0"). Ese campo NUNCA debe respetarse para S+1: el patrón correcto
+// (el que ahora usa openStockPlanningWeek en index.html) es excluir la propia clave (year,week) del
+// getStoredPlan que se le pasa a projectOpeningBalance — el mismo truco que ya usaba
+// setStockWeekInitialBalanceMode para S+2+ — y forzar snap.initialBalanceMode a 'inherit' después de
+// refrescar. Sin esa exclusión, projectOpeningBalance lee el "zero" del propio snapshot que se está
+// refrescando y devuelve saldo 0 para todo, por mucho que refreshInheritedBalance funcione bien.
+test('S+1 con initialBalanceMode="zero" histórico: la exclusión de la propia clave fuerza inherit y recalcula el saldo real',()=>{
+  const anchorPlan={
+    data:[{producto:'T1',generico:'G',categoria:'ROSAS',saldo:30},{producto:'T2',generico:'G',categoria:'ROSAS',saldo:10}],
+    genericoData:{G:{compraL:20,compraM:0,compraX:0,compraJ:0,compraV:0,pendientePreasignar:0}},
+    prevExpedicionProducto:{T1:5,T2:5}
+  };
+  const staleS1Snap={
+    key:'2026-34',year:2026,week:34,mode:'planificacion',initialBalanceMode:'zero',baseWeekKey:'2026-33',
+    data:[{producto:'T1',generico:'G',categoria:'ROSAS',saldo:0},{producto:'T2',generico:'G',categoria:'ROSAS',saldo:0}],
+    genericoData:{G:{compraL:8,compraM:0,compraX:0,compraJ:0,compraV:0,pendientePreasignar:0}}, // compras ya en S+1
+    prevExpedicionProducto:{T1:11,T2:4} // PREV ya en S+1
+  };
+  const storedPlans={'2026-34':staleS1Snap};
+  const getStoredPlanSinExclusion=(y,w)=>storedPlans[`${y}-${w}`]||null;
+  const getStoredPlanConExclusion=(y,w)=>(y===2026&&w===34)?null:getStoredPlanSinExclusion(y,w);
+
+  // Reproduce primero el bug (sin la exclusión): confirma que SIN el fix, el "zero" histórico gana.
+  const buggy=StockPlanning.projectOpeningBalance({anchorPlan,anchorYear:2026,anchorWeek:33,targetYear:2026,targetWeek:34,getStoredPlan:getStoredPlanSinExclusion});
+  assert.equal(buggy.initialBalanceMode,'zero');
+  assert.deepEqual(buggy.balances,{T1:0,T2:0});
+
+  // Con la exclusión (lo que ahora hace openStockPlanningWeek): el "zero" histórico se ignora.
+  const projection=StockPlanning.projectOpeningBalance({anchorPlan,anchorYear:2026,anchorWeek:33,targetYear:2026,targetWeek:34,getStoredPlan:getStoredPlanConExclusion});
+  assert.equal(projection.initialBalanceMode,'inherit');
+  assert.notDeepEqual(projection.balances,{T1:0,T2:0}); // saldo final proyectado de S33 distinto de 0
+
+  const refreshed=StockPlanning.refreshInheritedBalance(staleS1Snap,projection.balances);
+  refreshed.initialBalanceMode='inherit'; // paso explícito que aplica openStockPlanningWeek tras refrescar
+  assert.deepEqual(refreshed.data.map(r=>[r.producto,r.saldo]),[['T1',projection.balances.T1],['T2',projection.balances.T2]]);
+  assert.notDeepEqual(refreshed.data.map(r=>r.saldo),[0,0]);
+  assert.equal(refreshed.initialBalanceMode,'inherit'); // el snapshot queda coherente con su rol s1
+  // compras y PREV que ya estaban en S+1 permanecen exactamente iguales
+  assert.deepEqual(refreshed.genericoData,staleS1Snap.genericoData);
+  assert.deepEqual(refreshed.prevExpedicionProducto,staleS1Snap.prevExpedicionProducto);
+});
+
+test('S+2 con initialBalanceMode="zero" sigue quedándose en zero (el fix de S+1 no afecta a future)',()=>{
+  const anchorPlan={data:[{producto:'A',generico:'G',saldo:40}],genericoData:{G:{compraL:10}},prevExpedicionProducto:{A:5}};
+  const storedS35={initialBalanceMode:'zero',genericoData:{G:{compraL:0}},prevExpedicionProducto:{A:0}};
+  // Mismo patrón que usa setStockWeekInitialBalanceMode para S+2+: excluye SU PROPIA clave (S35, el
+  // slot que se está configurando), pero deja intacta la lectura de cualquier otra semana intermedia.
+  const getStoredPlan=(y,w)=>(y===2026&&w===35)?storedS35:null;
+  const projection=StockPlanning.projectOpeningBalance({anchorPlan,anchorYear:2026,anchorWeek:33,targetYear:2026,targetWeek:35,getStoredPlan});
+  assert.equal(projection.initialBalanceMode,'zero');
+  assert.deepEqual(projection.balances,{A:0});
+});
+
+test('S+2 con initialBalanceMode="inherit" sigue heredando el saldo real (el fix de S+1 no afecta a future)',()=>{
+  const anchorPlan={data:[{producto:'A',generico:'G',saldo:40}],genericoData:{G:{compraL:10}},prevExpedicionProducto:{A:5}};
+  const storedS35={initialBalanceMode:'inherit',genericoData:{G:{compraL:0}},prevExpedicionProducto:{A:0}};
+  const getStoredPlan=(y,w)=>(y===2026&&w===35)?storedS35:null;
+  const projection=StockPlanning.projectOpeningBalance({anchorPlan,anchorYear:2026,anchorWeek:33,targetYear:2026,targetWeek:35,getStoredPlan});
+  assert.equal(projection.initialBalanceMode,'inherit');
+  assert.notDeepEqual(projection.balances,{A:0});
+});
+
+// TESTS A-H (reconcileMissingInheritedProducts): reproducen exactamente el caso real confirmado en
+// sesión — S+1 con su propio Recap (composición distinta a la semana actual) al que le falta una
+// referencia que la semana actual termina con saldo != 0.
+const anchorRowsReconcile=[
+  {producto:'C-LUX_HORTENSIA_SWEET_3',generico:'C-LUX_HORTENSIA_SWEET',categoria:'COMPUESTOS',saldo:5,codeBase:'999'},
+  {producto:'A-Rosas-Colores-60_4',generico:'A-Rosas-Colores',categoria:'ROSAS',saldo:0,codeBase:'17127'},
+  {producto:'YA-EN-S1',generico:'G-YA',categoria:'ROSAS',saldo:1}
+];
+const endingBalancesReconcile={
+  'C-LUX_HORTENSIA_SWEET_3':-2, // saldo final != 0 (negativo): debe incorporarse con -2
+  'A-Rosas-Colores-60_4':0,     // saldo final == 0: NO debe incorporarse
+  'YA-EN-S1':999                // ya existe en S+1: nunca se toca ni se duplica aquí
+};
+function isActiveSiempre(){ return true; }
+function isActivoSoloHortensia(anchorRow){ return anchorRow.generico==='C-LUX_HORTENSIA_SWEET'; }
+
+test('A: producto con saldo final negativo (!=0), activo y ausente en S+1 -> se incorpora con ese saldo exacto',()=>{
+  const s1Plan={data:[{producto:'YA-EN-S1',generico:'G-YA',categoria:'ROSAS',saldo:1}]};
+  const result=StockPlanning.reconcileMissingInheritedProducts(s1Plan,endingBalancesReconcile,anchorRowsReconcile,isActiveSiempre);
+  const added=result.plan.data.find(r=>r.producto==='C-LUX_HORTENSIA_SWEET_3');
+  assert.ok(added,'debe añadirse la fila que faltaba');
+  assert.equal(added.saldo,-2);
+  assert.equal(added.generico,'C-LUX_HORTENSIA_SWEET');
+  assert.deepEqual(result.added,['C-LUX_HORTENSIA_SWEET_3']);
+});
+
+test('B: producto con saldo final positivo (!=0), activo y ausente en S+1 -> se incorpora',()=>{
+  const s1Plan={data:[]};
+  const anchorRows=[{producto:'X',generico:'GX',categoria:'ROSAS',saldo:0}];
+  const result=StockPlanning.reconcileMissingInheritedProducts(s1Plan,{X:4},anchorRows,isActiveSiempre);
+  const added=result.plan.data.find(r=>r.producto==='X');
+  assert.ok(added);
+  assert.equal(added.saldo,4);
+  assert.deepEqual(result.added,['X']);
+});
+
+test('C: producto con saldo final proyectado == 0 -> NO se incorpora aunque falte en S+1',()=>{
+  const s1Plan={data:[{producto:'YA-EN-S1',generico:'G-YA',categoria:'ROSAS',saldo:1}]};
+  const result=StockPlanning.reconcileMissingInheritedProducts(s1Plan,endingBalancesReconcile,anchorRowsReconcile,isActiveSiempre);
+  assert.equal(result.plan.data.find(r=>r.producto==='A-Rosas-Colores-60_4'),undefined);
+  assert.ok(!result.added.includes('A-Rosas-Colores-60_4'));
+  assert.ok(!result.omitted.some(o=>o.producto==='A-Rosas-Colores-60_4')); // no es "omitida por inactiva": simplemente no aplica la regla
+});
+
+test('D: genérico inactivo en Nomenclaturas -> NO se incorpora, se reporta en omitted (nunca se reactiva sola)',()=>{
+  const s1Plan={data:[]};
+  const anchorRows=[{producto:'C-ZODIAC-CANCER_1',generico:'C-ZODIAC-CANCER',categoria:'COMPUESTOS',saldo:0}];
+  function isActiveInactivo(){ return false; } // simula active:false en Nomenclaturas
+  const result=StockPlanning.reconcileMissingInheritedProducts(s1Plan,{'C-ZODIAC-CANCER_1':3},anchorRows,isActiveInactivo);
+  assert.equal(result.plan.data.length,0);
+  assert.deepEqual(result.added,[]);
+  assert.deepEqual(result.omitted,[{producto:'C-ZODIAC-CANCER_1',generico:'C-ZODIAC-CANCER',saldo:3}]);
+});
+
+test('E: genérico no encontrado en Nomenclaturas (no confirmable) -> NO se incorpora, se reporta en omitted',()=>{
+  const s1Plan={data:[]};
+  const anchorRows=[{producto:'S-Premium-12-18-24-30-roja_3',generico:'S-Premium-12-18-24-30-roja',categoria:'SIMPLES',saldo:0}];
+  function isActiveNoEncontrado(){ return false; } // simula "no encontrada en Nomenclaturas"
+  const result=StockPlanning.reconcileMissingInheritedProducts(s1Plan,{'S-Premium-12-18-24-30-roja_3':7},anchorRows,isActiveNoEncontrado);
+  assert.equal(result.plan.data.length,0);
+  assert.deepEqual(result.omitted,[{producto:'S-Premium-12-18-24-30-roja_3',generico:'S-Premium-12-18-24-30-roja',saldo:7}]);
+});
+
+test('F: un producto que ya existe en S+1 nunca se duplica, aunque su saldo final en el ancla sea != 0',()=>{
+  const s1Plan={data:[{producto:'YA-EN-S1',generico:'G-YA',categoria:'ROSAS',saldo:1}]};
+  const result=StockPlanning.reconcileMissingInheritedProducts(s1Plan,endingBalancesReconcile,anchorRowsReconcile,isActiveSiempre);
+  assert.equal(result.plan.data.filter(r=>r.producto==='YA-EN-S1').length,1);
+  assert.equal(result.plan.data.find(r=>r.producto==='YA-EN-S1').saldo,1); // su saldo NO se toca aquí (eso es refreshInheritedBalance)
+  assert.ok(!result.added.includes('YA-EN-S1'));
+});
+
+test('G: compras, PREV, genericoData, forecastAdjustments y simplesPrea de S+1 permanecen idénticos tras reconciliar',()=>{
+  const s1Plan={
+    data:[{producto:'YA-EN-S1',generico:'G-YA',categoria:'ROSAS',saldo:1}],
+    genericoData:{'G-YA':{compraL:9,compraM:0,compraX:0,compraJ:0,compraV:0,pendientePreasignar:0}},
+    prevExpedicionProducto:{'YA-EN-S1':2},
+    forecastAdjustments:{'G-YA':{percent:'10'}},
+    simplesPrea:{'G-YA':5}
+  };
+  const result=StockPlanning.reconcileMissingInheritedProducts(s1Plan,endingBalancesReconcile,anchorRowsReconcile,isActiveSiempre);
+  assert.deepEqual(result.plan.genericoData,s1Plan.genericoData);
+  assert.deepEqual(result.plan.prevExpedicionProducto,s1Plan.prevExpedicionProducto);
+  assert.deepEqual(result.plan.forecastAdjustments,s1Plan.forecastAdjustments);
+  assert.deepEqual(result.plan.simplesPrea,s1Plan.simplesPrea);
+  // encadenado con refreshInheritedBalance (como hace openStockPlanningWeek): sigue intacto
+  const refreshed=StockPlanning.refreshInheritedBalance(result.plan,endingBalancesReconcile);
+  assert.deepEqual(refreshed.genericoData,s1Plan.genericoData);
+  assert.deepEqual(refreshed.prevExpedicionProducto,s1Plan.prevExpedicionProducto);
+});
+
+test('la comprobación de activo puede admitir/rechazar por genérico distintos de cada fila, no solo un flag global',()=>{
+  const s1Plan={data:[]};
+  const anchorRows=[
+    {producto:'C-LUX_HORTENSIA_SWEET_3',generico:'C-LUX_HORTENSIA_SWEET',categoria:'COMPUESTOS',saldo:0},
+    {producto:'C-ZODIAC-CANCER_1',generico:'C-ZODIAC-CANCER',categoria:'COMPUESTOS',saldo:0}
+  ];
+  const balances={'C-LUX_HORTENSIA_SWEET_3':-2,'C-ZODIAC-CANCER_1':3};
+  const result=StockPlanning.reconcileMissingInheritedProducts(s1Plan,balances,anchorRows,isActivoSoloHortensia);
+  assert.deepEqual(result.added,['C-LUX_HORTENSIA_SWEET_3']);
+  assert.deepEqual(result.omitted,[{producto:'C-ZODIAC-CANCER_1',generico:'C-ZODIAC-CANCER',saldo:3}]);
+});
+
+// TESTS A-H (bug real confirmado en sesión con datos de Supabase): reconcileMissingInheritedProducts
+// añadía de vuelta una talla antigua de una familia (categoria+codeBase) que la semana destino YA
+// representaba con otra composición de tallas (p.ej. S34 con 2 tallas reales de Alstro-parme recibía de
+// vuelta una 3ª talla de S33 solo porque su `producto` no coincidía letra a letra). Ahora, si la familia
+// entera ya está representada en destino, esa variante suelta no se reintroduce.
+test('A: familia completamente ausente en destino + saldo != 0 + activa -> se añade (comportamiento sin cambios)',()=>{
+  const destino={data:[]};
+  const anchorRows=[{producto:'X-1',generico:'GX',categoria:'SIMPLES',codeBase:'999',saldo:0}];
+  const result=StockPlanning.reconcileMissingInheritedProducts(destino,{'X-1':7},anchorRows,isActiveSiempre);
+  assert.deepEqual(result.added,['X-1']);
+  assert.equal(result.plan.data.find(r=>r.producto==='X-1').saldo,7);
+});
+
+test('B: producto exacto ya existente en destino -> nunca se duplica, con prioridad sobre cualquier chequeo de familia',()=>{
+  const destino={data:[{producto:'X-1',generico:'GX',categoria:'SIMPLES',codeBase:'999',saldo:3}]};
+  const anchorRows=[{producto:'X-1',generico:'GX',categoria:'SIMPLES',codeBase:'999',saldo:0}];
+  const result=StockPlanning.reconcileMissingInheritedProducts(destino,{'X-1':7},anchorRows,isActiveSiempre);
+  assert.deepEqual(result.added,[]);
+  assert.equal(result.plan.data.filter(r=>r.producto==='X-1').length,1);
+  assert.equal(result.plan.data.find(r=>r.producto==='X-1').saldo,3); // su saldo NO se toca aquí (eso es refreshInheritedBalance)
+});
+
+test('C: producto distinto pero misma categoria+codeBase YA representada en destino -> NO se añade',()=>{
+  const destino={data:[{producto:'S-Alstro-parme-20-2',generico:'S-Alstro-parme',categoria:'SIMPLES',codeBase:'25148',saldo:0}]};
+  const anchorRows=[{producto:'S-Alstro-parme-15-1',generico:'S-Alstro-parme',categoria:'SIMPLES',codeBase:'25148',saldo:0}];
+  const result=StockPlanning.reconcileMissingInheritedProducts(destino,{'S-Alstro-parme-15-1':4},anchorRows,isActiveSiempre);
+  assert.deepEqual(result.added,[]);
+  assert.equal(result.plan.data.length,1);
+  assert.ok(!result.plan.data.some(r=>r.producto==='S-Alstro-parme-15-1'));
+});
+
+test('D: varias variantes candidatas de una familia YA representada en destino -> no se añade ninguna',()=>{
+  const destino={data:[{producto:'S-Alstro-parme-20-2',generico:'S-Alstro-parme',categoria:'SIMPLES',codeBase:'25148',saldo:0}]};
+  const anchorRows=[
+    {producto:'S-Alstro-parme-15-1',generico:'S-Alstro-parme',categoria:'SIMPLES',codeBase:'25148',saldo:0},
+    {producto:'S-Alstro-parme-25-3',generico:'S-Alstro-parme',categoria:'SIMPLES',codeBase:'25148',saldo:0}
+  ];
+  const balances={'S-Alstro-parme-15-1':4,'S-Alstro-parme-25-3':1};
+  const result=StockPlanning.reconcileMissingInheritedProducts(destino,balances,anchorRows,isActiveSiempre);
+  assert.deepEqual(result.added,[]);
+  assert.equal(result.plan.data.length,1);
+});
+
+test('E: familia completamente ausente con varias variantes activas y saldo != 0 -> se incorporan todas (no se bloquean entre sí)',()=>{
+  const destino={data:[]};
+  const anchorRows=[
+    {producto:'S-Alstro-parme-15-1',generico:'S-Alstro-parme',categoria:'SIMPLES',codeBase:'25148',saldo:0},
+    {producto:'S-Alstro-parme-20-2',generico:'S-Alstro-parme',categoria:'SIMPLES',codeBase:'25148',saldo:0},
+    {producto:'S-Alstro-parme-25-3',generico:'S-Alstro-parme',categoria:'SIMPLES',codeBase:'25148',saldo:0}
+  ];
+  const balances={'S-Alstro-parme-15-1':-1,'S-Alstro-parme-20-2':0,'S-Alstro-parme-25-3':-1};
+  const result=StockPlanning.reconcileMissingInheritedProducts(destino,balances,anchorRows,isActiveSiempre);
+  // -20-2 tiene saldo final 0: nunca se incorpora (regla ya existente, independiente de la familia)
+  assert.deepEqual(result.added,['S-Alstro-parme-15-1','S-Alstro-parme-25-3']);
+  assert.equal(result.plan.data.length,2);
+});
+
+test('F: sin codeBase en alguno de los dos lados -> comportamiento actual por producto exacto, nunca se agrupa por nombre',()=>{
+  const destino={data:[{producto:'S-Alstro-parme-20-2',generico:'S-Alstro-parme',categoria:'SIMPLES',saldo:0}]}; // sin codeBase
+  const anchorRows=[{producto:'S-Alstro-parme-15-1',generico:'S-Alstro-parme',categoria:'SIMPLES',saldo:0}]; // sin codeBase
+  const result=StockPlanning.reconcileMissingInheritedProducts(destino,{'S-Alstro-parme-15-1':4},anchorRows,isActiveSiempre);
+  assert.deepEqual(result.added,['S-Alstro-parme-15-1']); // sin codeBase no hay familia que comprobar: se añade igual que siempre
+});
+
+test('G: caso real Hortensia S+1 (activa, saldo final -2, familia completamente ausente) sigue incorporándose igual que antes',()=>{
+  const s1Plan={data:[{producto:'YA-EN-S1',generico:'G-YA',categoria:'ROSAS',saldo:1}]};
+  const result=StockPlanning.reconcileMissingInheritedProducts(s1Plan,endingBalancesReconcile,anchorRowsReconcile,isActiveSiempre);
+  const added=result.plan.data.find(r=>r.producto==='C-LUX_HORTENSIA_SWEET_3');
+  assert.ok(added,'Hortensia debe seguir incorporándose: no comparte codeBase con nada ya presente en destino');
+  assert.equal(added.saldo,-2);
+  assert.deepEqual(result.added,['C-LUX_HORTENSIA_SWEET_3']);
+});
+
+test('H: caso real Alstro intermedio (S33 con 3 variantes, S34 con 2 de la misma familia) -> la tercera NO reaparece',()=>{
+  const destino={ // composición real de S34: solo 2 de las 3 tallas de Alstro-parme
+    data:[
+      {producto:'S-Alstro-parme-20-2',generico:'S-Alstro-parme',categoria:'SIMPLES',codeBase:'25148',recapCode:'25.148',saldo:0},
+      {producto:'S-Alstro-parme-25-3',generico:'S-Alstro-parme',categoria:'SIMPLES',codeBase:'25148',recapCode:'25.148',saldo:0}
+    ]
+  };
+  const anchorRowsS33=[ // composición real de S33 (ancla): las 3 tallas
+    {producto:'S-Alstro-parme-15-1',generico:'S-Alstro-parme',categoria:'SIMPLES',codeBase:'25148',recapCode:'25.148',saldo:5},
+    {producto:'S-Alstro-parme-20-2',generico:'S-Alstro-parme',categoria:'SIMPLES',codeBase:'25148',recapCode:'25.148',saldo:2},
+    {producto:'S-Alstro-parme-25-3',generico:'S-Alstro-parme',categoria:'SIMPLES',codeBase:'25148',recapCode:'25.148',saldo:1}
+  ];
+  const endingBalancesS33={'S-Alstro-parme-15-1':4,'S-Alstro-parme-20-2':2,'S-Alstro-parme-25-3':1};
+  const result=StockPlanning.reconcileMissingInheritedProducts(destino,endingBalancesS33,anchorRowsS33,isActiveSiempre);
+  assert.deepEqual(result.added,[]);
+  assert.equal(result.plan.data.length,2);
+  assert.ok(!result.plan.data.some(r=>r.producto==='S-Alstro-parme-15-1'));
+});
+
+// TEST C/E (S+2 real, cadena de dos saltos): mismo bug y mismo fix que S+1, pero con una semana
+// intermedia REAL de por medio (S33), que respeta su propio modo/compras/PREV — projectOpeningBalance
+// no se toca, solo se encadena reconcile+refresh sobre su resultado, igual que hace ahora
+// setStockWeekInitialBalanceMode/openStockPlanningWeek para 'future' en modo inherit.
+test('S+2 (dos saltos, intermedia S33 real en inherit): reconcilia lo que falta del ancla y preserva lo propio de S+2',()=>{
+  const anchorPlan={
+    data:[{producto:'T1',generico:'G',categoria:'ROSAS',saldo:30},{producto:'T2',generico:'G',categoria:'ROSAS',saldo:10}],
+    genericoData:{G:{compraL:20,compraM:0,compraX:0,compraJ:0,compraV:0,pendientePreasignar:0}},
+    prevExpedicionProducto:{T1:5,T2:5}
+  };
+  const storedS33={initialBalanceMode:'inherit',genericoData:{G:{compraL:0,compraM:0,compraX:0,compraJ:0,compraV:0,pendientePreasignar:0}},prevExpedicionProducto:{T1:0,T2:0}};
+  const getStoredPlan=(y,w)=>(y===2026&&w===33)?storedS33:null; // S34 (destino) se excluye desde el caller, como ya hacemos
+  const projection=StockPlanning.projectOpeningBalance({anchorPlan,anchorYear:2026,anchorWeek:32,targetYear:2026,targetWeek:34,getStoredPlan});
+  assert.equal(projection.initialBalanceMode,'inherit');
+  assert.notDeepEqual(projection.balances,{T1:0,T2:0});
+
+  // S+2 (S34) tiene su propio Recap: no trae T1 (que el ancla proyecta con saldo != 0), pero sí trae un
+  // producto propio "PROPIO-S34" con saldo 12 que no tiene relación con el ancla.
+  const s34Plan={
+    data:[{producto:'T2',generico:'G',categoria:'ROSAS',saldo:0},{producto:'PROPIO-S34',generico:'G-PROPIO',categoria:'SIMPLES',saldo:12}],
+    genericoData:{'G-PROPIO':{compraL:1,compraM:0,compraX:0,compraJ:0,compraV:0,pendientePreasignar:0}},
+    prevExpedicionProducto:{'PROPIO-S34':3}
+  };
+  const reconciled=StockPlanning.reconcileMissingInheritedProducts(s34Plan,projection.balances,anchorPlan.data,()=>true);
+  assert.ok(reconciled.plan.data.some(r=>r.producto==='T1'),'T1 debe reconciliarse: falta en S34 y su saldo final proyectado es != 0');
+  assert.equal(reconciled.plan.data.find(r=>r.producto==='T1').saldo,projection.balances.T1);
+
+  const refreshed=StockPlanning.refreshInheritedBalance(reconciled.plan,projection.balances);
+  assert.equal(refreshed.data.find(r=>r.producto==='T1').saldo,projection.balances.T1);
+  assert.equal(refreshed.data.find(r=>r.producto==='T2').saldo,projection.balances.T2); // ya existía, se refresca
+  assert.equal(refreshed.data.find(r=>r.producto==='PROPIO-S34').saldo,12); // propio de S34: NUNCA se toca (no está en la proyección)
+  assert.deepEqual(refreshed.genericoData,s34Plan.genericoData); // compras propias de S34 intactas
+  assert.deepEqual(refreshed.prevExpedicionProducto,s34Plan.prevExpedicionProducto); // PREV propia de S34 intacta
+});
+
+test('S+3 con una intermedia real en modo "zero": la cadena se rompe ahí, igual que antes de este fix (projectOpeningBalance no se toca)',()=>{
+  const anchorPlan={data:[{producto:'A',generico:'G',saldo:40}],genericoData:{G:{compraL:10}},prevExpedicionProducto:{A:5}};
+  const storedS34={initialBalanceMode:'zero',genericoData:{G:{compraL:0}},prevExpedicionProducto:{A:0}};
+  const getStoredPlan=(y,w)=>(y===2026&&w===34)?storedS34:null;
+  const projection=StockPlanning.projectOpeningBalance({anchorPlan,anchorYear:2026,anchorWeek:32,targetYear:2026,targetWeek:35,getStoredPlan});
+  // S32 termina en 45; S34 (intermedia, zero) resetea la apertura a 0 antes de aplicar su propio movimiento (0);
+  // S35 (destino, sin stored propio) hereda esa cadena ya rota: 0, no 45.
+  assert.deepEqual(projection.balances,{A:0});
 });
 
 test('promoteWeekPlans es la única transición actual->historico y no altera los planes originales',()=>{

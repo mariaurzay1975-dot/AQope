@@ -18,6 +18,18 @@
   function finiteNumber(value,fallback=0){if(value===''||value===null||value===undefined)return fallback;const number=Number(String(value).replace(',','.'));return Number.isFinite(number)?number:fallback;}
   function nonNegativeNumber(value,fallback=0){const number=finiteNumber(value,null);return number!=null&&number>=0?number:fallback;}
   function isoNow(now){const date=now instanceof Date?now:new Date(now||Date.now());return Number.isNaN(date.getTime())?new Date().toISOString():date.toISOString();}
+  // Último campo NO VACÍO de una fila de Recap ya partida por tabulador (parts=line.split('\t')). Nunca
+  // asume que el último elemento del array es válido: si el Recap deja un tabulador vacío al final de la
+  // línea, parts[parts.length-1] sería '' — esto recorre desde el final hasta encontrar el primer valor
+  // con contenido real, sin alterar ni recortar el array original.
+  function lastNonEmptyField(parts){
+    const list=Array.isArray(parts)?parts:[];
+    for(let i=list.length-1;i>=0;i--){
+      const value=cleanText(list[i]);
+      if(value!=='') return value;
+    }
+    return '';
+  }
 
   // ---------- Utilidades de año+semana ISO ----------
   // getISOWeek/getISOWeekRange/weekKey replican EXACTAMENTE el algoritmo ya usado en index.html
@@ -282,6 +294,257 @@
     },{now});
   }
 
+  // ---------- Refresco del saldo heredado de un borrador YA EXISTENTE (solo S+1) ----------
+  // openStockPlanningWeek() crea el borrador de S+1 la PRIMERA vez con buildDraftWeekPlan(), pero si el
+  // usuario vuelve a entrar más tarde el snapshot ya existe y proyectOpeningBalance() nunca se
+  // recalculaba: el saldo heredado quedaba congelado aunque compras/PREV/pendientePreasignar de la
+  // semana actual cambiasen después. refreshInheritedBalance() es la única pieza que corrige eso: solo
+  // reescribe data[].saldo (por `producto`, la misma clave que ya usa buildDraftWeekPlan/
+  // projectOpeningBalance) con el saldo recién proyectado. Todo lo demás del borrador — genericoData
+  // (compras/pendientePreasignar), prevExpedicionProducto (PREV. manual de S+1), forecastAdjustments,
+  // simplesPrea, initialBalanceMode, filas añadidas manualmente, etc. — se conserva íntegro. Una fila
+  // cuyo producto no aparezca en openingBalances mantiene su saldo actual (nunca se inventa un 0).
+  // ---------- Reconciliación de composición heredada (solo S+1) ----------
+  // El Recap propio de S+1 (el mismo mecanismo de "Cargar Recap" que ya usa cualquier semana) puede
+  // reemplazar su `data` libremente, y eso es correcto: cada semana tiene su propio Recap real. Pero si
+  // ese Recap deja fuera una referencia que la semana actual todavía tiene con saldo final proyectado
+  // distinto de 0, esa referencia no debe desaparecer sin más de S+1: hay que reincorporarla con ese
+  // mismo saldo (positivo o negativo) como fila normal. reconcileMissingInheritedProducts() es la única
+  // pieza que hace esto — SOLO añade filas que faltan (nunca quita ni duplica una que ya esté, nunca
+  // toca el saldo de las que ya existen: eso sigue siendo trabajo exclusivo de refreshInheritedBalance,
+  // que se aplica después). Reglas: (1) coincidencia EXACTA de `producto` tiene prioridad — si ya existe,
+  // nunca se toca ni se duplica; (2) si no hay coincidencia exacta pero la fila candidata tiene
+  // `categoria`+`codeBase` y esa MISMA familia ya está representada en `plan.data` (por otra variante,
+  // con otro `producto`), la familia se considera ya cubierta y NO se añade esa variante suelta — nunca
+  // se reintroduce una talla antigua de una familia que la semana destino ya trae con su propia
+  // composición (aunque los nombres de producto no coincidan letra a letra, p.ej. una intermedia real
+  // cuyo propio Recap dejó fuera una talla concreta de una familia que sigue representada por las
+  // demás); (3) solo si la familia completa está ausente (o no se puede determinar por falta de
+  // `codeBase` en alguno de los dos lados, en cuyo caso se sigue comparando solo por `producto` exacto,
+  // como siempre) se aplica la lógica de siempre: solo se considera un producto del ancla si su saldo
+  // final proyectado (endingBalances) es distinto de 0, y solo se incorpora si isActiveProduct(anchorRow)
+  // confirma que sigue activa — si no se puede confirmar (no encontrada) o está inactiva, NUNCA se
+  // reactiva sola: se reporta en `omitted` para revisión manual, nunca en silencio y nunca añadiéndola.
+  function reconcileMissingInheritedProducts(plan,endingBalances={},anchorRows=[],isActiveProduct){
+    const next=clone(plan||{});
+    next.data=Array.isArray(next.data)?next.data:[];
+    const existing=new Set(next.data.map(row=>row&&row.producto).filter(Boolean));
+    const familyKeyOf=row=>(row&&row.categoria&&row.codeBase)?`${row.categoria}|${row.codeBase}`:null;
+    // Familias YA representadas en destino, calculado UNA sola vez a partir de la composición original
+    // (antes de añadir nada en esta misma llamada): así, si una familia entera está ausente y el ancla
+    // aporta varias de sus variantes, todas siguen pudiendo incorporarse (no se bloquean entre sí).
+    const existingFamilies=new Set(next.data.map(familyKeyOf).filter(Boolean));
+    const added=[],omitted=[];
+    (anchorRows||[]).forEach(anchorRow=>{
+      if(!anchorRow||!anchorRow.producto||existing.has(anchorRow.producto)) return;
+      const family=familyKeyOf(anchorRow);
+      if(family&&existingFamilies.has(family)) return; // su familia ya está representada en destino con otra composición: no reintroducir esta variante suelta
+      const hasBalance=Object.prototype.hasOwnProperty.call(endingBalances,anchorRow.producto);
+      const saldo=hasBalance?finiteNumber(endingBalances[anchorRow.producto],null):null;
+      if(saldo==null||saldo===0) return;
+      if(typeof isActiveProduct==='function'&&!isActiveProduct(anchorRow)){
+        omitted.push({producto:anchorRow.producto,generico:anchorRow.generico,saldo:Math.round(saldo)});
+        return;
+      }
+      next.data=[...next.data,{...clone(anchorRow),saldo:Math.round(saldo)}];
+      existing.add(anchorRow.producto);
+      added.push(anchorRow.producto);
+    });
+    return {plan:next,added,omitted};
+  }
+
+  function refreshInheritedBalance(plan,openingBalances={}){
+    const next=clone(plan||{});
+    next.data=(Array.isArray(next.data)?next.data:[]).map(row=>{
+      if(!row||!Object.prototype.hasOwnProperty.call(openingBalances,row.producto)) return row;
+      return {...row,saldo:Math.round(finiteNumber(openingBalances[row.producto],row.saldo))};
+    });
+    return next;
+  }
+
+  // ---------- Herencia por VARIANTE real (categoria+codeBase+variantCode) ----------
+  // El nombre de `producto` puede cambiar entre Recaps de semanas distintas para la MISMA variante real
+  // (mismo caso de siempre: talla 2 de una familia puede llamarse "-20-2" en una semana y "_2" en otra),
+  // pero cuando el propio Recap Stock trae un código de variante real (columna `variantCode`, NUNCA
+  // inferido del sufijo del nombre), esa es una identidad mucho más fiable que el reparto proporcional
+  // por familia. refreshInheritedBalanceByVariant() SOLO actúa sobre lo que refreshInheritedBalance()
+  // dejó sin resolver (ni el producto de destino ni el de origen coincidían exactos), y solo asigna el
+  // saldo cuando hay EXACTAMENTE una variante origen y una fila destino para la misma clave
+  // categoria+codeBase+variantCode — nunca adivina si hay ambigüedad (varias candidatas a la vez para la
+  // misma clave): eso se deja para el fallback de familia. Filas sin `variantCode` (snapshots antiguos,
+  // de antes de este cambio) simplemente no participan aquí. Devuelve también qué `producto` de destino
+  // y de origen quedaron resueltos, para que el fallback de familia (refreshInheritedBalanceByFamily) los
+  // excluya y nunca haya doble conteo.
+  function refreshInheritedBalanceByVariant(plan,projectionRows=[],projectionBalances={}){
+    const next=clone(plan||{});
+    next.data=Array.isArray(next.data)?next.data:[];
+    const variantKeyOf=row=>(row&&row.categoria&&row.codeBase&&row.variantCode)?`${row.categoria}|${row.codeBase}|${row.variantCode}`:null;
+    const destinoProductoSet=new Set(next.data.map(row=>row&&row.producto).filter(Boolean));
+
+    const sourceByVariant=new Map();
+    (projectionRows||[]).forEach(sourceRow=>{
+      if(!sourceRow||!sourceRow.producto||destinoProductoSet.has(sourceRow.producto)) return; // ya resuelto por coincidencia exacta
+      if(!Object.prototype.hasOwnProperty.call(projectionBalances,sourceRow.producto)) return;
+      const key=variantKeyOf(sourceRow);
+      if(!key) return;
+      const list=sourceByVariant.get(key)||[];
+      list.push(sourceRow.producto);
+      sourceByVariant.set(key,list);
+    });
+
+    const destByVariant=new Map();
+    next.data.forEach(row=>{
+      if(!row||!row.producto||Object.prototype.hasOwnProperty.call(projectionBalances,row.producto)) return; // ya resuelto por coincidencia exacta
+      const key=variantKeyOf(row);
+      if(!key) return;
+      const list=destByVariant.get(key)||[];
+      list.push(row);
+      destByVariant.set(key,list);
+    });
+
+    const matchedDestino=[],matchedSource=[];
+    destByVariant.forEach((destRows,key)=>{
+      const sourceProductos=sourceByVariant.get(key);
+      if(!sourceProductos||sourceProductos.length!==1||destRows.length!==1) return; // ambiguo: nunca se adivina, queda para el fallback de familia
+      const saldo=finiteNumber(projectionBalances[sourceProductos[0]],null);
+      if(saldo==null) return;
+      const producto=destRows[0].producto;
+      next.data=next.data.map(row=>row.producto===producto?{...row,saldo:Math.round(saldo)}:row);
+      matchedDestino.push(producto);
+      matchedSource.push(sourceProductos[0]);
+    });
+
+    return {plan:next,matchedDestino,matchedSource};
+  }
+
+  // ---------- Herencia por FAMILIA (categoria+codeBase): fallback LEGACY por residual ----------
+  // Solo actúa cuando una familia NO tiene cobertura estructural completa de variantCode en ambos
+  // lados (fuente y destino) — snapshots de antes de capturar variantCode, o Recaps mixtos. En vez de
+  // intentar adivinar "qué filas quedan sin resolver" (eso rompía el caso real: 3 de 4 tallas de
+  // Rosas-Colores ya coincidían exacto, así que la 4ª — ausente del todo en destino — nunca encontraba
+  // ninguna fila "sin resolver" a la que repartirse, y esa unidad se perdía sin más), calcula el TOTAL
+  // real de la familia en origen (sourceFamilyTotal, con TODAS sus variantes, resueltas o no) y el
+  // total que la familia YA tiene en destino después de los pasos A (producto exacto) y B (variantCode)
+  // — destinationFamilyCurrentTotal —, y reparte SOLO la diferencia (delta) entre las filas destino
+  // EXISTENTES de esa familia con distributeAcrossRows. Si delta=0 (la familia ya cuadra exacta) no se
+  // toca nada; si todas las filas (fuente y destino) de la familia ya tienen variantCode, tampoco se
+  // toca nada — se confía en la resolución estructural del paso B, aunque quedase un residual, para no
+  // corromper una coincidencia ya precisa con un reparto aproximado. Nunca añade filas nuevas (eso es
+  // responsabilidad exclusiva de reconcileMissingInheritedProducts), nunca mezcla familias distintas, y
+  // nunca toca nada que no sea `data[].saldo`.
+  function refreshInheritedBalanceByFamily(plan,projectionRows=[],projectionBalances={}){
+    const next=clone(plan||{});
+    next.data=Array.isArray(next.data)?next.data:[];
+    const familyKeyOf=row=>(row&&row.categoria&&row.codeBase)?`${row.categoria}|${row.codeBase}`:null;
+
+    const sourceRowsByFamily=new Map();
+    (projectionRows||[]).forEach(sourceRow=>{
+      const family=familyKeyOf(sourceRow);
+      if(!family||!sourceRow||!sourceRow.producto) return;
+      if(!Object.prototype.hasOwnProperty.call(projectionBalances,sourceRow.producto)) return;
+      const list=sourceRowsByFamily.get(family)||[];
+      list.push(sourceRow);
+      sourceRowsByFamily.set(family,list);
+    });
+
+    const destRowsByFamily=new Map();
+    next.data.forEach(row=>{
+      const family=familyKeyOf(row);
+      if(!family||!row||!row.producto) return;
+      const list=destRowsByFamily.get(family)||[];
+      list.push(row);
+      destRowsByFamily.set(family,list);
+    });
+
+    destRowsByFamily.forEach((destRows,family)=>{
+      const sourceRowsFamily=sourceRowsByFamily.get(family);
+      if(!sourceRowsFamily||!sourceRowsFamily.length) return; // ninguna referencia fuente de esta familia: nada que ajustar
+
+      const coberturaVariantCodeCompleta=sourceRowsFamily.every(row=>row.variantCode)&&destRows.every(row=>row.variantCode);
+      if(coberturaVariantCodeCompleta) return; // resolución estructural por variante ya definitiva: nunca se ajusta con un reparto aproximado
+
+      const sourceFamilyTotal=sourceRowsFamily.reduce((sum,row)=>sum+finiteNumber(projectionBalances[row.producto],0),0);
+      const destinationFamilyCurrentTotal=destRows.reduce((sum,row)=>sum+finiteNumber(row.saldo,0),0);
+      const delta=sourceFamilyTotal-destinationFamilyCurrentTotal;
+      if(delta===0) return;
+
+      const partes=distributeAcrossRows(destRows,delta);
+      const deltaByProducto={};
+      destRows.forEach((row,index)=>{ deltaByProducto[row.producto]=partes[index]; });
+      next.data=next.data.map(row=>
+        Object.prototype.hasOwnProperty.call(deltaByProducto,row.producto)
+          ?{...row,saldo:Math.round(finiteNumber(row.saldo,0)+deltaByProducto[row.producto])}
+          :row
+      );
+    });
+
+    return next;
+  }
+
+  // ---------- Proyección de apertura ENCADENADA (S+2 en adelante): la composición evoluciona en cada
+  // salto real, en vez de quedar fijada a la del ancla (S33) durante toda la cadena ---------------------
+  // projectOpeningBalance() fija `rows` a anchorPlan.data una sola vez y lo usa sin cambios en todos los
+  // saltos: si una intermedia real (p.ej. S34) tiene su propia composición (productos que no existían en
+  // el ancla, o que el ancla ya no tiene), esos productos nunca entran en el cálculo — ni en el
+  // movimiento de esa intermedia ni en la reconciliación del destino. projectOpeningBalanceChain() existe
+  // exclusivamente para resolver eso: en cada salto con snapshot real, reconcilia esa intermedia contra
+  // lo heredado hasta ese punto (o la resetea a 0 si su initialBalanceMode es 'zero') y usa SU PROPIA
+  // composición ya reconciliada (`runningPlan`) como base del siguiente salto. projectOpeningBalance()
+  // NO se modifica: sigue siendo la proyección de un solo salto que usa S+1 (donde "el ancla" y "la
+  // semana inmediatamente anterior" son la misma semana por definición, así que no hay nada que
+  // evolucionar). Nunca escribe en ningún snapshot: `getStoredPlan` es un accesor de solo lectura, igual
+  // que en projectOpeningBalance(); todo el recorrido de las intermedias ocurre en memoria y se descarta
+  // al terminar — solo el resultado final (`balances`+`rows` de la semana destino) sale de la función.
+  function projectOpeningBalanceChain({anchorPlan,anchorYear,anchorWeek,targetYear,targetWeek,getStoredPlan,getAutomaticForecastTotal,isActiveProduct}={}){
+    const ay=parseInt(anchorYear,10),aw=parseInt(anchorWeek,10),ty=parseInt(targetYear,10),tw=parseInt(targetWeek,10);
+    if(compareWeek(ty,tw,ay,aw)<=0){
+      const rows=Array.isArray(anchorPlan?.data)?anchorPlan.data:[];
+      const opening=Object.fromEntries(rows.map(row=>[row.producto,finiteNumber(row.saldo,0)]));
+      return {year:ay,week:aw,initialBalanceMode:DEFAULT_INITIAL_BALANCE_MODE,balances:opening,rows,omitted:[]};
+    }
+    let runningPlan=anchorPlan;
+    let runningBalances=endingBalanceForPlan(anchorPlan);
+    const omitted=[]; // acumula lo omitido en CUALQUIER salto real de la cadena (no solo el destino final), para que quien llama pueda revisarlo todo junto
+    let cursor=shiftWeek(ay,aw,1),guard=0;
+    while(guard++<PROJECTION_GUARD_LIMIT){
+      const isTarget=(cursor.year===ty&&cursor.week===tw);
+      // Nunca se lee el propio destino: mismo patrón de autoexclusión que ya usan S+1 y "Heredar" para
+      // que un initialBalanceMode/composición antiguos de ESE mismo snapshot no se autoalimenten.
+      const stored=isTarget?null:(typeof getStoredPlan==='function'?getStoredPlan(cursor.year,cursor.week):null);
+      const mode=stored?normalizeInitialBalanceMode(stored.initialBalanceMode):DEFAULT_INITIAL_BALANCE_MODE;
+      const openingRows=(stored&&Array.isArray(stored.data)&&stored.data.length)?stored.data:runningPlan.data;
+      const opening=mode==='zero'?zeroBalances(openingRows):runningBalances;
+      if(isTarget) return {year:ty,week:tw,initialBalanceMode:mode,balances:opening,rows:runningPlan.data,omitted};
+      if(stored){
+        if(mode==='zero'){
+          // El saldo inicial de esta intermedia se corta a 0, pero su propio movimiento (compras/PREV
+          // desde 0) sí genera un saldo final real que puede heredarse al siguiente salto.
+          const zeroed={...stored,data:(stored.data||[]).map(row=>({...row,saldo:0}))};
+          runningPlan=zeroed;
+          runningBalances=endingBalanceForPlan(zeroed);
+        } else {
+          // Reconcilia ESTA intermedia real contra lo heredado hasta aquí antes de usarla como base del
+          // siguiente salto: nunca reactiva inactivos/no confirmables, nunca duplica, nunca borra sus
+          // propios productos/compras/PREV (lo garantiza la secuencia exacta -> variante -> familia).
+          const reconciled=reconcileMissingInheritedProducts(stored,opening,runningPlan.data,isActiveProduct);
+          if(reconciled.omitted.length) omitted.push(...reconciled.omitted);
+          const refreshed=refreshInheritedBalance(reconciled.plan,opening);
+          const byVariant=refreshInheritedBalanceByVariant(refreshed,runningPlan.data,opening);
+          const byFamily=refreshInheritedBalanceByFamily(byVariant.plan,runningPlan.data,opening);
+          runningPlan=byFamily;
+          runningBalances=endingBalanceForPlan(byFamily);
+        }
+      } else {
+        // Hueco sin snapshot real: previsión automática igual que projectOpeningBalance(), pero anclada
+        // a la composición MÁS RECIENTE conocida (runningPlan), no siempre a la del ancla original.
+        const synthetic=buildAutomaticForecastPlan(runningPlan.data,runningPlan.prevExpedicionProducto||{},cursor.year,cursor.week,getAutomaticForecastTotal);
+        runningBalances=applyWeekMovement(runningPlan.data,opening,synthetic);
+      }
+      cursor=shiftWeek(cursor.year,cursor.week,1);
+    }
+    throw new Error('projectOpeningBalanceChain: horizonte de proyección excesivo (posible bucle de semanas).');
+  }
+
   // ---------- Transición explícita de estado (solo la usa el flujo de promoción real) ----------
   function promoteWeekPlans({currentActualPlan,targetPlan}){
     const previous=clone(currentActualPlan);
@@ -312,7 +575,10 @@
     normalizeMode,normalizeInitialBalanceMode,normalizeStockWeekPlan,
     hasGenericoForecastOverride,forecastForGenerico,addPlannedProduct,removePlannedProduct,
     aplicaPreasignacion,distributeAcrossRows,applyWeekMovement,endingBalanceForPlan,zeroBalances,buildAutomaticForecastPlan,projectOpeningBalance,
-    buildDraftWeekPlan,promoteWeekPlans,
+    projectOpeningBalanceChain,
+    buildDraftWeekPlan,refreshInheritedBalance,reconcileMissingInheritedProducts,
+    refreshInheritedBalanceByVariant,refreshInheritedBalanceByFamily,lastNonEmptyField,
+    promoteWeekPlans,
     isEligibleHistoryWeek,filterHistoryPlans
   };
 });

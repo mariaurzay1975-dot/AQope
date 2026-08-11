@@ -2650,6 +2650,31 @@ function stockPlanningAutomaticForecastTotal(year, week){
   const lookup = AquarelleAnnualHolidays.getAnnualForecastForWeek(annualPlanning, year, week);
   return lookup.status === 'found' ? lookup.value : null;
 }
+// Objetivo efectivo de la semana activa: el mismo que pinta renderWeekPanel/updateWeekSummary
+// (previsión en vivo de Planificación anual si existe, o el valor guardado en weekState como
+// fallback). ÚNICA fuente de verdad de "pendiente" para que la pantalla y el cálculo con IA
+// (openPrevisionModal / btnPrevisionCalcular) nunca usen cifras distintas.
+function stockPlanningEffectiveObjetivo(){
+  const live = stockPlanningAutomaticForecastTotal(weekState.year, weekState.week);
+  return live!=null ? live : (weekState.objetivo||0);
+}
+// Confirma si una fila del ancla (semana actual) sigue activa en Nomenclaturas, para
+// reconcileMissingInheritedProducts(). El `producto` operativo (con sufijo de talla, p.ej.
+// "C-LUX_HORTENSIA_SWEET_3") casi nunca coincide exactamente con el productCode de Nomenclaturas: por
+// eso se busca también por su `generico` (p.ej. "C-LUX_HORTENSIA_SWEET"), que sí es el nombre/código real
+// del producto en Nomenclaturas. Si no se encuentra ninguna coincidencia, se trata como NO confirmable
+// (nunca como "activa por defecto"): reconcileMissingInheritedProducts nunca reincorpora una referencia
+// que no pueda confirmar como activa.
+function stockPlanningProductIsActiveInCatalog(anchorRow){
+  const producto = anchorRow && anchorRow.producto;
+  const generico = anchorRow && anchorRow.generico;
+  const candidates = (nomenclatures||[]).filter(n=>
+    n.productCode===producto || n.productName===producto ||
+    (generico && (n.productName===generico || n.productCode===generico))
+  );
+  if(!candidates.length) return false;
+  return candidates.some(n=>n.active!==false);
+}
 function stockPlanningAnchorPlan(){
   const snap = weekSnapshots[currentWeekKey];
   if(snap) return AquarelleStockPlanning.normalizeStockWeekPlan(snap);
@@ -2696,6 +2721,81 @@ function openStockPlanningWeek(year, week){
       initialBalanceMode:projection.initialBalanceMode, now:new Date().toISOString()
     });
     weekSnapshots[key] = snap; // se persiste SOLO la semana que el usuario decide abrir; nunca las intermedias
+  } else if(stockPlanningWeekRole(year, week) === 's1'){
+    // S+1 (única semana con herencia obligatoria) siempre debe reflejar el saldo final proyectado
+    // ACTUAL de la semana actual, aunque su borrador ya existiera: compras/PREV/pendientePreasignar de
+    // la semana actual pueden haber cambiado desde que se creó, y antes ese saldo quedaba congelado
+    // para siempre. refreshInheritedBalance() SOLO toca data[].saldo; compras/PREV/ajustes que el
+    // usuario ya introdujo manualmente en S+1 nunca se tocan. No aplica a S+2 en adelante.
+    // El propio initialBalanceMode guardado en ESTE snapshot nunca debe respetarse aquí: puede venir de
+    // un ciclo de semanas anterior en el que este mismo slot fue S+2+ con "Partir de 0". Por eso
+    // getStoredPlan excluye expresamente su propia clave (year,week) — mismo patrón que ya usa
+    // setStockWeekInitialBalanceMode para S+2+ — forzando el fallback a DEFAULT_INITIAL_BALANCE_MODE
+    // ('inherit') en vez de leer un "zero" histórico. projectOpeningBalance() no se toca: es un cambio
+    // exclusivamente del lado de quien la llama, así que S+2+ (que sí puede seguir en "zero") no se ve
+    // afectado.
+    const anchorPlan = stockPlanningAnchorPlan();
+    const projection = AquarelleStockPlanning.projectOpeningBalance({
+      anchorPlan, anchorYear:anchorPlan.year, anchorWeek:anchorPlan.week,
+      targetYear:year, targetWeek:week,
+      getStoredPlan:(y,w)=>(y===year&&w===week)?null:stockPlanningGetStoredPlan(y,w),
+      getAutomaticForecastTotal: stockPlanningAutomaticForecastTotal
+    });
+    // Su propio Recap Stock ya pudo haber reemplazado data[] con una composición distinta a la de la
+    // semana actual (cada semana tiene su propio Recap real: eso es correcto y no se toca). Pero si ese
+    // Recap dejó fuera una referencia que la semana actual termina con saldo != 0, hay que reincorporarla
+    // (reconcileMissingInheritedProducts SOLO añade filas que faltan y confirma primero que sigan
+    // activas en Nomenclaturas; nunca quita ni duplica filas, nunca reactiva nada sin poder confirmarlo).
+    const reconciled = AquarelleStockPlanning.reconcileMissingInheritedProducts(
+      snap, projection.balances, anchorPlan.data, stockPlanningProductIsActiveInCatalog
+    );
+    if(reconciled.omitted.length) console.info('S+1: referencias con saldo != 0 no incorporadas automáticamente (revisar en Nomenclaturas):', reconciled.omitted);
+    const refreshed = AquarelleStockPlanning.refreshInheritedBalance(reconciled.plan, projection.balances);
+    // Misma secuencia que S+2..S+8: el nombre de `producto` puede cambiar entre Recaps de semanas
+    // distintas para la MISMA variante real (caso real Rosas-Colores: S33 termina la familia en 4, S34
+    // solo trae 3 de sus tallas con nombres que ya no coinciden exacto — sin esto se pierde 1 unidad
+    // porque la familia ya está parcialmente representada y reconcileMissingInheritedProducts no
+    // reintroduce tallas sueltas de una familia ya presente). Resuelve por variante real
+    // (categoria+codeBase+variantCode, dato de origen del Recap) lo que no coincide exacto, y solo como
+    // último recurso reparte proporcionalmente lo que siga sin resolver dentro de su misma familia.
+    // OJO: projectOpeningBalance() (a diferencia de projectOpeningBalanceChain(), que sí usan S+2+) NO
+    // devuelve `rows` — S+1 es un salto único desde S33, así que la composición fuente es simplemente
+    // anchorPlan.data (la misma que ya recibe reconcileMissingInheritedProducts justo arriba). Pasar
+    // projection.rows aquí sería undefined y dejaría byVariant/byFamily sin ninguna fila fuente.
+    const byVariant = AquarelleStockPlanning.refreshInheritedBalanceByVariant(refreshed, anchorPlan.data, projection.balances);
+    const byFamily = AquarelleStockPlanning.refreshInheritedBalanceByFamily(byVariant.plan, anchorPlan.data, projection.balances);
+    snap = byFamily;
+    snap.initialBalanceMode = AquarelleStockPlanning.DEFAULT_INITIAL_BALANCE_MODE; // S+1 siempre inherit, nunca "zero"
+    weekSnapshots[key] = snap;
+  } else if(stockPlanningWeekRole(year, week) === 'future' && AquarelleStockPlanning.normalizeInitialBalanceMode(snap.initialBalanceMode) === 'inherit'){
+    // S+2 en adelante: a diferencia de S+1, aquí SÍ existe un modo real elegido por el usuario
+    // ("Heredar" vs "Partir de 0"), y solo se auto-refresca al reabrir cuando ese modo es 'inherit' — en
+    // 'zero' el saldo se queda exactamente como está, nunca se reconcilia nada (lo decide el propio
+    // guard de esta rama). Misma secuencia y mismas funciones puras que "Heredar" y que S+1: excluir la
+    // propia clave de getStoredPlan (para que un valor antiguo de ESTE snapshot no se autoalimente),
+    // reconciliar composición y refrescar saldo. No se fuerza initialBalanceMode aquí (ya es 'inherit',
+    // a diferencia de S+1 que siempre lo fuerza).
+    const anchorPlan = stockPlanningAnchorPlan();
+    const projection = AquarelleStockPlanning.projectOpeningBalanceChain({
+      anchorPlan, anchorYear:anchorPlan.year, anchorWeek:anchorPlan.week,
+      targetYear:year, targetWeek:week,
+      getStoredPlan:(y,w)=>(y===year&&w===week)?null:stockPlanningGetStoredPlan(y,w),
+      getAutomaticForecastTotal: stockPlanningAutomaticForecastTotal,
+      isActiveProduct: stockPlanningProductIsActiveInCatalog
+    });
+    const reconciled = AquarelleStockPlanning.reconcileMissingInheritedProducts(
+      snap, projection.balances, projection.rows, stockPlanningProductIsActiveInCatalog
+    );
+    const todoLoOmitido = [...projection.omitted, ...reconciled.omitted]; // toda la cadena, no solo este último salto
+    if(todoLoOmitido.length) console.info('S+2..S+8 (inherit): referencias con saldo != 0 no incorporadas automáticamente (revisar en Nomenclaturas):', todoLoOmitido);
+    const refreshed = AquarelleStockPlanning.refreshInheritedBalance(reconciled.plan, projection.balances);
+    // Igual que en "Heredar": resuelve por variante real (categoria+codeBase+variantCode, dato de
+    // origen del Recap) lo que el nombre de producto no permite emparejar exacto, y solo como último
+    // recurso reparte proporcionalmente lo que siga sin resolver dentro de su misma familia.
+    const byVariant = AquarelleStockPlanning.refreshInheritedBalanceByVariant(refreshed, projection.rows, projection.balances);
+    const byFamily = AquarelleStockPlanning.refreshInheritedBalanceByFamily(byVariant.plan, projection.rows, projection.balances);
+    snap = byFamily;
+    weekSnapshots[key] = snap;
   }
   applyWeekSnapshot({...AquarelleStockPlanning.normalizeStockWeekPlan(snap), key, mode:'planificacion', planningMode:true});
   weekState.baseWeekKey = currentWeekKey;
@@ -2710,15 +2810,46 @@ function openStockPlanningWeek(year, week){
 function setStockWeekInitialBalanceMode(mode){
   const safeMode = AquarelleStockPlanning.normalizeInitialBalanceMode(mode);
   if(activeStockPlanningWeekRole() !== 'future') return; // S+1 respecto a la semana real siempre hereda; no aplica aquí
-  const anchorPlan = stockPlanningAnchorPlan();
-  const projection = AquarelleStockPlanning.projectOpeningBalance({
-    anchorPlan, anchorYear:anchorPlan.year, anchorWeek:anchorPlan.week,
-    targetYear:weekState.year, targetWeek:weekState.week,
-    getStoredPlan:(y,w)=>(y===weekState.year&&w===weekState.week)?null:stockPlanningGetStoredPlan(y,w),
-    getAutomaticForecastTotal: stockPlanningAutomaticForecastTotal
-  });
-  const openingBalances = safeMode==='zero' ? AquarelleStockPlanning.zeroBalances(data) : projection.balances;
-  data = data.map(row=>({...row, saldo:Math.round(openingBalances[row.producto]??0)}));
+  if(safeMode==='zero'){
+    // "Partir de 0": nunca reconcilia productos heredados, el saldo pasa a 0 tal cual.
+    data = data.map(row=>({...row, saldo:0}));
+  } else {
+    // "Heredar": la cadena completa desde la semana actual (S33) hasta ESTA semana se recalcula en
+    // memoria con projectOpeningBalanceChain — cada intermedia real se reconcilia/refresca (o se
+    // resetea a 0 si su propio initialBalanceMode es 'zero') con SU PROPIA composición antes de servir
+    // de base al siguiente salto, en vez de fijar siempre la composición de S33 para toda la cadena.
+    // Nunca escribe en weekSnapshots: solo se persiste esta semana (más abajo, en saveState()).
+    const anchorPlan = stockPlanningAnchorPlan();
+    const projection = AquarelleStockPlanning.projectOpeningBalanceChain({
+      anchorPlan, anchorYear:anchorPlan.year, anchorWeek:anchorPlan.week,
+      targetYear:weekState.year, targetWeek:weekState.week,
+      getStoredPlan:(y,w)=>(y===weekState.year&&w===weekState.week)?null:stockPlanningGetStoredPlan(y,w),
+      getAutomaticForecastTotal: stockPlanningAutomaticForecastTotal,
+      isActiveProduct: stockPlanningProductIsActiveInCatalog
+    });
+    // reconcilia primero cualquier producto de la composición YA EVOLUCIONADA (projection.rows, no
+    // anchorPlan.data) con saldo final proyectado != 0 que falte en esta semana (nunca reactiva
+    // referencias inactivas/no confirmables en Nomenclaturas), y solo entonces refresca el saldo —
+    // refreshInheritedBalance preserva el saldo de cualquier fila propia de esta semana cuyo producto no
+    // esté en la proyección, en vez de forzarla a 0 como hacía el `??0` original.
+    const reconciled = AquarelleStockPlanning.reconcileMissingInheritedProducts(
+      {data}, projection.balances, projection.rows, stockPlanningProductIsActiveInCatalog
+    );
+    const todoLoOmitido = [...projection.omitted, ...reconciled.omitted]; // toda la cadena, no solo este último salto
+    if(todoLoOmitido.length) console.info('S+2..S+8 (Heredar): referencias con saldo != 0 no incorporadas automáticamente (revisar en Nomenclaturas):', todoLoOmitido);
+    const refreshed = AquarelleStockPlanning.refreshInheritedBalance(reconciled.plan, projection.balances);
+    // El nombre de `producto` puede cambiar entre Recaps de semanas distintas para la MISMA variante
+    // real (p.ej. "-20-2" en una semana, "_2" en otra): refreshInheritedBalance ya resolvió lo que
+    // coincide exacto; esto resuelve lo que queda por variante real (categoria+codeBase+variantCode,
+    // dato de origen del Recap, nunca inferido del nombre) cuando hay una correspondencia 1:1 inequívoca,
+    // y solo como último recurso reparte proporcionalmente lo que siga sin resolver dentro de su misma
+    // familia (categoria+codeBase) — nunca mezcla familias distintas, nunca cuenta dos veces lo ya
+    // resuelto por las vías anteriores.
+    const byVariant = AquarelleStockPlanning.refreshInheritedBalanceByVariant(refreshed, projection.rows, projection.balances);
+    const byFamily = AquarelleStockPlanning.refreshInheritedBalanceByFamily(byVariant.plan, projection.rows, projection.balances);
+    data = byFamily.data;
+    data.forEach(d=>{ genericoFor(d.generico); prevExpedicionFor(d.producto); }); // genericoData/prevExpedicionProducto para cualquier fila reconciliada nueva
+  }
   stockInitialBalanceMode = safeMode;
   render();
   saveState();
@@ -3170,7 +3301,7 @@ function renderWeekPanel(){
   // valor guardado (compatibilidad con el flujo de edición manual existente en semana actual/S+1).
   const role = activeStockPlanningWeekRole();
   const liveObjetivo = stockPlanningAutomaticForecastTotal(weekState.year, weekState.week);
-  const effectiveObjetivo = liveObjetivo!=null ? liveObjetivo : (weekState.objetivo||0);
+  const effectiveObjetivo = stockPlanningEffectiveObjetivo();
   const pendiente = effectiveObjetivo-weekState.acumulado;
   const objetivoCell = role==='future'
     ? `<div class="week-val" id="objetivoDisplay" title="Objetivo de Planificación anual para S${weekState.week}/${weekState.year}. Editar PREV. no lo modifica.">${liveObjetivo!=null?fmtNum(liveObjetivo):'Pendiente'}</div>`
@@ -3187,8 +3318,7 @@ function renderWeekPanel(){
 }
 
 function updateWeekSummary(){
-  const liveObjetivo = stockPlanningAutomaticForecastTotal(weekState.year, weekState.week);
-  const effectiveObjetivo = liveObjetivo!=null ? liveObjetivo : (weekState.objetivo||0);
+  const effectiveObjetivo = stockPlanningEffectiveObjetivo();
   const pendiente = effectiveObjetivo - weekState.acumulado;
   const percent = effectiveObjetivo > 0 ? Math.round(weekState.acumulado / effectiveObjetivo * 100) : 0;
   const pendingEl = document.getElementById('weekPendingValue');
@@ -8408,23 +8538,35 @@ document.getElementById('btnPasteApply').addEventListener('click', ()=>{
   lines.forEach(line=>{
     const parts = line.split('\t').map(p=>p.trim());
     if(parts.length < 2) return;
-    let producto, saldo, codeProduit = '', codeBase = '';
+    let producto, saldo, codeProduit = '', codeBase = '', variantCode = '';
     if(parts.length >= 7 && /^[A-Za-z]/.test(parts[2]||'')){
-      // Recap Stock real: code produit, variante, producto, stock prepa, stock fini, a expedir.
+      // Recap Stock real: code produit, variante, producto, stock prepa, stock fini, a expedir, ...
+      // El código de variante real (parts[1]) NUNCA se había leído hasta ahora: se descartaba por
+      // completo. Es un dato de origen (nunca se infiere del sufijo de `producto`) que identifica la
+      // talla/variante real dentro de su familia (categoria+codeBase), y es estable entre Recaps de
+      // semanas distintas aunque el nombre de `producto` cambie. El Recap también suele traer, como
+      // último campo no vacío de la línea, una clave compuesta "codeBase-variantCode" — se usa solo
+      // como comprobación de coherencia en la importación, nunca como clave de emparejamiento (un
+      // string compuesto es más frágil de comparar que dos campos atómicos ya separados).
       codeProduit = parts[0];
       codeBase = codeBaseFor(codeProduit);
+      variantCode = parts[1];
       producto = parts[2];
       const prepa = parseAppNumber(parts[3]);
       const fini = parseAppNumber(parts[4]);
       const expedir = parseAppNumber(parts[5]);
       saldo = prepa + fini - expedir;
+      const variantKey = AquarelleStockPlanning.lastNonEmptyField(parts);
+      if(codeBase && variantCode && variantKey && variantKey !== `${codeBase}-${variantCode}`){
+        console.warn(`Recap Stock: variantKey inesperada para "${producto}" — se esperaba "${codeBase}-${variantCode}", se encontró "${variantKey}".`);
+      }
     } else {
       producto = parts[0];
       saldo = parseAppNumber(parts[1]);
     }
     const meta = metaByProduct.get(producto);
     const categoria = meta?.categoria || inferCategoryFromProduct(producto);
-    const row = {producto, saldo, codeProduit, codeBase, meta, categoria};
+    const row = {producto, saldo, codeProduit, codeBase, variantCode, meta, categoria};
     if(!meta) unknownRows.push(row);
     parsedRows.push(row);
   });
@@ -8451,7 +8593,7 @@ document.getElementById('btnPasteApply').addEventListener('click', ()=>{
   parsedRows.forEach(r=>{
     if(!r.meta && !includeUnknown.has(r.producto)){ ignored++; return; }
     const generico = safeGenericForRecapRow(r, codeGroups);
-    nextData.push({categoria:r.categoria, generico, producto:r.producto, saldo:r.saldo, recapCode:r.codeProduit, codeBase:r.codeBase});
+    nextData.push({categoria:r.categoria, generico, producto:r.producto, saldo:r.saldo, recapCode:r.codeProduit, codeBase:r.codeBase, variantCode:r.variantCode});
     included++;
     if(!r.meta) pending++;
   });
@@ -8469,6 +8611,36 @@ document.getElementById('btnPasteApply').addEventListener('click', ()=>{
   });
   const validGenericos = new Set(data.map(d=>d.generico));
   Object.keys(forecastAdjustments).forEach(g=>{ if(!validGenericos.has(g)) delete forecastAdjustments[g]; });
+
+  // Misma regla que aplica openStockPlanningWeek al reabrir S+1, pero en el instante del pegado: el
+  // Recap propio de S+1 puede añadir productos nuevos libremente, pero si deja fuera una referencia que
+  // la semana actual termina con saldo != 0, hay que reincorporarla ya mismo (reutiliza exactamente
+  // reconcileMissingInheritedProducts + refreshInheritedBalance; nunca se duplica esta lógica). No
+  // aplica si la semana activa en pantalla es la actual, S+2+ o histórico.
+  if(activeStockPlanningWeekRole() === 's1'){
+    const anchorPlan = stockPlanningAnchorPlan();
+    const projection = AquarelleStockPlanning.projectOpeningBalance({
+      anchorPlan, anchorYear:anchorPlan.year, anchorWeek:anchorPlan.week,
+      targetYear:weekState.year, targetWeek:weekState.week,
+      getStoredPlan:(y,w)=>(y===weekState.year&&w===weekState.week)?null:stockPlanningGetStoredPlan(y,w),
+      getAutomaticForecastTotal: stockPlanningAutomaticForecastTotal
+    });
+    const reconciled = AquarelleStockPlanning.reconcileMissingInheritedProducts(
+      {data}, projection.balances, anchorPlan.data, stockPlanningProductIsActiveInCatalog
+    );
+    if(reconciled.omitted.length) console.info('S+1: referencias con saldo != 0 no incorporadas automáticamente (revisar en Nomenclaturas):', reconciled.omitted);
+    const refreshed = AquarelleStockPlanning.refreshInheritedBalance(reconciled.plan, projection.balances);
+    // Misma secuencia que la rama s1 de openStockPlanningWeek: resuelve por variante real
+    // (categoria+codeBase+variantCode) lo que el nuevo Recap de S+1 no puede emparejar exacto, y solo
+    // como último recurso reparte proporcionalmente lo que siga sin resolver dentro de su misma familia.
+    // OJO: projectOpeningBalance() no devuelve `rows` (a diferencia de projectOpeningBalanceChain, que sí
+    // usan S+2+); la composición fuente de S+1 es simplemente anchorPlan.data, la misma que ya recibe
+    // reconcileMissingInheritedProducts arriba.
+    const byVariant = AquarelleStockPlanning.refreshInheritedBalanceByVariant(refreshed, anchorPlan.data, projection.balances);
+    const byFamily = AquarelleStockPlanning.refreshInheritedBalanceByFamily(byVariant.plan, anchorPlan.data, projection.balances);
+    data = byFamily.data;
+    data.forEach(d=>{ genericoFor(d.generico); prevExpedicionFor(d.producto); }); // genericoData/prevExpedicionProducto para cualquier fila reconciliada nueva
+  }
 
   document.getElementById('pasteArea').value = '';
   modal.classList.remove('open');
@@ -8576,7 +8748,7 @@ function openPrevisionModal(){
   // La previsión con IA solo aplica a la semana actual y a S+1 (mismo flujo de siempre). Desde S+2 la
   // previsión se escribe directamente en la columna PREV. de la tabla, sin IA ni ajustes por ramo.
   if(activeStockPlanningWeekRole()==='future'){ alert('El cálculo de previsión con IA no está disponible en semanas de planificación futura (S+2 en adelante). Escribe la previsión directamente en la columna PREV. de la tabla.'); return; }
-  const pendiente = weekState.objetivo - weekState.acumulado;
+  const pendiente = stockPlanningEffectiveObjetivo() - weekState.acumulado;
   document.getElementById('pendienteLabel').textContent = `${planningMode ? 'pendiente por prever' : 'pendiente por salir'} (${fmtNum(pendiente)} expediciones)`;
   document.getElementById('previsionStatus').textContent = '';
   renderForecastAdjustmentList();
@@ -8682,7 +8854,7 @@ document.getElementById('previsionFileInput')?.addEventListener('change', async 
     }
 
     const resultado = aplicarPrevisionDesdeRegistros(registros);
-    const pendiente = weekState.objetivo - weekState.acumulado;
+    const pendiente = stockPlanningEffectiveObjetivo() - weekState.acumulado;
 
     statusEl.style.color = resultado.totalAplicado === pendiente ? 'var(--pos)' : 'var(--ink-soft)';
     statusEl.textContent = `Previsión cargada desde archivo: ${resultado.familias} familias y ${resultado.productos} productos aplicados. Total: ${fmtNum(resultado.totalAplicado)}` +
@@ -8719,7 +8891,7 @@ document.getElementById('btnPrevisionCalcular').addEventListener('click', async 
     return;
   }
 
-  const pendiente = Math.max(0, weekState.objetivo - weekState.acumulado);
+  const pendiente = Math.max(0, stockPlanningEffectiveObjetivo() - weekState.acumulado);
   const EXCLUIR_EXACTO = new Set(['S_ pot_blanco_13cm','S_zinc pot 14cm','S-POP_CHAT']);
 
   // Mapa de prefijo de referencia de venta (tal como aparece en la tabla pegada)

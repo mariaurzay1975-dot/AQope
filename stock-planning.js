@@ -321,12 +321,13 @@
   // que se aplica después). Reglas: (1) coincidencia EXACTA de `producto` tiene prioridad — si ya existe,
   // nunca se toca ni se duplica; (2) si no hay coincidencia exacta pero la fila candidata tiene
   // `categoria`+`codeBase` y esa MISMA familia ya está representada en `plan.data` (por otra variante,
-  // con otro `producto`), la familia se considera ya cubierta y NO se añade esa variante suelta — nunca
-  // se reintroduce una talla antigua de una familia que la semana destino ya trae con su propia
-  // composición (aunque los nombres de producto no coincidan letra a letra, p.ej. una intermedia real
-  // cuyo propio Recap dejó fuera una talla concreta de una familia que sigue representada por las
-  // demás); (3) solo si la familia completa está ausente (o no se puede determinar por falta de
-  // `codeBase` en alguno de los dos lados, en cuyo caso se sigue comparando solo por `producto` exacto,
+  // con otro `producto`), la familia se considera ya cubierta y NO se añade esa variante suelta cuando
+  // el destino tiene Recap propio (o es un snapshot antiguo sin marca): nunca se reintroduce una talla
+  // antigua de una composición deliberada. La excepción son los borradores generados por la app con
+  // `recapLoaded:false`: estos sí deben completar todas las variantes activas heredadas aunque la familia
+  // ya esté parcialmente presente; (3) solo si la familia completa está ausente (o no se puede determinar
+  // por falta de `codeBase` en alguno de los dos lados, en cuyo caso se sigue comparando solo por
+  // `producto` exacto,
   // como siempre) se aplica la lógica de siempre: solo se considera un producto del ancla si su saldo
   // final proyectado (endingBalances) es distinto de 0, y solo se incorpora si isActiveProduct(anchorRow)
   // confirma que sigue activa — si no se puede confirmar (no encontrada) o está inactiva, NUNCA se
@@ -334,6 +335,9 @@
   function reconcileMissingInheritedProducts(plan,endingBalances={},anchorRows=[],isActiveProduct){
     const next=clone(plan||{});
     next.data=Array.isArray(next.data)?next.data:[];
+    // Los borradores futuros generados por la app deben mantener completa la composición heredada.
+    // Un Recap propio, y los snapshots antiguos sin esta marca, conservan su composición deliberada.
+    const preserveDestinationFamilyComposition=next.recapLoaded!==false;
     const existing=new Set(next.data.map(row=>row&&row.producto).filter(Boolean));
     const familyKeyOf=row=>(row&&row.categoria&&row.codeBase)?`${row.categoria}|${row.codeBase}`:null;
     // Familias YA representadas en destino, calculado UNA sola vez a partir de la composición original
@@ -344,18 +348,87 @@
     (anchorRows||[]).forEach(anchorRow=>{
       if(!anchorRow||!anchorRow.producto||existing.has(anchorRow.producto)) return;
       const family=familyKeyOf(anchorRow);
-      if(family&&existingFamilies.has(family)) return; // su familia ya está representada en destino con otra composición: no reintroducir esta variante suelta
+      if(preserveDestinationFamilyComposition&&family&&existingFamilies.has(family)) return; // un Recap propio ya representa la familia con su composición: no reintroducir esta variante suelta
       const hasBalance=Object.prototype.hasOwnProperty.call(endingBalances,anchorRow.producto);
       const saldo=hasBalance?finiteNumber(endingBalances[anchorRow.producto],null):null;
-      if(saldo==null||saldo===0) return;
+      // En un borrador automático se sincroniza también la composición: una referencia nueva y activa
+      // debe entrar aunque su saldo proyectado sea 0. Con Recap propio/estado legacy se mantiene la regla
+      // histórica de reincorporar únicamente saldos distintos de 0 para respetar su composición.
+      if(saldo==null||(preserveDestinationFamilyComposition&&saldo===0)) return;
       if(typeof isActiveProduct==='function'&&!isActiveProduct(anchorRow)){
         omitted.push({producto:anchorRow.producto,generico:anchorRow.generico,saldo:Math.round(saldo)});
         return;
       }
-      next.data=[...next.data,{...clone(anchorRow),saldo:Math.round(saldo)}];
+      const inheritedRow={...clone(anchorRow),saldo:Math.round(saldo)};
+      if(!preserveDestinationFamilyComposition&&family&&existingFamilies.has(family)){
+        // Si completamos una familia de un borrador generado, insertamos la variante junto a sus
+        // hermanas. Añadirla al final separaba visualmente el producto y creaba otro encabezado de
+        // categoría (p.ej. Virgo aparecía en un segundo bloque COMPUESTOS tras SIMPLES).
+        let familyEnd=-1;
+        next.data.forEach((row,index)=>{ if(familyKeyOf(row)===family) familyEnd=index; });
+        next.data.splice(familyEnd+1,0,inheritedRow);
+      } else {
+        next.data=[...next.data,inheritedRow];
+      }
       existing.add(anchorRow.producto);
       added.push(anchorRow.producto);
     });
+    if(!preserveDestinationFamilyComposition){
+      const anchorProducts=new Set((anchorRows||[]).map(row=>row?.producto).filter(Boolean));
+      const anchorFamilies=new Set((anchorRows||[]).map(familyKeyOf).filter(Boolean));
+      next.data=next.data.filter(row=>{
+        const family=familyKeyOf(row);
+        const inheritedNow=anchorProducts.has(row?.producto)||(family&&anchorFamilies.has(family));
+        if(inheritedNow||row?.addedManually) return true;
+        const genericValues=next.genericoData?.[row?.generico]||{};
+        const hasOwnMovement=Object.values(genericValues).some(value=>finiteNumber(value,0)!==0)
+          ||finiteNumber(next.prevExpedicionProducto?.[row?.producto],0)!==0
+          ||finiteNumber(next.prevExpedicionProducto?.[row?.generico],0)!==0
+          ||Object.prototype.hasOwnProperty.call(next.forecastAdjustments||{},row?.generico);
+        return hasOwnMovement;
+      });
+      // La semana anterior es también la plantilla de presentación: cada familia heredada debe quedar
+      // en el mismo lugar que allí, no solo dentro de la misma categoría. Esto repara igualmente los
+      // snapshots ya guardados que tenían una familia completa al final. Las filas propias/manuales que
+      // todavía tienen planificación se conservan y se colocan al final de su categoría.
+      const identityOf=row=>{
+        const family=familyKeyOf(row);
+        return family?`family:${family}`:(row?.producto?`product:${row.producto}`:null);
+      };
+      const groups=new Map(),originalKeys=[];
+      next.data.forEach(row=>{
+        const key=identityOf(row);
+        if(!key) return;
+        if(!groups.has(key)){
+          groups.set(key,{rows:[],categoria:row.categoria});
+          originalKeys.push(key);
+        }
+        groups.get(key).rows.push(row);
+      });
+      const anchorKeys=[];
+      (anchorRows||[]).forEach(row=>{
+        const key=identityOf(row);
+        if(key&&groups.has(key)&&!anchorKeys.includes(key)) anchorKeys.push(key);
+      });
+      const orderedKeys=[...anchorKeys];
+      originalKeys.filter(key=>!anchorKeys.includes(key)).forEach(key=>{
+        const originalIndex=originalKeys.indexOf(key);
+        const categoria=groups.get(key).categoria;
+        const nextKnown=originalKeys.slice(originalIndex+1).find(candidate=>orderedKeys.includes(candidate)&&groups.get(candidate)?.categoria===categoria);
+        if(nextKnown){
+          orderedKeys.splice(orderedKeys.indexOf(nextKnown),0,key);
+          return;
+        }
+        let categoryEnd=-1;
+        orderedKeys.forEach((candidate,index)=>{ if(groups.get(candidate)?.categoria===categoria) categoryEnd=index; });
+        if(categoryEnd>=0) orderedKeys.splice(categoryEnd+1,0,key);
+        else orderedKeys.push(key);
+      });
+      const ordered=orderedKeys.flatMap(key=>groups.get(key).rows);
+      // Las filas sin identidad (datos legacy incompletos) nunca se pierden ni se reinterpretan.
+      next.data.filter(row=>!identityOf(row)).forEach(row=>ordered.push(row));
+      next.data=ordered;
+    }
     return {plan:next,added,omitted};
   }
 

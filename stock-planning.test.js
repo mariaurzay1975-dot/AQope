@@ -782,6 +782,92 @@ test('H: caso real Alstro intermedio (S33 con 3 variantes, S34 con 2 de la misma
   assert.ok(!result.plan.data.some(r=>r.producto==='S-Alstro-parme-15-1'));
 });
 
+test('regresión Virgo: borrador futuro sin Recap completa las variantes heredadas de una familia ya presente',()=>{
+  const destino={
+    recapLoaded:false,
+    data:[
+      {producto:'A-ROSAS',generico:'A-ROSAS',categoria:'ROSAS',codeBase:'1',variantCode:'1',saldo:1},
+      // Producto obsoleto de un borrador antiguo: ya no existe en S35 y no tiene planificación propia.
+      {producto:'C-ASTRO-LEO_1',generico:'C-ASTRO-LEO',categoria:'COMPUESTOS',codeBase:'4',variantCode:'1',saldo:-5},
+      {producto:'P-BONSAI',generico:'P-BONSAI',categoria:'PLANTAS',codeBase:'2',variantCode:'1',saldo:1},
+      {producto:'S-ALSTRO',generico:'S-ALSTRO',categoria:'SIMPLES',codeBase:'3',variantCode:'1',saldo:1},
+      // Reproduce el estado real guardado: Virgo estaba al final y generaba un segundo bloque COMPUESTOS.
+      {producto:'C-ZODIAC-VIRGO_1',generico:'C-ZODIAC-VIRGO',categoria:'COMPUESTOS',codeBase:'54804',variantCode:'1',saldo:6}
+    ]
+  };
+  const anchorRows=[
+    {producto:'A-ROSAS',generico:'A-ROSAS',categoria:'ROSAS',codeBase:'1',variantCode:'1',saldo:1},
+    {producto:'C-ZODIAC-VIRGO_1',generico:'C-ZODIAC-VIRGO',categoria:'COMPUESTOS',codeBase:'54804',variantCode:'1',saldo:6},
+    {producto:'C-ZODIAC-VIRGO_2',generico:'C-ZODIAC-VIRGO',categoria:'COMPUESTOS',codeBase:'54804',variantCode:'2',saldo:16},
+    {producto:'C-ZODIAC-VIRGO_3',generico:'C-ZODIAC-VIRGO',categoria:'COMPUESTOS',codeBase:'54804',variantCode:'3',saldo:2},
+    {producto:'P-BONSAI',generico:'P-BONSAI',categoria:'PLANTAS',codeBase:'2',variantCode:'1',saldo:1},
+    {producto:'S-ALSTRO',generico:'S-ALSTRO',categoria:'SIMPLES',codeBase:'3',variantCode:'1',saldo:1}
+  ];
+  const balances={'C-ZODIAC-VIRGO_1':6,'C-ZODIAC-VIRGO_2':16,'C-ZODIAC-VIRGO_3':2};
+
+  const reconciled=StockPlanning.reconcileMissingInheritedProducts(destino,balances,anchorRows,isActiveSiempre);
+  const refreshed=StockPlanning.refreshInheritedBalance(reconciled.plan,balances);
+  const byVariant=StockPlanning.refreshInheritedBalanceByVariant(refreshed,anchorRows,balances);
+  const result=StockPlanning.refreshInheritedBalanceByFamily(byVariant.plan,anchorRows,balances);
+  const virgoRows=result.data.filter(row=>row.generico==='C-ZODIAC-VIRGO');
+
+  assert.deepEqual(reconciled.added,['C-ZODIAC-VIRGO_2','C-ZODIAC-VIRGO_3']);
+  assert.equal(virgoRows.length,3);
+  assert.equal(virgoRows.reduce((sum,row)=>sum+row.saldo,0),24);
+  assert.deepEqual(result.data.map(row=>row.producto),[
+    'A-ROSAS',
+    'C-ZODIAC-VIRGO_1','C-ZODIAC-VIRGO_2','C-ZODIAC-VIRGO_3',
+    'P-BONSAI','S-ALSTRO'
+  ]);
+  assert.ok(!result.data.some(row=>row.generico==='C-ASTRO-LEO'));
+});
+
+test('borrador futuro conserva una referencia ausente del ancla si fue añadida manualmente',()=>{
+  const destino={
+    recapLoaded:false,
+    data:[{producto:'C-MANUAL_1',generico:'C-MANUAL',categoria:'COMPUESTOS',codeBase:'999',variantCode:'1',saldo:0,addedManually:true}]
+  };
+  const result=StockPlanning.reconcileMissingInheritedProducts(destino,{},[],isActiveSiempre);
+  assert.deepEqual(result.plan.data.map(row=>row.producto),['C-MANUAL_1']);
+});
+
+test('borrador futuro incorpora un ramo nuevo activo aunque llegue con saldo proyectado 0',()=>{
+  const destino={recapLoaded:false,data:[]};
+  const anchorRows=[
+    {producto:'C-NUEVO_1',generico:'C-NUEVO',categoria:'COMPUESTOS',codeBase:'777',variantCode:'1',saldo:0}
+  ];
+  const result=StockPlanning.reconcileMissingInheritedProducts(destino,{'C-NUEVO_1':0},anchorRows,isActiveSiempre);
+  assert.deepEqual(result.added,['C-NUEVO_1']);
+  assert.equal(result.plan.data[0].saldo,0);
+});
+
+test('borrador futuro conserva un ramo ausente del ancla cuando tiene planificación propia',()=>{
+  const destino={
+    recapLoaded:false,
+    data:[{producto:'C-PLANIFICADO_1',generico:'C-PLANIFICADO',categoria:'COMPUESTOS',codeBase:'778',variantCode:'1',saldo:0}],
+    genericoData:{'C-PLANIFICADO':{compraL:5,compraM:0,compraX:0,compraJ:0,compraV:0}}
+  };
+  const result=StockPlanning.reconcileMissingInheritedProducts(destino,{},[],isActiveSiempre);
+  assert.deepEqual(result.plan.data.map(row=>row.producto),['C-PLANIFICADO_1']);
+});
+
+test('familia parcial con Recap propio conserva su composición y no reintroduce variantes ausentes',()=>{
+  const destino={
+    recapLoaded:true,
+    data:[
+      {producto:'C-ZODIAC-VIRGO_1',generico:'C-ZODIAC-VIRGO',categoria:'COMPUESTOS',codeBase:'54804',variantCode:'1',saldo:6}
+    ]
+  };
+  const anchorRows=[
+    {producto:'C-ZODIAC-VIRGO_1',generico:'C-ZODIAC-VIRGO',categoria:'COMPUESTOS',codeBase:'54804',variantCode:'1',saldo:6},
+    {producto:'C-ZODIAC-VIRGO_2',generico:'C-ZODIAC-VIRGO',categoria:'COMPUESTOS',codeBase:'54804',variantCode:'2',saldo:16}
+  ];
+  const result=StockPlanning.reconcileMissingInheritedProducts(destino,{'C-ZODIAC-VIRGO_1':6,'C-ZODIAC-VIRGO_2':16},anchorRows,isActiveSiempre);
+
+  assert.deepEqual(result.added,[]);
+  assert.deepEqual(result.plan.data.map(row=>row.producto),['C-ZODIAC-VIRGO_1']);
+});
+
 // TEST C/E (S+2 real, cadena de dos saltos): mismo bug y mismo fix que S+1, pero con una semana
 // intermedia REAL de por medio (S33), que respeta su propio modo/compras/PREV — projectOpeningBalance
 // no se toca, solo se encadena reconcile+refresh sobre su resultado, igual que hace ahora

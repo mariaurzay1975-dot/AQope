@@ -2681,12 +2681,17 @@ function stockPlanningEffectiveObjetivo(){
 function stockPlanningProductIsActiveInCatalog(anchorRow){
   const producto = anchorRow && anchorRow.producto;
   const generico = anchorRow && anchorRow.generico;
+  // El código del Recap es estable aunque el nombre comercial cambie de campaña.
+  // Si existe en catálogo, su estado prevalece sobre coincidencias por nombre.
+  const code = codeBaseFor(anchorRow?.codeBase || anchorRow?.recapCode);
+  const byCode = code ? (nomenclatures||[]).filter(n=>codeBaseFor(n.productCode)===code) : [];
+  if(byCode.length) return byCode.some(n=>n.active!==false && !n.deleted);
   const candidates = (nomenclatures||[]).filter(n=>
     n.productCode===producto || n.productName===producto ||
     (generico && (n.productName===generico || n.productCode===generico))
   );
   if(!candidates.length) return false;
-  return candidates.some(n=>n.active!==false);
+  return candidates.some(n=>n.active!==false && !n.deleted);
 }
 function stockPlanningAnchorPlan(){
   const snap = weekSnapshots[currentWeekKey];

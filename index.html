@@ -2028,6 +2028,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="shared-state-merge.js"></script>
 <script src="nomenclature-flower-usage.js"></script>
 <script src="nomenclature-ux.js"></script>
 <script src="annual-holidays.js"></script>
@@ -2192,7 +2193,7 @@ async function uploadMigrationCandidate(){
       const nextVersion=(existing.version||0)+1;
       const {data,error}=await supabaseClient.from('app_states')
         .update({state:migrationCandidate,version:nextVersion,updated_by:supabaseUser.id,updated_at:new Date().toISOString()})
-        .eq('week_key',SUPABASE_STATE_KEY).select('version,updated_at').single();
+        .eq('week_key',SUPABASE_STATE_KEY).eq('version',existing.version).select('version,updated_at').single();
       if(error) throw error;
       row=data;
     }else{
@@ -7887,7 +7888,7 @@ function saveProductEditor(){
   saveState();
   writeStateToOneDrive(null, {silent:false}).then(ok=>{
     const el = document.getElementById('nomenclatureCloudStatus');
-    if(el) el.textContent = ok ? 'Producto guardado en OneDrive' : 'Producto guardado localmente. Pulsa Guardar para actualizar OneDrive.';
+    if(el) el.textContent = ok ? 'Producto guardado en el almacenamiento compartido' : 'Cambios conservados en este navegador; pendientes de sincronizar.';
   });
   document.getElementById('productEditorModal').classList.remove('open');
   renderNomenclatures();
@@ -8008,7 +8009,7 @@ async function saveNomenclaturesToOneDrive(){
     }
     if(jsonOk || excelOk){
       nomenclatureDirty = false;
-      if(status) status.textContent = `Guardado en OneDrive ${new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}`;
+      if(status) status.textContent = `Guardado compartido ${new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}`;
       return true;
     }
     if(status) status.textContent = 'Pendiente de autorizar OneDrive';
@@ -9876,7 +9877,7 @@ function saveProductEditor(){
   renderNomenclatures();
   writeStateToOneDrive(null, {silent:false}).then(ok=>{
     const el = document.getElementById('nomenclatureCloudStatus');
-    if(el) el.textContent = ok ? 'Producto guardado en OneDrive' : 'Producto guardado localmente. Pulsa Guardar para actualizar OneDrive.';
+    if(el) el.textContent = ok ? 'Producto guardado en el almacenamiento compartido' : 'Cambios conservados en este navegador; pendientes de sincronizar.';
   });
   saveNomenclaturesToOneDrive().then(ok=>{
     if(!ok){
@@ -10134,14 +10135,14 @@ async function saveNomenclaturesToOneDrive(){
     const ok = await writeStateToOneDrive(null, {silent:true});
     if(ok){
       nomenclatureDirty = false;
-      if(status) status.textContent = `Guardado en OneDrive ${new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}`;
+      if(status) status.textContent = `Guardado compartido ${new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}`;
       return true;
     }
-    if(status) status.textContent = 'Pendiente de guardar en OneDrive';
+    if(status) status.textContent = 'Cambios locales pendientes de sincronizar';
     return false;
   } catch(err){
     console.warn('No se pudo guardar nomenclaturas en OneDrive', err);
-    if(status) status.textContent = 'Pendiente de guardar en OneDrive';
+    if(status) status.textContent = 'Cambios locales pendientes de sincronizar';
     return false;
   }
 }
@@ -10275,7 +10276,7 @@ async function saveProductEditorFinal(){
   saveState();
   const ok = await writeStateToOneDrive(null, {silent:false}).catch(()=>false);
   const el = document.getElementById('nomenclatureCloudStatus');
-  if(el) el.textContent = ok ? 'Producto guardado en OneDrive' : 'Producto guardado localmente. Pulsa Guardar para actualizar OneDrive.';
+  if(el) el.textContent = ok ? 'Producto guardado en el almacenamiento compartido' : 'Cambios conservados en este navegador; pendientes de sincronizar.';
   closeProductEditor();
   renderNomenclatures();
 }
@@ -11243,7 +11244,13 @@ document.getElementById('preasignDiaDaySelect').addEventListener('change', e=>{
 document.getElementById('preasignDiaSearch').addEventListener('input', ()=>{ renderPreasignDiaTable(); renderPreasignDiaFooter(); });
 document.getElementById('preasignDiaCategoryFilter').addEventListener('change', ()=>{ renderPreasignDiaTable(); renderPreasignDiaFooter(); });
 document.getElementById('preasignDiaViewFilter').addEventListener('change', ()=>{ renderPreasignDiaTable(); renderPreasignDiaFooter(); });
-
+</script>
+<script src="shared-sync.js"></script>
+<script>
+if(typeof sharedBase==='undefined'){
+  setSaveStatus('No se cargó la sincronización. Recarga la aplicación antes de editar.','warn');
+  throw new Error('El módulo de sincronización compartida no se ha cargado.');
+}
 populateFilter();
 document.getElementById('toggleGroup').checked = groupView;
 storeActiveSnapshot();

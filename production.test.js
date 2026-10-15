@@ -543,3 +543,19 @@ test('el cálculo automático nunca propaga NaN ni convierte pendientes en horas
   const result=Production.calculateManufacturingPlan(manufacturingInput({productForecast:[manufacturingProduct(100,[{variantKey:'1',variantIndex:1,quantity:50},{variantKey:'2',variantIndex:2,quantity:Number.NaN}])],nomenclatures:[]}));
   assert.ok(Number.isFinite(result.weeklyHours));assert.ok(Object.values(result.dailyHours).every(Number.isFinite));assert.equal(result.products[0].variants[0].hours,null);assert.equal(result.products[0].variants[0].rate,null);
 });
+
+ test('copia solo semanas validadas e incluye siete días, cargas y contexto para horarios',()=>{
+  let state=deleteSpecialTasks(Production.createProductionState(null));
+  const plan=balancedPlan(2026,43,70);
+  assert.throws(()=>Production.weeklyPlanClipboardText(plan,state),/Valida primero/);
+  const result=Production.validateWeeklyPlan(state,plan,{now:NOW});
+  assert.equal(result.ok,true);
+  const text=Production.weeklyPlanClipboardText(result.plan,result.state);
+  assert.match(text,/Semana 43 \/ 2026/);
+  assert.match(text,/2026-10-19 a 2026-10-25/);
+  assert.match(text,/Lunes: 70/);
+  assert.match(text,/Domingo: 0/);
+  assert.match(text,/horas-persona/);
+  assert.match(text,/No inventes personal/);
+  assert.match(text,/Total semanal: 70 expediciones/);
+});

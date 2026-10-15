@@ -316,7 +316,7 @@
     calculated.dailyBreakdown.columns.forEach(column=>{const task=state.tasks.find(item=>item.id===column.id)||column;lines.push('| '+[cell(task.name),task.type==='principal'?'Principal':'Satélite',cell(task.priority),cell(task.mobility),...WEEK_DAYS.map(day=>number(calculated.hoursByTaskAndDay[column.id]?.[day.code])),number(calculated.dailyBreakdown.totalsByTask[column.id])].join(' | ')+' |');});
     lines.push('','TOTALES DIARIOS',...WEEK_DAYS.map(day=>`- ${day.label}: ${number(calculated.days[day.code].total)} h-persona`),`Total semanal: ${number(calculated.weekly.total)} h-persona`);
     const mailing=cleanText(options.mailing),mailingProductCode=cleanText(options.mailingProductCode);
-    lines.push('','MAILING PREVISTO (Planificación anual de esta semana)',`Nombre del producto: ${mailing||'No informado'}`,`Código del producto: ${mailingProductCode||'No informado'}`);
+    lines.splice(5,0,'','MAILING PREVISTO (Planificación anual de esta semana)',`Nombre del producto: ${mailing||'No informado'}`,`Código del producto: ${mailingProductCode||'No informado'}`);
     const holidays=plan.distributionContext.holidayDetails||[];
     if(holidays.length)lines.push('','FESTIVOS',...holidays.map(item=>`- ${item.date}: ${item.name} (expediciones: ${item.affectsShipping?'afectadas':'sin bloqueo'}; producción: ${item.affectsProduction?'afectada':'sin bloqueo'})`));
     if(calculated.issues.length)lines.push('','AVISOS Y ESTIMACIONES',...calculated.issues.map(issue=>'- '+issue.message));

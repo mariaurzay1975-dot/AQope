@@ -559,3 +559,15 @@ test('el cálculo automático nunca propaga NaN ni convierte pendientes en horas
   assert.match(text,/No inventes personal/);
   assert.match(text,/Total semanal: 70 expediciones/);
 });
+
+test('la copia incluye el mailing previsto y conserva códigos con ceros iniciales',()=>{
+  const state=deleteSpecialTasks(Production.createProductionState(null));
+  const result=Production.validateWeeklyPlan(state,balancedPlan(2026,43,70),{now:NOW});
+  const text=Production.weeklyPlanClipboardText(result.plan,result.state,{mailing:'Ramo Otoño',mailingProductCode:'001234'});
+  assert.match(text,/MAILING PREVISTO/);
+  assert.match(text,/Nombre del producto: Ramo Otoño/);
+  assert.match(text,/Código del producto: 001234/);
+  const empty=Production.weeklyPlanClipboardText(result.plan,result.state);
+  assert.match(empty,/Nombre del producto: No informado/);
+  assert.match(empty,/Código del producto: No informado/);
+});

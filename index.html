@@ -5886,7 +5886,8 @@ async function copyProductionWeek(){
   try{
     const plan=ensureProductionWeeklyDraft();
     if(productionWeeklyDirty)throw new Error('Guarda y valida primero los cambios.');
-    const text=AquarelleProduction.weeklyPlanClipboardText(plan,productionState,{variantRates:productionManufacturingRates(),purchases:productionPurchasesForWeek(plan.year,plan.week),...productionManufacturingOptions(plan)});
+    const mailingWeek=annualWeek(plan.year,plan.week);
+    const text=AquarelleProduction.weeklyPlanClipboardText(plan,productionState,{mailing:mailingWeek?.mailing,mailingProductCode:mailingWeek?.mailingProductCode,variantRates:productionManufacturingRates(),purchases:productionPurchasesForWeek(plan.year,plan.week),...productionManufacturingOptions(plan)});
     try{await navigator.clipboard.writeText(text);}catch(error){
       const field=document.createElement('textarea');field.value=text;field.style.cssText='position:fixed;left:-9999px';document.body.appendChild(field);
       const focused=document.activeElement;try{field.select();if(!document.execCommand('copy'))throw new Error('No se pudo copiar. Permite el acceso al portapapeles y vuelve a intentarlo.');}finally{field.remove();focused?.focus();}

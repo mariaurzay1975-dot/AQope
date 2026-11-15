@@ -338,6 +338,31 @@
     // Los borradores futuros generados por la app deben mantener completa la composición heredada.
     // Un Recap propio, y los snapshots antiguos sin esta marca, conservan su composición deliberada.
     const preserveDestinationFamilyComposition=next.recapLoaded!==false;
+    if(!preserveDestinationFamilyComposition){
+      // Los borradores automáticos pueden conservar nombres antiguos de una misma
+      // variante y duplicados sin metadatos. No sumar varias veces el mismo stock.
+      const identity=row=>row?.categoria&&row?.codeBase&&row?.variantCode
+        ?`${row.categoria}|${row.codeBase}|${row.variantCode}`:null;
+      const sourceByVariant=new Map((anchorRows||[]).filter(row=>identity(row)).map(row=>[identity(row),row]));
+      const preferred=new Map(),seen=new Set();
+      next.data.forEach(row=>{
+        if(!preferred.has(row?.producto)||(!preferred.get(row?.producto)?.codeBase&&row?.codeBase)) preferred.set(row?.producto,row);
+      });
+      next.data=next.data.filter(row=>{
+        if(!row?.producto) return true;
+        if(row!==preferred.get(row.producto)||seen.has(row.producto)) return false;
+        seen.add(row.producto);
+        const source=sourceByVariant.get(identity(row));
+        if(!source||source.producto===row.producto||row.addedManually) return true;
+        // Conservar las claves que todavía contienen movimientos propios.
+        const ownForecast=finiteNumber(next.prevExpedicionProducto?.[row.producto],0)!==0;
+        const ownFamilyMovement=row.generico!==source.generico&&(
+          Object.values(next.genericoData?.[row.generico]||{}).some(value=>finiteNumber(value,0)!==0)
+          ||finiteNumber(next.prevExpedicionProducto?.[row.generico],0)!==0
+          ||Object.prototype.hasOwnProperty.call(next.forecastAdjustments||{},row.generico));
+        return ownForecast||ownFamilyMovement;
+      });
+    }
     const existing=new Set(next.data.map(row=>row&&row.producto).filter(Boolean));
     const familyKeyOf=row=>(row&&row.categoria&&row.codeBase)?`${row.categoria}|${row.codeBase}`:null;
     // Familias YA representadas en destino, calculado UNA sola vez a partir de la composición original

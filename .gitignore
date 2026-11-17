@@ -1,0 +1,5 @@
+/Datos/
+/Copias de seguridad/
+.env
+.env.*
+!.env.example

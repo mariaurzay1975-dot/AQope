@@ -1637,6 +1637,10 @@
       <span id="productEditorDirtyStatus" class="nomenclature-edit-hint"></span>
     </div>
     <h3 style="font-size:17px;margin-top:10px;">Flores / articulos del ramo</h3>
+    <div class="product-editor-tools">
+      <button type="button" class="btn btn-ghost" id="btnProductAddFlower">Añadir flor del catálogo</button>
+      <button type="button" class="btn btn-ghost" id="btnProductNewFlower" data-editor-action="new-flower">Nueva flor</button>
+    </div>
     <datalist id="flowerSuggestions"></datalist>
     <div class="nomenclature-table-wrap" style="max-height:340px;">
       <table class="nomenclature-table" style="min-width:1040px;">
@@ -1661,7 +1665,7 @@
       <span id="productEditMargin">Margen: -</span>
     </div>
     <div class="modal-actions" style="justify-content:space-between;">
-      <button class="btn btn-ghost" id="btnProductAddFlower">Anadir flor al ramo</button>
+
       <div style="display:flex;gap:10px;">
         <button class="btn btn-ghost" id="btnProductEditorCancel">Cancelar</button>
         <button class="btn btn-primary" id="btnProductEditorSave">Guardar producto</button>
@@ -7665,7 +7669,8 @@ document.getElementById('flowerAlternativeProviders').addEventListener('click', 
   renderFlowerAlternativeProviders();
 });
 ['productEditCode','productEditName','productEditCategory','productEditVariantCode','productEditVariantName','productEditSize','productEditSalePrice','productEditVat','productEditActive','productEditNotes','productEditMinimumMargin'].forEach(id=>{ document.getElementById(id).addEventListener('input', renderProductEditorLines); document.getElementById(id).addEventListener('change', renderProductEditorLines); });
-document.getElementById('btnProductAddFlower').addEventListener('click', ()=>{ productEditorLines.push({articleCode:'',articleName:'',supplier:'',unitCost:'',stems:{},active:true,notes:'',_masterFlowerKey:''}); renderProductEditorLines(); });
+document.getElementById('btnProductNewFlower').addEventListener('click', ()=>startProductEditorNewFlower(productEditorLines.length));
+document.getElementById('btnProductAddFlower').addEventListener('click', ()=>{ rememberProductEditorUndo(); productEditorLines.push({articleCode:'',articleName:'',supplier:'',unitCost:'',stems:{},active:true,notes:'',_masterFlowerKey:''}); renderProductEditorLines(); });
 document.getElementById('btnProductEditorCancel').addEventListener('click', ()=> document.getElementById('productEditorModal').classList.remove('open'));
 document.getElementById('btnProductEditorSave').addEventListener('click', saveProductEditor);
 document.getElementById('productFlowersTbody').addEventListener('change', e=>{
@@ -9807,6 +9812,7 @@ function updateProductPriceSummaries(){
   const table = document.getElementById('productEconomicsTable');
   const cells = values=>values.map((value,index)=>`<td class="${economy.variants[index].lowMargin?'low':''}">${value}</td>`).join('');
   table.innerHTML = `<thead><tr><th>Concepto</th>${economy.variants.map(variant=>`<th>P${variant.priceNumber}</th>`).join('')}</tr></thead><tbody>
+    <tr><td>Total tallos (flores activas)</td>${cells(economy.variants.map(variant=>productEditorLines.filter(line=>line.active !== false && !line.deleted).reduce((total,line)=>total + parseAppNumber(line.stems?.[variant.priceNumber] || 0),0).toLocaleString('es-ES')))}</tr>
     <tr><td>PVP</td>${cells(economy.variants.map(variant=>variant.pvp===''?'—':money(variant.pvp)))}</tr>
     <tr><td>PVP sin IVA</td>${cells(economy.variants.map(variant=>variant.pvpNet===''?'—':money(variant.pvpNet)))}</tr>
     <tr><td>Coste teorico</td>${cells(economy.variants.map(variant=>money(variant.cost)))}</tr>
@@ -9829,12 +9835,12 @@ function renderProductEditorLines(){
   tbody.innerHTML = productEditorLines.length ? productEditorLines.map((l,i)=>`
     <tr data-editor-line="${i}">
       <td><span class="flower-readonly muted">${escapeHtml(l.articleCode || '-')}</span></td>
-      <td><div class="product-flower-selector"><input data-editor-field="flowerSelection" list="flowerSuggestions" value="${escapeHtml(l.articleName)}" placeholder="Buscar flor activa..." autocomplete="off" title="Selecciona una flor del catalogo maestro"><button type="button" class="btn-mini" data-editor-action="new-flower">Nueva flor</button></div></td>
+      <td><div class="product-flower-selector"><input data-editor-field="flowerSelection" list="flowerSuggestions" value="${escapeHtml(l.articleName)}" placeholder="Buscar flor activa..." autocomplete="off" title="Selecciona una flor del catalogo maestro"><button type="button" class="btn-mini warn" data-editor-action="delete" title="Eliminar esta flor de todos los precios de este ramo">Quitar del ramo</button></div></td>
       <td class="num"><input data-editor-field="unitCost" type="text" inputmode="decimal" value="${escapeHtml(l.unitCost)}"></td>
       ${Array.from({length:count},(_,p)=>`<td class="num"><input data-editor-field="stem-${p+1}" type="text" inputmode="decimal" value="${escapeHtml(l.stems?.[p+1] ?? '')}"></td>`).join('')}
       <td><select data-editor-field="active"><option value="true" ${l.active!==false?'selected':''}>Activo</option><option value="false" ${l.active===false?'selected':''}>Inactivo</option></select></td>
       <td><input data-editor-field="notes" value="${escapeHtml(l.notes || '')}"></td>
-      <td><button type="button" class="btn-mini" data-editor-action="move-up" title="Mover arriba">↑</button><button type="button" class="btn-mini" data-editor-action="move-down" title="Mover abajo">↓</button><button type="button" class="btn-mini warn" data-editor-action="delete">Quitar</button></td>
+      <td><button type="button" class="btn-mini" data-editor-action="move-up" title="Mover arriba">↑</button><button type="button" class="btn-mini" data-editor-action="move-down" title="Mover abajo">↓</button></td>
     </tr>
   `).join('') : `<tr><td colspan="${count+7}"><div class="empty-state">Anade las flores o articulos que lleva este producto.</div></td></tr>`;
   updateProductPriceSummaries();

@@ -267,6 +267,9 @@
     const targetLineIndex = Number.isInteger(restored.targetLineIndex) ? restored.targetLineIndex : -1;
     if (newFlowerEntry && targetLineIndex >= 0 && restored.lines?.[targetLineIndex]) {
       restored.lines[targetLineIndex] = applyMasterFlowerToLine(restored.lines[targetLineIndex], newFlowerEntry);
+    } else if (newFlowerEntry && targetLineIndex === restored.lines?.length) {
+      restored.undoSnapshot = cloneProductEditorDraft({lines:restored.lines}).lines;
+      restored.lines.push(applyMasterFlowerToLine({stems:{},active:true,notes:''}, newFlowerEntry));
     }
     return restored;
   }
